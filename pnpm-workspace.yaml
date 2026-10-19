@@ -3,3 +3,9 @@
 overrides:
   vite@*: npm:@voidzero-dev/vite-plus-core@1.3.0
   vitest@*: 5.0.5
+
+# 依存のインストール時スクリプトは、許したものだけ動かす（pnpm 11）。
+# esbuild と workerd（wrangler の手元実行に使う）はバイナリの取得に要る。
+allowBuilds:
+  esbuild: true
+  workerd: true
