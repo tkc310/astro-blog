@@ -15,7 +15,6 @@
 
 ## Markdown の拡張（その PR で確かめる）
 
-- [ ] `markdown.processor: unified()` で、remark-link-card-plus と Expressive Code が一緒に動くか
 - [ ] Workers にデプロイしたあと、`/articles/<id>` がリダイレクトなしに 200 で返るか（ビルドが `articles/<id>.html` を出すことは `check-output` で確かめ済み）
 
 ## 仕組み

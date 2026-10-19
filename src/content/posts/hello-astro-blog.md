@@ -13,6 +13,10 @@ category: frontend
 - 記事はリポジトリの Markdown に置く
 - Cloudflare Workers の静的アセットで配信する
 
+https://astro.build/
+
+設定は [Astro のドキュメント](https://docs.astro.build/) を見ながら書きました。
+
 ### 検査
 
 `make check` で、フォーマット・静的検査・テスト・ビルドを回します。

@@ -94,6 +94,18 @@ for (const file of htmlFiles(DIST)) {
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${name}: <title> がありません`);
   if (!/<meta name="description" content="[^"]+"/.test(html))
     fail(`${name}: meta description がありません`);
+
+  // 外部へのリンクは別タブで開き、opener と参照元を渡さない（docs/specs/blog-replace.md §5）。
+  for (const [tag] of html.matchAll(/<a\b[^>]*\bhref="https?:\/\/[^"]*"[^>]*>/g)) {
+    if (!/\btarget="_blank"/.test(tag) || !/\brel="[^"]*\bnoopener\b[^"]*"/.test(tag))
+      fail(`${name}: 外部リンクに target="_blank" と rel="noopener" がありません: ${tag}`);
+  }
+
+  // 画像は大きさを持ち、読み込みの前後でレイアウトがずれないようにする（rules/seo.md の性能）。
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
+    if (!/\bwidth="\d+"/.test(tag) || !/\bheight="\d+"/.test(tag))
+      fail(`${name}: 画像に width と height がありません: ${tag}`);
+  }
 }
 
 if (errors.length > 0) {

@@ -116,17 +116,111 @@
   letter-spacing: 0;
 }
 
-.prose pre {
+/* コードブロックは Expressive Code が組む（astro.config.mjs）。ここでは前後の余白だけをそろえる。 */
+.prose .expressive-code {
   margin: 0 0 1.75em;
-  padding: var(--space-5) var(--space-5);
-  overflow-x: auto;
+  letter-spacing: 0;
+}
+
+/*
+ * リンクカード（remark-link-card-plus）。枠や影は使わず、コードと同じ薄いグレーの地で本文と分ける。
+ * サムネイルの枠は大きさを固定し、読み込みの前後で高さが変わらないようにする。
+ */
+.prose .remark-link-card-plus__container {
+  margin: 0 0 1.75em;
+}
+
+.prose .remark-link-card-plus__card {
+  display: flex;
+  min-height: 7.875rem;
+  overflow: hidden;
   border-radius: 4px;
-  /* Shiki が pre に書く地の色（白）より、サイトの地の色を優先する。 */
-  background: var(--wash) !important;
+  background: var(--wash);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.prose .remark-link-card-plus__card:hover {
+  background: var(--line);
+}
+
+.prose .remark-link-card-plus__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+}
+
+.prose .remark-link-card-plus__title {
+  overflow: hidden;
+  color: var(--strong);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prose .remark-link-card-plus__description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
   font-size: var(--text-xs);
   line-height: 1.8;
-  letter-spacing: 0;
-  overflow-wrap: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.prose .remark-link-card-plus__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+}
+
+.prose .remark-link-card-plus__favicon {
+  display: block;
+  margin: 0;
+}
+
+.prose .remark-link-card-plus__thumbnail {
+  flex: none;
+  width: 15rem;
+  background: var(--line);
+}
+
+.prose .remark-link-card-plus__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+@media (width < 36rem) {
+  .prose .remark-link-card-plus__card {
+    min-height: 6rem;
+  }
+
+  .prose .remark-link-card-plus__main {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .prose .remark-link-card-plus__description {
+    display: none;
+  }
+
+  .prose .remark-link-card-plus__thumbnail {
+    width: 6rem;
+  }
 }
 
 .prose table {
