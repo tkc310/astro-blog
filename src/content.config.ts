@@ -2,6 +2,8 @@ import { defineCollection, reference } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
+import { categoryColors } from "./lib/category-colors";
+
 // 記事の形式は rules/content.md。項目を足すときは Sveltia CMS の設定と指示書の表も直す。
 const posts = defineCollection({
   loader: glob({ base: "./src/content/posts", pattern: "**/*.md" }),
@@ -16,21 +18,6 @@ const posts = defineCollection({
     })
     .strict(),
 });
-
-// 旧ブログの microCMS のカテゴリの色をそのまま持つ。
-export const categoryColors = [
-  "blue",
-  "green",
-  "red",
-  "pink",
-  "orange",
-  "yellow",
-  "cyan",
-  "teal",
-  "purple",
-  "black",
-  "gray",
-] as const;
 
 const categories = defineCollection({
   loader: glob({ base: "./src/content/categories", pattern: "**/*.yml" }),
