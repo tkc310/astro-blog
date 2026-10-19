@@ -3,8 +3,14 @@
  * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
  */
 
+/*
+ * 色は CSS 変数だけで切り替える（ADR-0015）。
+ * - <html> に data-theme が無いとき（自動）は OS の設定（prefers-color-scheme）に従う
+ * - data-theme="light"・"dark" のときはそれに従う（<head> のスクリプトが描く前に付ける）
+ * 部品の側で prefers-color-scheme を直接見ない。昼と夜で変わるものは、ここのトークンにする。
+ */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   --paper: #ffffff;
   --ink: #000000;
@@ -13,6 +19,8 @@
   --alert: #ff0000;
   --frame-hi: #dfdfdf;
   --frame-lo: #808080;
+  --bevel-out: outset;
+  --bevel-in: inset;
   --counter-bg: #000000;
   --counter-ink: #33ff33;
   --quiet: #555555;
@@ -26,9 +34,10 @@
   --space: 1rem;
 }
 
-/* 夜はパソコン通信の端末風（ADR-0013）。 */
+/* 夜はパソコン通信の端末風（ADR-0013）。自動で OS が夜のときと、夜を選んだときの 2 か所に同じ値を書く。 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --paper: #000000;
     --ink: #33ff33;
     --link: #ffff55;
@@ -36,11 +45,30 @@
     --alert: #ff5555;
     --frame-hi: #33ff33;
     --frame-lo: #118811;
-    --counter-bg: #000000;
-    --counter-ink: #33ff33;
+    --bevel-out: solid;
+    --bevel-in: solid;
     --quiet: #22bb22;
+    /* カテゴリの「■」を、カテゴリの色ではなく文字と同じ緑にする。 */
+    --mark: var(--ink);
     --body-font: var(--mono);
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #000000;
+  --ink: #33ff33;
+  --link: #ffff55;
+  --visited: #55ffff;
+  --alert: #ff5555;
+  --frame-hi: #33ff33;
+  --frame-lo: #118811;
+  --bevel-out: solid;
+  --bevel-in: solid;
+  --quiet: #22bb22;
+  /* カテゴリの「■」を、カテゴリの色ではなく文字と同じ緑にする。 */
+  --mark: var(--ink);
+  --body-font: var(--mono);
 }
 
 /* ページの移り変わりを CSS だけで滑らかにする（ADR-0013）。 */
@@ -134,25 +162,16 @@ pre {
 
 /* 昔の表。凹凸の枠（outset の表に inset のセル）。 */
 table.bevel {
-  border: 2px outset var(--frame-hi);
+  border: 2px var(--bevel-out) var(--frame-hi);
   border-collapse: separate;
   border-spacing: 2px;
 }
 
 table.bevel th,
 table.bevel td {
-  border: 1px inset var(--frame-hi);
+  border: 1px var(--bevel-in) var(--frame-hi);
   padding: 0.2em 0.5em;
   vertical-align: top;
-}
-
-@media (prefers-color-scheme: dark) {
-  table.bevel,
-  table.bevel th,
-  table.bevel td {
-    border-style: solid;
-    border-color: var(--frame-lo);
-  }
 }
 
 .visually-hidden {

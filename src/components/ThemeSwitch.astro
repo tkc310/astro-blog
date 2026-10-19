@@ -1,0 +1,100 @@
+---
+// 表示の切り替え（自動・昼・夜）。ADR-0015・docs/specs/design.md §6。
+// 選んだ表示は <html data-theme> と localStorage に入れる。描く前の適用は Base.astro の <head> のスクリプトが行う。
+const options = [
+  { value: "auto", label: "自動" },
+  { value: "light", label: "昼（ホームページ）" },
+  { value: "dark", label: "夜（パソコン通信）" },
+] as const;
+---
+
+<fieldset class="theme" data-theme-switch>
+  <legend>表示</legend>
+  {
+    options.map((option) => (
+      <label>
+        <input type="radio" name="theme" value={option.value} checked={option.value === "auto"} />
+        {option.label}
+      </label>
+    ))
+  }
+</fieldset>
+
+<script>
+  const STORAGE_KEY = "theme";
+  type Theme = "auto" | "light" | "dark";
+
+  function isTheme(value: string): value is Theme {
+    return value === "auto" || value === "light" || value === "dark";
+  }
+
+  function apply(theme: Theme): void {
+    const root = document.documentElement;
+    if (theme === "auto") delete root.dataset.theme;
+    else root.dataset.theme = theme;
+    try {
+      if (theme === "auto") localStorage.removeItem(STORAGE_KEY);
+      else localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      // localStorage が使えない（プライベートブラウズなど）ときは、このページだけ切り替える。
+    }
+  }
+
+  const form = document.querySelector<HTMLFieldSetElement>("[data-theme-switch]");
+  if (form) {
+    const current = document.documentElement.dataset.theme ?? "auto";
+    const radio = form.querySelector<HTMLInputElement>(`input[value="${current}"]`);
+    if (radio) radio.checked = true;
+
+    form.addEventListener("change", (event) => {
+      const value = (event.target as HTMLInputElement).value;
+      if (!isTheme(value)) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // 対応するブラウザでは、切り替えをビュー遷移でつなぐ。
+      if (!reduce && "startViewTransition" in document) {
+        document.startViewTransition(() => apply(value));
+      } else {
+        apply(value);
+      }
+    });
+  }
+</script>
+
+<style>
+  .theme {
+    margin: 1.5em 0 0;
+    padding: 0.3em 0.6em 0.5em;
+    border: 2px groove var(--frame-hi);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  legend {
+    padding: 0 0.3em;
+    font-weight: bold;
+  }
+
+  label {
+    display: block;
+    cursor: pointer;
+  }
+
+  input {
+    margin: 0 0.3em 0 0;
+    accent-color: var(--link);
+  }
+
+  /* JS が動かないときは出さない（押しても何も起きない部品を見せない）。 */
+  :global(html:not(.js)) .theme {
+    display: none;
+  }
+
+  @media (width < 48em) {
+    .theme {
+      margin-top: 0.5em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 1em;
+    }
+  }
+</style>

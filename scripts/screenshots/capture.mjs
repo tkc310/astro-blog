@@ -87,6 +87,37 @@ for (const scheme of ["light", "dark"]) {
   }
 }
 
+// 表示の切り替え（ADR-0015）: OS の設定と逆の表示を選んだ場合も撮る。
+for (const [scheme, theme] of [
+  ["light", "dark"],
+  ["dark", "light"],
+]) {
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    colorScheme: scheme,
+    reducedMotion: "reduce",
+  });
+  await context.addInitScript((value) => {
+    try {
+      localStorage.setItem("theme", value);
+    } catch {
+      // 撮影には関係しない
+    }
+  }, theme);
+  const page = await context.newPage();
+  page.on("pageerror", (error) => failures.push(`forced-${theme}: ${error.message}`));
+  for (const target of pages.slice(0, 2)) {
+    await page.goto(`${base}${target.path}`, { waitUntil: "networkidle" });
+    const applied = await page.evaluate(() => document.documentElement.dataset.theme);
+    if (applied !== theme) failures.push(`forced-${theme}: data-theme が ${applied} になった`);
+    await page.screenshot({
+      path: join(OUT, `${target.name}-pc-forced-${theme}.png`),
+      fullPage: true,
+    });
+  }
+  await context.close();
+}
+
 await browser.close();
 server.close();
 

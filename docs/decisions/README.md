@@ -19,6 +19,7 @@
 | [0012](./0012-lapras-activities-on-client.md) | About の LAPRAS の活動一覧は、クライアントで取得して表示する                          | 採用               |
 | [0013](./0013-retro-homepage-design.md)       | 見た目は平成初期の個人ホームページと掲示板のパロディにし、中身は今の技術で作る        | 採用               |
 | [0014](./0014-makefile.md)                    | コマンドの入口を Makefile にまとめる（中身は vp と mise）                             | 採用               |
+| [0015](./0015-theme-switch.md)                | 表示の切り替え（自動・昼・夜）を置く                                                  | 採用               |
 
 ## テンプレート
 

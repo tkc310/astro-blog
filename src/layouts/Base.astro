@@ -5,6 +5,7 @@ import "../styles/global.css";
 
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteMenu from "../components/SiteMenu.astro";
+import ThemeSwitch from "../components/ThemeSwitch.astro";
 import { site } from "../site.config";
 
 interface Props {
@@ -37,12 +38,26 @@ const speculationRules = {
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
+    <!-- 描く前に、選んだ表示（ADR-0015）を付ける。ちらつかないよう <head> で同期的に動かす。 -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.add("js");
+        try {
+          const theme = localStorage.getItem("theme");
+          if (theme === "light" || theme === "dark") root.dataset.theme = theme;
+        } catch {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">本文へ移動</a>
     <div class="frames">
       <aside class="menu-frame">
-        <SiteMenu />
+        <div class="menu-inner">
+          <SiteMenu />
+          <ThemeSwitch />
+        </div>
       </aside>
       <div class="main-frame">
         <main id="main">
@@ -79,7 +94,7 @@ const speculationRules = {
     padding: 1em 0.8em;
   }
 
-  .menu-frame > :global(*) {
+  .menu-inner {
     position: sticky;
     top: 1em;
   }
@@ -102,7 +117,7 @@ const speculationRules = {
       padding: 0.6em 1em;
     }
 
-    .menu-frame > :global(*) {
+    .menu-inner {
       position: static;
     }
 

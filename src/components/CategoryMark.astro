@@ -12,14 +12,9 @@ const { category } = Astro.props;
 <span class="mark" style={`--category: ${category.data.color}`} aria-hidden="true">■</span>
 
 <style>
+  /* 昼はカテゴリの色。夜は --mark（文字と同じ緑）を使う（src/styles/global.css）。 */
   .mark {
-    color: var(--category);
+    color: var(--mark, var(--category));
     margin-right: 0.15em;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .mark {
-      color: var(--ink);
-    }
   }
 </style>

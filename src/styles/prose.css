@@ -34,7 +34,7 @@
 .prose blockquote {
   margin: 0 0 1.2em;
   padding: 0.5em 1em;
-  border: 1px inset var(--frame-hi);
+  border: 1px var(--bevel-in) var(--frame-hi);
 }
 
 .prose :not(pre) > code {
@@ -45,12 +45,12 @@
 .prose pre {
   overflow-x: auto;
   padding: 0.8em 1em;
-  border: 2px inset var(--frame-hi);
+  border: 2px var(--bevel-in) var(--frame-hi);
   line-height: 1.6;
 }
 
 .prose table {
-  border: 2px outset var(--frame-hi);
+  border: 2px var(--bevel-out) var(--frame-hi);
   border-spacing: 2px;
   margin: 0 0 1.2em;
   display: block;
@@ -59,7 +59,7 @@
 
 .prose th,
 .prose td {
-  border: 1px inset var(--frame-hi);
+  border: 1px var(--bevel-in) var(--frame-hi);
   padding: 0.2em 0.5em;
 }
 
