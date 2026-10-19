@@ -35,7 +35,7 @@
 - 本文 16px・行間 2・字間 0.05em。記事の本文だけ 17px・行間 2.05、1 行の最大幅 36em
 - 文字の大きさは 1.25 倍ずつの階段（`--text-2xs` 12px 〜 `--text-lg` 22px、`--text-xl`・`--text-display` は画面の幅で伸び縮み）
 - ページの題: `--text-display`（36〜52px）・太さ 200・字間 0.16em。このサイトでいちばん目立つ要素
-- 見出し: 太さ 600、字間 0.08em、かなを詰める（`font-feature-settings: "palt"`）。文節の切れ目で折り返す（`word-break: auto-phrase`）
+- 見出し: 太さ 600、字間 0.06em（記事の題は欧文が開きすぎないよう 0.03em）、かなを詰める（`font-feature-settings: "palt"`）。文節の切れ目で折り返す（`word-break: auto-phrase`）
 - 小さな文字（日付・ナビ・カテゴリ・補足）は字間を 0.06〜0.14em 開け、小さくても詰まって見えないようにする
 - 日付は `2026.10.19` の形で、数字の幅をそろえる（`tabular-nums`）
 - 和文と欧文のあいだを自動で空け（`text-autospace`）、行頭の約物を詰める（`text-spacing-trim`）。対応しないブラウザでは何も起きない

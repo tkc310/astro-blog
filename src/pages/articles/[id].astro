@@ -106,7 +106,8 @@ const { title, description, pubDate, updatedDate, draft } = post.data;
     font-size: var(--text-xl);
     font-weight: 600;
     line-height: 1.55;
-    letter-spacing: 0.06em;
+    /* 大きな文字では欧文の字間が開きすぎるので、本文より詰める。 */
+    letter-spacing: 0.03em;
   }
 
   .body {

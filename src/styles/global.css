@@ -28,7 +28,7 @@
   --text-base: 1rem;
   --text-md: 1.125rem;
   --text-lg: 1.375rem;
-  --text-xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
+  --text-xl: clamp(1.5rem, 1.15rem + 1.5vw, 2.125rem);
   --text-display: clamp(2.25rem, 1.5rem + 3vw, 3.25rem);
 
   /* 余白: 4px を単位にした階段。 */
@@ -117,7 +117,7 @@ h4 {
   line-height: 1.6;
   /* 見出しはかなを詰め（palt）、詰めたぶん字間を開けて、文字の並びを均す。 */
   font-feature-settings: "palt";
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   /* 日本語を文節の切れ目で折り返し（対応するブラウザ）、行の長さをそろえる。 */
   word-break: auto-phrase;
   text-wrap: balance;
