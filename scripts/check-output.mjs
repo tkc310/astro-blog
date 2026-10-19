@@ -55,6 +55,9 @@ if (existsSync(join(DIST, "_redirects"))) {
   for (const [from, to] of [
     ["/articles", "/"],
     ["/articles/page/1", "/"],
+    ["/rss/atom.xml", "/rss/feed.xml"],
+    ["/rss/feed.json", "/rss/feed.xml"],
+    ["/sitemap.xml", "/sitemap-index.xml"],
   ]) {
     if (!rules.some((rule) => rule[0] === from && rule[1] === to && rule[2] === "301"))
       fail(`_redirects に ${from} → ${to} の 301 がありません`);
@@ -137,6 +140,9 @@ for (const file of htmlFiles(DIST)) {
     if (!/\btarget="_blank"/.test(tag) || !/\brel="[^"]*\bnoopener\b[^"]*"/.test(tag))
       fail(`${name}: 外部リンクに target="_blank" と rel="noopener" がありません: ${tag}`);
   }
+
+  // 移行した記事が microCMS の画像を読み続けないようにする（ADR-0010。契約を止めると消える）。
+  if (html.includes("images.microcms-assets.io")) fail(`${name}: microCMS の画像を読んでいます`);
 
   // 画像は大きさを持ち、読み込みの前後でレイアウトがずれないようにする（rules/seo.md の性能）。
   for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {

@@ -22,6 +22,7 @@
 - テスト: `make test`（例: `make test ARGS="src/lib"`）
 - 手元で Workers として確かめる: `make preview`（`astro preview`。`/about` のキャッシュの動きもここで見る）
 - 手動でデプロイ: `make deploy`（ふだんは Workers Builds が行う）
+- 旧ブログの記事を移す: `make migrate`（tkc310.com の公開ページから取り、`src/content/posts/`・`categories/`・`src/assets/posts/` を作り直す）
 - 新しい版がある依存パッケージを一覧: `make outdated`（範囲内で上げるなら `make update`）
 - ビルド結果と生成物を消す: `make clean`
 - コマンドの一覧: `make help`

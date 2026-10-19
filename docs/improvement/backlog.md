@@ -5,7 +5,8 @@
 
 ## 決めること
 
-- [ ] 本番を切り替える日（移行の PR をマージしてから決める。手順は `docs/specs/microcms-migration.md` の「切り替え」）
+- [ ] 本番を切り替える日（移行の PR はマージ済み。手順は `docs/specs/microcms-migration.md` の「切り替え」）
+- [ ] 旧ブログのテスト用の記事 `g8crnjuuxpgt`（下書き）を消すか直すか決める
 - [ ] 本番のドメインが `https://tkc310.com` で合っているか（`src/site.config.ts` の `SITE_URL` に仮で入れた。旧ブログはドメインを環境変数に持っていた）
 
 ## 人が Cloudflare・GitHub で行う設定

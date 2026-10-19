@@ -9,6 +9,7 @@
     "preview": "astro build && astro preview",
     "typecheck": "astro check",
     "check-output": "node scripts/check-output.mjs",
+    "migrate": "node scripts/migrate-legacy.ts",
     "deploy": "astro build && wrangler deploy",
     "astro": "astro"
   },

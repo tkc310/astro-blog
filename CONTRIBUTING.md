@@ -86,6 +86,7 @@ post: Astro 7 への移行メモを公開する
   - `make dev` では `/admin/` ではなく `/admin/index.html` を開きます（Astro の開発サーバはフォルダの `index.html` を返さない）
 - 公開前の記事は frontmatter に `draft: true` を付けます。プレビュー URL でだけ表示されます
 - 記事だけの変更は `post` の type でコミットします
+- 旧ブログの記事は `make migrate` で取り込みました（tkc310.com の公開ページから。手順は [`docs/specs/microcms-migration.md`](./docs/specs/microcms-migration.md)）
 
 ## 守ってほしいこと
 

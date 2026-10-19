@@ -75,8 +75,8 @@ collections:
     identifier_field: name
     slug:
       editable: [create]
-      hint: "URL（/articles/categories/<id>）になる ID。英小文字・数字・- だけ"
-      pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "英小文字・数字・- だけで書いてください"]
+      hint: "URL（/articles/categories/<id>）になる ID。英小文字・数字・-・_ だけ（旧ブログの book_review を保つため _ も使える）"
+      pattern: ["^[a-z0-9]+(?:[-_][a-z0-9]+)*$", "英小文字・数字・-・_ だけで書いてください"]
     fields:
       - { name: name, label: 名前, widget: string }
       - name: color

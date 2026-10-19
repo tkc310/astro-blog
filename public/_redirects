@@ -1,17 +1,26 @@
 # 旧ブログの URL と、無くしたページのリダイレクト（ADR-0006・docs/specs/blog-replace.md §4）。
 # Cloudflare Workers の静的アセットが読む。公開済みの URL を変えたら、ここに 301 を足す。
+# 決まった URL のルールを先に、* を使うルールを後に書く（Workers がその順で速く引ける）。
 
 # 記事の一覧の 1 ページ目は /
 /articles              /                 301
 /articles/             /                 301
 /articles/page/1       /                 301
 
-# タグは廃止した
-/articles/tags/*       /                 301
+# 旧ブログのテスト用の記事（MDX のコンポーネントの確認用）。移行では下書きにした
+/articles/g8crnjuuxpgt /                 301
 
-# ノート・寄付・認証・プレビューは移していない
+# RSS とサイトマップは 1 つにまとめた
+/rss/atom.xml          /rss/feed.xml     301
+/rss/feed.json         /rss/feed.xml     301
+/sitemap.xml           /sitemap-index.xml 301
+
+# ノート・寄付は移していない
 /notes                 /                 301
-/notes/*               /                 301
 /donation              /                 301
+
+# タグは廃止した。ノート・認証・プレビューも移していない
+/articles/tags/*       /                 301
+/notes/*               /                 301
 /auth/*                /                 301
 /preview/*             /                 301
