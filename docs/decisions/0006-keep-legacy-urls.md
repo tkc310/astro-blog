@@ -15,17 +15,20 @@
 ## 決定
 
 - 記事のファイル名に microCMS の ID を使い（`src/content/posts/<id>.md`）、`/articles/<id>` をそのまま保つ
-- 一覧・カテゴリ・ページ送り・About・RSS（`/rss/feed.xml`）の URL も保つ
+- カテゴリ・ページ送り（`/articles/page/<n>`）・RSS（`/rss/feed.xml`）の URL も保つ
+- トップ（`/`）は自己紹介にし、記事の一覧は `/articles` に移す（2026-10-19 に変更）。旧ブログの `/` は一覧だったが、URL としては 200 を返し続ける
 - 末尾スラッシュは付けない。Astro は `trailingSlash: 'never'` と `build.format: 'file'` にし、`/articles/<id>.html` を出す。Workers の `html_handling` は既定（`auto-trailing-slash`）のままにし、`/articles/<id>` を 200 で返す
-- 無くすページは `_redirects` で 301 にする
+- 無くすページは `public/_redirects` で 301 にする
 
-| 旧 URL                               | 新しい扱い                 |
-| ------------------------------------ | -------------------------- |
-| `/articles/tags/*`                   | `/` へ 301（タグは廃止）   |
-| `/notes`、`/notes/*`                 | `/` へ 301（ノートは廃止） |
-| `/donation`、`/auth/*`、`/preview/*` | `/` へ 301                 |
-| `/rss/atom.xml`、`/rss/feed.json`    | `/rss/feed.xml` へ 301     |
-| `/sitemap.xml`                       | 新しいサイトマップへ 301   |
+| 旧 URL                               | 新しい扱い                       |
+| ------------------------------------ | -------------------------------- |
+| `/articles/tags/*`                   | `/articles` へ 301（タグは廃止） |
+| `/about`                             | `/` へ 301（自己紹介はトップ）   |
+| `/articles/page/1`                   | `/articles` へ 301               |
+| `/notes`、`/notes/*`                 | `/` へ 301（ノートは廃止）       |
+| `/donation`、`/auth/*`、`/preview/*` | `/` へ 301                       |
+| `/rss/atom.xml`、`/rss/feed.json`    | `/rss/feed.xml` へ 301           |
+| `/sitemap.xml`                       | 新しいサイトマップへ 301         |
 
 ## 理由
 

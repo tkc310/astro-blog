@@ -72,7 +72,7 @@ jobs:
             const branch = process.env.BRANCH;
             const sha = context.payload.pull_request.head.sha.slice(0, 7);
             const raw = (name) => `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branch}/${name}`;
-            const pages = ["top", "article", "category", "about", "404"];
+            const pages = ["top", "articles", "article", "category", "404"];
             const rows = pages.map((page) =>
               `| ${page} | <img src="${raw(`${page}-pc.png`)}" width="360"> | <img src="${raw(`${page}-sp.png`)}" width="140"> |`);
             const marker = "<!-- screenshots -->";

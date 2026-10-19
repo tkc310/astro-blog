@@ -24,7 +24,7 @@ if (!existsSync(DIST)) {
 }
 
 // 末尾スラッシュなしの URL を返すため、ページは <path>.html で出す（ADR-0006）。
-for (const file of ["index.html", "404.html", "about.html"]) {
+for (const file of ["index.html", "404.html", "articles.html", "_redirects"]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
 }
 

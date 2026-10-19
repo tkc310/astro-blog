@@ -3,9 +3,9 @@
 
 import { yearOf } from "./format";
 
-/** 一覧の n ページ目の URL。1 ページ目はトップ。 */
+/** 記事の一覧の n ページ目の URL。1 ページ目は /articles。 */
 export function listPageHref(page: number): string {
-  return page <= 1 ? "/" : `/articles/page/${page}`;
+  return page <= 1 ? "/articles" : `/articles/page/${page}`;
 }
 
 export interface PageSlice<T> {

@@ -1,58 +1,245 @@
 ---
-// トップ: サイトの紹介、カテゴリへのリンク、年でまとめた記事の一覧（docs/specs/design.md §5）。
-import CategoryLabel from "../components/CategoryLabel.astro";
-import Pager from "../components/Pager.astro";
-import PostList from "../components/PostList.astro";
+// トップ（/）: 自己紹介。最近の記事と、LAPRAS の活動一覧（クライアントで取得、ADR-0012）。
+// /about は public/_redirects でここへ 301 する（docs/specs/design.md §5）。
+import { formatDate, toIsoDate } from "../lib/format";
+import { articlePath, getPosts } from "../lib/posts";
 import Base from "../layouts/Base.astro";
-import { slicePage } from "../lib/listing";
-import { getCategories, getPosts } from "../lib/posts";
 import { site } from "../site.config";
 
-const posts = await getPosts();
-const categories = await getCategories();
-const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
+const { author } = site;
+const laprasProfile = `https://lapras.com/public/${author.accounts.lapras}`;
+const laprasApi = `${laprasProfile}.json`;
+const recent = (await getPosts()).slice(0, 3);
 ---
 
-<Base>
-  <section class="intro">
-    <h1 class="visually-hidden">{site.name}</h1>
-    <p class="lead">{site.description}。</p>
-    {
-      categories.length > 0 && (
-        <nav aria-label="カテゴリ">
-          <ul class="categories">
-            {categories.map((category) => (
-              <li>
-                <CategoryLabel category={category} />
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )
-    }
+<Base description={`${author.name} の自己紹介と、${site.description}`}>
+  <h1>{author.name}</h1>
+  <p class="intro">{author.description}</p>
+
+  <section class="recent" aria-labelledby="recent-heading">
+    <h2 id="recent-heading">最近の記事</h2>
+    <ol class="recent-list">
+      {
+        recent.map((post) => (
+          <li>
+            <time datetime={toIsoDate(post.data.pubDate)}>{formatDate(post.data.pubDate)}</time>
+            <a href={articlePath(post.id)}>{post.data.title}</a>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="more"><a href="/articles">記事の一覧へ</a></p>
   </section>
 
-  <PostList posts={items} />
-  <Pager page={page} totalPages={totalPages} />
+  <section class="activity" aria-labelledby="activity-heading">
+    <h2 id="activity-heading">最近の活動</h2>
+    <p class="note">
+      <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった記録を、開いたときに読み込みます。
+    </p>
+    <div class="activities" data-lapras-api={laprasApi} data-lapras-profile={laprasProfile}>
+      <p class="status" data-status>読み込み中…</p>
+      <ol class="list" data-list hidden></ol>
+    </div>
+  </section>
 </Base>
 
+<script>
+  // LAPRAS の公開 API から活動を取り、新しい順に出す（ADR-0012）。
+  // 枠の高さは CSS で確保してあるので、読み込んでもページはずれない。
+  interface Activity {
+    title: string;
+    url: string;
+    date: string;
+    type: string;
+  }
+
+  const LIMIT = 20;
+  const TYPE_LABELS: Record<string, string> = {
+    github: "GitHub",
+    qiita: "Qiita",
+    zenn: "Zenn",
+    note: "note",
+    blog: "ブログ",
+    speaker_deck: "Speaker Deck",
+    teratail: "teratail",
+    connpass: "connpass",
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-lapras-api]");
+
+  async function load(container: HTMLElement): Promise<void> {
+    const status = container.querySelector<HTMLElement>("[data-status]");
+    const list = container.querySelector<HTMLOListElement>("[data-list]");
+    if (!status || !list) return;
+    try {
+      const response = await fetch(container.dataset.laprasApi ?? "");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = (await response.json()) as { activities?: Activity[] };
+      const activities = (data.activities ?? [])
+        .toSorted((a, b) => b.date.localeCompare(a.date))
+        .slice(0, LIMIT);
+      if (activities.length === 0) {
+        status.textContent = "まだ活動の記録はありません。";
+        return;
+      }
+      for (const activity of activities) {
+        const item = document.createElement("li");
+        const date = document.createElement("time");
+        date.dateTime = activity.date;
+        date.textContent = activity.date.slice(0, 10).replaceAll("-", ".");
+        const link = document.createElement("a");
+        link.href = activity.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = activity.title;
+        const type = document.createElement("span");
+        type.className = "type";
+        type.textContent = TYPE_LABELS[activity.type] ?? activity.type;
+        item.append(date, link, type);
+        list.append(item);
+      }
+      status.remove();
+      list.hidden = false;
+    } catch {
+      status.replaceChildren(
+        "活動を読み込めませんでした。",
+        Object.assign(document.createElement("a"), {
+          href: container.dataset.laprasProfile ?? "",
+          textContent: "LAPRAS のプロフィールを見る",
+          target: "_blank",
+          rel: "noopener",
+        }),
+      );
+    }
+  }
+
+  if (root) {
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          void load(root);
+        }
+      });
+      observer.observe(root);
+    } else {
+      void load(root);
+    }
+  }
+</script>
+
 <style>
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: 2rem;
+  }
+
   .intro {
-    margin-bottom: 4rem;
+    max-width: var(--measure);
+    margin: 0 0 4.5rem;
+    font-size: 1.05rem;
   }
 
-  .lead {
-    margin: 0 0 1rem;
-    font-size: 1.15rem;
-    line-height: 1.8;
+  section + section {
+    margin-top: 4.5rem;
   }
 
-  .categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.5rem;
+  .recent-list {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .recent-list li {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .recent-list time {
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  .recent-list a {
+    color: var(--strong);
+    text-decoration: none;
+    word-break: auto-phrase;
+  }
+
+  .recent-list a:hover {
+    text-decoration: underline;
+  }
+
+  .more {
+    margin: 1rem 0 0;
+    font-size: 0.94rem;
+  }
+
+  @media (width < 36rem) {
+    .recent-list li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
+  }
+
+  .note {
+    margin: 0 0 1.25rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  /* 取得前から高さを確保し、読み込んでもレイアウトをずらさない（rules/architecture.md）。 */
+  .activities {
+    height: 28rem;
+    overflow-y: auto;
+    max-width: var(--measure);
+  }
+
+  .status {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list :global(li) {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    gap: 0 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.94rem;
+  }
+
+  .list :global(time) {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .list :global(.type) {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  @media (width < 36rem) {
+    .list :global(li) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .list :global(a) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
   }
 </style>

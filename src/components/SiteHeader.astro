@@ -4,10 +4,10 @@ import { site } from "../site.config";
 
 // build.format: 'file' では /about.html・/index.html の形で来るので、拡張子と index を外してそろえる。
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
-const isArticles = path === "/" || path.startsWith("/articles");
+// トップ（/）は自己紹介、記事は /articles の下（docs/specs/design.md §5）。
 const links = [
-  { href: "/", label: "記事", current: isArticles },
-  { href: "/about", label: "About", current: path === "/about" },
+  { href: "/articles", label: "記事", current: path.startsWith("/articles") },
+  { href: "/", label: "About", current: path === "/" },
 ];
 ---
 

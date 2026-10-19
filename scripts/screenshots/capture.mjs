@@ -50,9 +50,9 @@ const base = "http://localhost:4321";
 
 const pages = [
   { name: "top", path: "/" },
+  { name: "articles", path: "/articles" },
   { name: "article", path: process.env.SCREENSHOT_ARTICLE ?? "/articles/hello-astro-blog" },
   { name: "category", path: process.env.SCREENSHOT_CATEGORY ?? "/articles/categories/frontend" },
-  { name: "about", path: "/about" },
   { name: "404", path: "/this-page-does-not-exist" },
 ];
 
