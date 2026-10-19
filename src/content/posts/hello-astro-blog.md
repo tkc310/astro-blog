@@ -15,7 +15,7 @@ category: frontend
 
 ### 検査
 
-`vp check` と `vp test` で、フォーマット・静的検査・テストを回します。
+`make check` で、フォーマット・静的検査・テスト・ビルドを回します。
 
 ```ts title="src/lib/drafts.ts"
 export function shouldShowDrafts(env: Record<string, string | undefined>): boolean {

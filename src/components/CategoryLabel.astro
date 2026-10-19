@@ -1,0 +1,63 @@
+---
+// カテゴリ: 小さな丸（カテゴリの色）＋名前。色は旧ブログの色の名前を、落ち着いた色に置き換える。
+import type { categoryColors } from "../content.config";
+import { categoryPath, type Category } from "../lib/posts";
+
+interface Props {
+  category: Category;
+  link?: boolean;
+}
+
+const { category, link = true } = Astro.props;
+
+const palette: Record<(typeof categoryColors)[number], string> = {
+  blue: "#3b6fd4",
+  green: "#2f8a5b",
+  red: "#c94a4a",
+  pink: "#c75b8f",
+  orange: "#d07a2d",
+  yellow: "#b8961e",
+  cyan: "#2a93a8",
+  teal: "#24857a",
+  purple: "#7a5bc2",
+  black: "#3a3f45",
+  gray: "#8a929b",
+};
+const color = palette[category.data.color];
+---
+
+{
+  link ? (
+    <a class="category" href={categoryPath(category.id)} style={`--dot: ${color}`}>
+      {category.data.name}
+    </a>
+  ) : (
+    <span class="category" style={`--dot: ${color}`}>
+      {category.data.name}
+    </span>
+  )
+}
+
+<style>
+  .category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .category::before {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--dot);
+    flex: none;
+  }
+
+  a.category:hover {
+    color: var(--ink);
+  }
+</style>

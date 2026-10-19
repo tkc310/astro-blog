@@ -12,4 +12,8 @@ export default defineConfig({
     // /articles/<id>.html を出し、Workers の静的アセットが /articles/<id> を 200 で返す。
     format: "file",
   },
+  markdown: {
+    // 白地に合わせた明るい配色（ADR-0016）。コードブロックの装飾は Expressive Code の PR で見直す（ADR-0008）。
+    shikiConfig: { theme: "github-light" },
+  },
 });

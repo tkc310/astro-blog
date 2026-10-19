@@ -1,0 +1,123 @@
+/*
+ * 白地のシンプルなデザイン（ADR-0016・docs/specs/design.md）。白と黒とグレーだけで組み、色はカテゴリの丸にだけ使う。
+ * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
+ */
+
+:root {
+  color-scheme: light;
+
+  --paper: #ffffff;
+  --strong: #000000;
+  --ink: #222222;
+  --muted: #6b6b6b;
+  --faint: #b5b5b5;
+  --line: #e6e6e6;
+  --wash: #f7f7f7;
+
+  --sans:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui,
+    sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --measure: 38em;
+  --column: 44rem;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+/* ページの移り変わりを CSS だけで滑らかにする（ADR-0016）。 */
+@view-transition {
+  navigation: auto;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 2;
+  letter-spacing: 0.04em;
+  font-kerning: normal;
+  text-wrap: pretty;
+  /* 和文と欧文のあいだを空け、行頭の約物を詰める（対応するブラウザだけ）。 */
+  text-autospace: normal;
+  text-spacing-trim: trim-start;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--faint);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.15s;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--strong);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--strong);
+  font-weight: 600;
+  line-height: 1.6;
+  /* 見出しはかなを詰め（palt）、字間を少し開けて整える。 */
+  font-feature-settings: "palt";
+  letter-spacing: 0.06em;
+  /* 日本語を文節の切れ目で折り返し（対応するブラウザ）、行の長さをそろえる。 */
+  word-break: auto-phrase;
+  text-wrap: balance;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--mono);
+}
+
+time,
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}

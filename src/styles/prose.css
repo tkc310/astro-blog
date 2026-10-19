@@ -1,0 +1,98 @@
+/* 記事の本文（Markdown から作った HTML）の組版。.prose の中だけに効かせる。 */
+
+.prose {
+  max-width: var(--measure);
+  overflow-wrap: anywhere;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin: 0 0 1.4em;
+}
+
+.prose h2 {
+  font-size: 1.45rem;
+  margin: 2.6em 0 0.8em;
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+  margin: 2em 0 0.6em;
+}
+
+.prose :is(h2, h3) {
+  scroll-margin-top: 1.5rem;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.4em;
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: 0.35em;
+}
+
+.prose li::marker {
+  color: var(--muted);
+}
+
+.prose blockquote {
+  margin: 0 0 1.4em;
+  padding: 0.2em 0 0.2em 1.2em;
+  border-left: 3px solid var(--line);
+  color: var(--muted);
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 2.5em 0;
+}
+
+.prose :not(pre) > code {
+  font-size: 0.88em;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: var(--wash);
+}
+
+.prose pre {
+  margin: 0 0 1.6em;
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.86rem;
+  line-height: 1.7;
+  overflow-wrap: normal;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  margin: 0 0 1.6em;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.prose th,
+.prose td {
+  padding: 0.45em 0.9em;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.prose th {
+  font-weight: 700;
+}
+
+.prose img {
+  display: block;
+  margin: 0 auto 1.6em;
+  border-radius: 6px;
+}

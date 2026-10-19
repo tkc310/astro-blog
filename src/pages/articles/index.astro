@@ -1,0 +1,57 @@
+---
+// 記事の一覧（/articles）: カテゴリへのリンクと、年でまとめた記事（docs/specs/design.md §5）。
+// 2 ページ目からは /articles/page/<n>。
+import CategoryLabel from "../../components/CategoryLabel.astro";
+import Pager from "../../components/Pager.astro";
+import PostList from "../../components/PostList.astro";
+import Base from "../../layouts/Base.astro";
+import { slicePage } from "../../lib/listing";
+import { getCategories, getPosts } from "../../lib/posts";
+import { site } from "../../site.config";
+
+const posts = await getPosts();
+const categories = await getCategories();
+const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
+---
+
+<Base title="記事" description={`${site.description}の記事の一覧`}>
+  <header class="heading">
+    <h1>記事</h1>
+    {
+      categories.length > 0 && (
+        <nav aria-label="カテゴリ">
+          <ul class="categories">
+            {categories.map((category) => (
+              <li>
+                <CategoryLabel category={category} />
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </header>
+
+  <PostList posts={items} />
+  <Pager page={page} totalPages={totalPages} />
+</Base>
+
+<style>
+  .heading {
+    margin-bottom: 4rem;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+  }
+
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,96 @@
+---
+// 目次。h2・h3 から作る。PC は本文の横に固定、スマホは本文の前に畳む（docs/specs/design.md §4）。
+// 現在位置の強調だけ小さなスクリプトで行う（rules/architecture.md で許したクライアント JS）。
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const items = Astro.props.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{
+  items.length > 0 && (
+    <details class="toc" open data-toc>
+      <summary>目次</summary>
+      <ol>
+        {items.map((heading) => (
+          <li class={`depth-${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  )
+}
+
+<script>
+  // 画面に入っている見出しに対応する目次の項目へ aria-current を付ける。
+  const toc = document.querySelector<HTMLElement>("[data-toc]");
+  if (toc && "IntersectionObserver" in window) {
+    const links = new Map<string, HTMLAnchorElement>();
+    for (const link of toc.querySelectorAll<HTMLAnchorElement>("a[href^='#']")) {
+      links.set(decodeURIComponent(link.hash.slice(1)), link);
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting);
+        const target = visible[0]?.target;
+        if (!target) return;
+        for (const link of links.values()) link.removeAttribute("aria-current");
+        links.get(target.id)?.setAttribute("aria-current", "true");
+      },
+      { rootMargin: "0px 0px -70% 0px" },
+    );
+    for (const id of links.keys()) {
+      const heading = document.getElementById(id);
+      if (heading) observer.observe(heading);
+    }
+  }
+</script>
+
+<style>
+  .toc {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0 0 2.5rem;
+    padding: 0 0 0 1rem;
+    border-left: 1px solid var(--line);
+  }
+
+  summary {
+    color: var(--muted);
+    font-weight: 700;
+    cursor: pointer;
+    list-style-position: outside;
+  }
+
+  ol {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+  }
+
+  li + li {
+    margin-top: 0.45rem;
+  }
+
+  .depth-3 {
+    padding-left: 1rem;
+  }
+
+  a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  a:hover,
+  [aria-current] {
+    color: var(--ink);
+  }
+
+  [aria-current] {
+    font-weight: 700;
+  }
+</style>

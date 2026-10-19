@@ -1,0 +1,29 @@
+---
+// 一覧の 2 ページ目以降（/articles/page/<n>）。1 ページ目はトップ。
+import type { GetStaticPaths } from "astro";
+
+import Pager from "../../../components/Pager.astro";
+import PostList from "../../../components/PostList.astro";
+import Base from "../../../layouts/Base.astro";
+import { slicePage } from "../../../lib/listing";
+import { getPosts } from "../../../lib/posts";
+import { site } from "../../../site.config";
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  const { totalPages } = slicePage(posts, 1, site.perPage);
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}) satisfies GetStaticPaths;
+
+const page = Number(Astro.params.page);
+const slice = slicePage(await getPosts(), page, site.perPage);
+const title = `記事の一覧（${slice.page} ページ目）`;
+---
+
+<Base title={title} description={`${site.name} の${title}`}>
+  <h1 class="visually-hidden">{title}</h1>
+  <PostList posts={slice.items} />
+  <Pager page={slice.page} totalPages={slice.totalPages} />
+</Base>

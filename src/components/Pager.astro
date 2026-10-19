@@ -1,0 +1,58 @@
+---
+// ページ送り: 前へ / 1 2 3 / 次へ（docs/specs/design.md §4）。
+import { listPageHref } from "../lib/listing";
+
+interface Props {
+  page: number;
+  totalPages: number;
+}
+
+const { page, totalPages } = Astro.props;
+const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+---
+
+{
+  totalPages > 1 && (
+    <nav class="pager" aria-label="ページ送り">
+      {page > 1 ? <a href={listPageHref(page - 1)} rel="prev">前へ</a> : <span class="off">前へ</span>}
+      <ol>
+        {pages.map((n) => (
+          <li>
+            {n === page ? (
+              <span class="current numeric" aria-current="page">{n}</span>
+            ) : (
+              <a class="numeric" href={listPageHref(n)}>{n}</a>
+            )}
+          </li>
+        ))}
+      </ol>
+      {page < totalPages ? <a href={listPageHref(page + 1)} rel="next">次へ</a> : <span class="off">次へ</span>}
+    </nav>
+  )
+}
+
+<style>
+  .pager {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 4rem;
+    font-size: 0.94rem;
+  }
+
+  ol {
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .current {
+    font-weight: 700;
+  }
+
+  .off {
+    color: var(--line);
+  }
+</style>

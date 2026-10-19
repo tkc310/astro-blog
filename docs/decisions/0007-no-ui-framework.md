@@ -19,7 +19,7 @@
 | アイコン     | astro-icon（ビルド時に SVG を埋め込む）                                        |
 | フォント     | 日本語はシステムフォント。等幅だけ Astro の Fonts API で読む                   |
 | ページ遷移   | CSS の `@view-transition`（JS を使わない）                                     |
-| ダークモード | `prefers-color-scheme` に従う（切り替えボタンは置かない）                      |
+| ダークモード | 置かない。いつも白地（ADR-0016）                                               |
 
 ## 理由
 
