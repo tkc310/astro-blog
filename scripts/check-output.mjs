@@ -64,6 +64,44 @@ if (existsSync(join(DIST, "_redirects"))) {
   }
 }
 
+// 旧ブログの URL は、新しいサイトでも 200（ページがある）か 301（_redirects）で返す（ADR-0006）。
+// Worker で描くページ（/about、ADR-0017）は静的なファイルを持たないので、ここで並べる。
+const ON_DEMAND = new Set(["/about"]);
+if (existsSync(join(DIST, "_redirects"))) {
+  const redirects = readFileSync(join(DIST, "_redirects"), "utf8")
+    .split("\n")
+    .map((line) => line.replace(/#.*/, "").trim().split(/\s+/))
+    .filter((parts) => parts.length === 3 && parts[2] === "301")
+    .map(([from]) => from);
+  const redirected = (path) =>
+    redirects.some((from) =>
+      from.endsWith("/*") ? path.startsWith(from.slice(0, -1)) : from === path,
+    );
+  const isFile = (path) => existsSync(path) && statSync(path).isFile();
+  const served = (path) =>
+    ON_DEMAND.has(path) ||
+    isFile(join(DIST, path === "/" ? "index.html" : `${path}.html`)) ||
+    isFile(join(DIST, path));
+  const legacy = readFileSync("scripts/legacy-urls.txt", "utf8")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+  for (const path of legacy) {
+    if (!served(path) && !redirected(path)) fail(`旧 URL ${path} が 200 にも 301 にもなりません`);
+  }
+
+  // 301 はアセットより先に効くので、ページがある URL に 301 を残すと、そのページが見えなくなる。
+  for (const from of redirects) {
+    if (
+      !from.includes("*") &&
+      from !== "/" &&
+      served(from.replace(/\/$/, "")) &&
+      !ON_DEMAND.has(from)
+    )
+      fail(`_redirects の ${from} は、ビルドしたページを隠しています。301 の行を消してください`);
+  }
+}
+
 // 私について（/about）は Worker で描く（ADR-0017）。静的な about.html があると、アセットが先に返して Worker に届かない。
 if (existsSync(join(DIST, "about.html"))) {
   fail("about.html があります。私については prerender = false にして Worker で描いてください");

@@ -1,0 +1,66 @@
+name: Lighthouse
+
+# 主なページを Lighthouse（モバイル）で 3 回ずつ測り、性能・アクセシビリティ・SEO が 95 点以上かを確かめる（rules/seo.md の性能）。
+# 設定は lighthouserc.json。下回る変更は、理由を ADR に書く。
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "public/**"
+      - "astro.config.mjs"
+      - "package.json"
+      - "lighthouserc.json"
+      - ".github/workflows/lighthouse.yml"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version-file: .tool-versions
+          cache: true
+          run-install: |
+            - args: ['--frozen-lockfile']
+
+      - name: Build
+        run: scripts/ci-step.sh "make build" make build
+
+      # make preview と同じ astro preview（workerd）。/about は Worker で描く（ADR-0017）。
+      - name: Start preview server
+        run: |
+          pnpm exec astro preview --port 4321 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in $(seq 60); do
+            curl -sf -o /dev/null http://localhost:4321/ && exit 0
+            sleep 1
+          done
+          echo "::error title=preview::プレビューのサーバが起動しませんでした"
+          tail -n 120 "$RUNNER_TEMP/preview.log"
+          exit 1
+
+      # Lighthouse CI はプロジェクトの依存に入れず、測るときだけ別の場所に入れる。Chrome はランナーに入っている。
+      - name: Lighthouse
+        run: |
+          mkdir -p "$RUNNER_TEMP/lhci"
+          npm install --prefix "$RUNNER_TEMP/lhci" --no-audit --no-fund @lhci/cli@0.15.1
+          scripts/ci-step.sh "lighthouse" "$RUNNER_TEMP/lhci/node_modules/.bin/lhci" autorun --config=lighthouserc.json
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse
+          path: .lighthouseci/
+          if-no-files-found: ignore

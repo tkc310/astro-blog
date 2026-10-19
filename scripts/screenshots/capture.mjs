@@ -13,8 +13,8 @@ const OUT = outArg ?? "screenshots";
 const pages = [
   { name: "top", path: "/" },
   { name: "about", path: "/about" },
-  { name: "article", path: process.env.SCREENSHOT_ARTICLE ?? "/articles/hello-astro-blog" },
-  { name: "category", path: process.env.SCREENSHOT_CATEGORY ?? "/articles/categories/frontend" },
+  { name: "article", path: process.env.SCREENSHOT_ARTICLE ?? "/articles/w2oz-j1lm" },
+  { name: "category", path: process.env.SCREENSHOT_CATEGORY ?? "/articles/categories/tech" },
   { name: "404", path: "/this-page-does-not-exist" },
 ];
 
