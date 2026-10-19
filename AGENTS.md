@@ -4,19 +4,23 @@
 
 ## いまの段階
 
-**計画段階。アプリのコードはまだ無い。** 先に `docs/specs/` の指示書と `docs/decisions/` の ADR で合意してから実装に入る。頼まれていないのにコード（`package.json`・`src/` など）を足さない。
+**実装中。** `docs/specs/blog-replace.md` の「進め方」の順に、1 PR ずつ作っている。指示書に無い機能は、先に `docs/specs/` に指示書を書いて合意してから作る。
 
 ## 開発者用のコマンド
 
-コマンドは Vite+ の `vp` で実行する（ADR-0003）。下は雛形を作ったあとに使えるようになる予定の一覧。コマンドを足したら、ここと `CONTRIBUTING.md` の両方に `vp` の形で書く。
+コマンドは Vite+ の `vp` で実行する（ADR-0003）。コマンドを足したら、`package.json` のスクリプトに書き、ここと `CONTRIBUTING.md` の両方に `vp` の形で書く。
 
 - 依存パッケージを入れる: `vp install`
-- 開発サーバ起動: `vp run dev`（`astro dev`）
+- 開発サーバ起動: `vp run dev`（`astro dev`）。下書きも見るなら `SHOW_DRAFTS=true vp run dev`
 - ビルド: `vp run build`（`astro build`）
+- ビルド結果の検査: `vp run check-output`（`vp run build` の後）
 - まとめて検査（フォーマット・静的・型）: `vp check`（直すなら `vp check --fix`）
 - `.astro` の型検査: `vp run typecheck`（`astro check`）
 - テスト: `vp test`
-- コミットメッセージの検査: `vp run lint-commits`
+- 手元で Workers として確かめる: `vp run preview`
+- CI と同じ順: `vp run typecheck` → `vp check` → `vp test` → `vp run build` → `vp run check-output`
+
+npm のレジストリに届かない環境（一部のエージェントの作業環境）では、`docs/ai-agents.md` の「npm に届かない環境で作業するとき」に従う。
 
 ## まず読むもの
 
@@ -36,7 +40,7 @@
 - `rules/` の規則に従う。`architecture.md`（SSG・クライアント JS・境界）、`content.md`（記事の形式）、`seo.md`（構造化データ・メタタグ・性能）。検査を通すために規則を緩めない（緩めるなら ADR に理由を書き、人の承認を得る）
 - コミットメッセージは Conventional Commits（`type(scope): 説明`）で書く。書き方は `CONTRIBUTING.md` の「コミットメッセージ」と `.claude/skills/conventional-commits/SKILL.md`
 - 1 PR 1 改善。直したら再発防止（検査・テスト・ルール・スキル）を足す
-- 変更したら `vp check` と `vp test` を通し（雛形ができてから）、`docs/improvement/log.md` の表の先頭に 1 行記録する
+- 変更したら CI と同じ順の検査（上のコマンド）を通し、`docs/improvement/log.md` の表の先頭に 1 行記録する
 - 値や方針を変えたら `docs/decisions/` に ADR を足す。古い ADR は消さず「廃止（→ NNNN）」にする
 - 会話で受けた指摘も `log.md` に残し、同じ種類の指摘が続いたらルール文書か検査に格上げする
 - 秘密情報（microCMS の API キー、OAuth のクライアントシークレット、Cloudflare のトークン）をコミットしない

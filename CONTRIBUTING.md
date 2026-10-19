@@ -3,6 +3,7 @@
 開発の流れ、コミットメッセージ、記事の書き方をまとめます。AI エージェント向けの入口は [`AGENTS.md`](./AGENTS.md) です。
 
 - [いまの段階](#いまの段階)
+- [開発環境](#開発環境)
 - [開発の流れ](#開発の流れ)
 - [コミットメッセージ](#コミットメッセージ)
 - [記事を書く](#記事を書く)
@@ -10,17 +11,33 @@
 
 ## いまの段階
 
-計画段階です。アプリのコードはまだありません。実装に入るまでは、指示書（[`docs/specs/`](./docs/specs/)）と ADR（[`docs/decisions/`](./docs/decisions/README.md)）を Pull Request でレビューして合意します。
+実装中です。指示書（[`docs/specs/`](./docs/specs/)）の「進め方」の順に、1 PR ずつ作っています。指示書に無い機能は、先に指示書と ADR（[`docs/decisions/`](./docs/decisions/README.md)）を Pull Request でレビューして合意します。
 
-雛形ができたら、次の節にセットアップとコマンドを書き足します（[バックログ](./docs/improvement/backlog.md)）。
+## 開発環境
+
+| ツール  | バージョン                               |
+| ------- | ---------------------------------------- |
+| Node.js | 24（[`.node-version`](./.node-version)） |
+| pnpm    | 11（`package.json` の `packageManager`） |
+| Vite+   | 1.3（`vp`。グローバルに入れる）          |
+
+```bash
+curl -fsSL https://vite.plus | bash   # vp を入れる（初回だけ）
+git clone https://github.com/tkc310/astro-blog.git
+cd astro-blog
+vp install
+vp run dev   # http://localhost:4321
+```
+
+コマンドの一覧は [`AGENTS.md`](./AGENTS.md) の「開発者用のコマンド」にあります。`package.json` のスクリプトは `vp run <名前>` で、検査とテストは `vp check`・`vp test` で実行します。
 
 ## 開発の流れ
 
 1. `main` から作業ブランチを切る（例: `feat/toc`、`fix/jsonld-date`、`post/astro-6-migration`）
 2. 変更する。機能を足す・大きく変えるときは、先に `docs/specs/` に指示書を書く
-3. 検査を通す（雛形ができてから: `vp check`・`vp test`・`vp run typecheck`）
+3. 検査を通す: `vp run typecheck`・`vp check`・`vp test`・`vp run build`・`vp run check-output`（CI も同じ順で回す）
 4. Pull Request を作り、テンプレートのチェックリストを埋める
-5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする（雛形とデプロイ設定ができてから）。見た目と構造化データをそこで確かめる
+5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする（Cloudflare 側の設定が済んでから。[バックログ](./docs/improvement/backlog.md)）。見た目と構造化データをそこで確かめる
 6. `main` にマージすると本番に反映される
 
 ## コミットメッセージ

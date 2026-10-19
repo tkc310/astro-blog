@@ -32,6 +32,14 @@
 4. **記録させる**: `docs/improvement/log.md` に 1 行、方針を変えたら ADR を 1 つ
 5. **確かめる**: PR の CI が通ることと、Workers Builds のプレビュー URL で見た目・構造化データを見る
 
+## npm に届かない環境で作業するとき
+
+エージェントの作業環境によっては、npm のレジストリに接続できず `vp install` もビルドもできない。そのときは次のように進める。
+
+- **フォーマット**: Oxfmt の単体のバイナリを GitHub Releases（`oxc-project/oxc` の `oxfmt_v<版>`）から取り、`oxfmt .` で直す。版は `vite-plus` が使うもの（`vp check` と同じ結果になる版）にそろえる
+- **検査・テスト・ビルド**: PR を出し、GitHub Actions の CI に回してもらう
+- **CI の結果を読む**: ログ本体を開けない環境でも、失敗した手順の出力の末尾が注釈に出る（`scripts/ci-step.sh`）。`gh api repos/<owner>/<repo>/check-runs/<job id>/annotations` で読む
+
 ## 指摘の伝え方
 
 会話で指摘するときは、「何がどう困るか」を書くと再発防止まで届きやすくなります（例:「リンクカードが読み込み後にずれて、本文が跳ねる」）。

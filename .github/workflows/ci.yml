@@ -16,22 +16,17 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions:
-      # ロックファイルを PR のブランチにコミットするため（ロックファイルが入るまでの間だけ）。
-      contents: write
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref || github.ref }}
 
       - uses: voidzero-dev/setup-vp@v1.21.2
         with:
           node-version-file: .node-version
-          # ロックファイルが入るまではロックなしで入れる。入ったら --frozen-lockfile に戻す（バックログ）。
+          cache: true
           run-install: |
-            - args: ['--no-frozen-lockfile']
+            - args: ['--frozen-lockfile']
 
-      # 失敗したときは scripts/ci-step.sh が出力の末尾を注釈に出す。
+      # 失敗したときは scripts/ci-step.sh が出力の末尾を注釈に出す（docs/ai-agents.md）。
       # astro check は型の生成（.astro/types.d.ts）も行うので、vp check より先に回す。
       - name: Type check (.astro)
         run: scripts/ci-step.sh "astro check" vp run typecheck
@@ -47,14 +42,3 @@ jobs:
 
       - name: Check build output
         run: scripts/ci-step.sh "check-output" vp run check-output
-
-      - name: Commit lockfile
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          if [ -f pnpm-lock.yaml ] && ! git ls-files --error-unmatch pnpm-lock.yaml >/dev/null 2>&1; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add pnpm-lock.yaml
-            git commit -m "build: ロックファイルを追加する"
-            git push origin "HEAD:${GITHUB_HEAD_REF}"
-          fi
