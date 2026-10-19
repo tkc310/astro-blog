@@ -1,7 +1,7 @@
 # microCMS からの移行 指示書
 
 移行元: [`tkc310/microCMS_blog`](https://github.com/tkc310/microCMS_blog) と microCMS のサービス `tkc310`
-方針: [ADR-0010](../decisions/0010-microcms-migration.md)、URL: [ADR-0006](../decisions/0006-keep-legacy-urls.md)
+方針: [ADR-0010](../decisions/0010-microcms-migration.md)・[ADR-0018](../decisions/0018-migrate-from-public-pages.md)（データは公開ページの `__NEXT_DATA__` から取る）、URL: [ADR-0006](../decisions/0006-keep-legacy-urls.md)
 
 ---
 
@@ -34,15 +34,11 @@
 
 ### 下書きの記事
 
-microCMS で一度も公開していない記事も移し、`draft: true` を付ける。
-
-- 公開済みの記事は、下書きキーを付けずに取る（公開中の版を移す。公開済みの記事に保存しただけの未公開の変更は移さない）
-- 下書きの記事は、`X-GLOBAL-DRAFT-KEY` を付けた一覧から、公開済みの一覧に無いものを選んで取る
-- 下書きには `publishedAt` が無いので、`pubDate` には仮に `createdAt` を入れ、報告の一覧に出す。公開するときに日付を直す（`write-post` スキル）
+公開ページから取るので（ADR-0018）、microCMS で一度も公開していない記事は移らない。要るものは管理画面から手で移し、`draft: true` を付ける。公開済みの記事は、公開中の版を移す。
 
 ### カテゴリ
 
-`src/content/categories/<slug>.yml` に `name`・`color` を書く。
+`src/content/categories/<slug>.yml` に `name`・`color` を書く。旧ブログのカテゴリには色が入っていない（空の配列）ので、スクリプトの `CATEGORY_COLORS` で決める（tech: blue・lifehack: green・book_review: orange・occult: purple・etc: gray）。`book_review` の `_` は旧 URL を保つために残す。
 
 ### 設定
 
@@ -52,16 +48,18 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 
 旧ブログは描画の前に本文を書き換えていた（`src/utils/mdx2html.ts`）。同じ意味になるよう、移行時に Markdown を直す。
 
-| 旧ブログでの書き方                              | 旧ブログでの表示                | 移行後                                                    |
-| ----------------------------------------------- | ------------------------------- | --------------------------------------------------------- |
-| `[テキスト](https://...)`                       | 別タブで開くリンク              | そのまま（rehype-external-links が別タブにする）          |
-| `<https://...>` が 1 行だけ                     | 実行時に OGP を取るリンクカード | URL だけの行に直す（ビルド時にリンクカードになる）        |
-| `![alt](https://images.microcms-assets.io/...)` | 画像                            | 画像をダウンロードし、相対パスに直す（§3）                |
-| JSX のコンポーネント（例: `<PhoneIcon />`）     | React の部品                    | 自動では直さない。一覧に出し、手で Markdown に直す        |
-| コードブロック                                  | Prism でハイライト              | そのまま（Expressive Code）。言語名の無いものを一覧に出す |
-| 本文中の `# 見出し`（h1）                       | h1                              | h2 に下げる（ページの h1 はタイトルだけ）                 |
+| 旧ブログでの書き方                              | 旧ブログでの表示                | 移行後                                                                  |
+| ----------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------- |
+| `[テキスト](https://...)`                       | 別タブで開くリンク              | そのまま（rehype-external-links が別タブにする）                        |
+| `<https://...>` が 1 行だけ                     | 実行時に OGP を取るリンクカード | URL だけの行に直す（ビルド時にリンクカードになる）                      |
+| `![alt](https://images.microcms-assets.io/...)` | 画像                            | 画像をダウンロードし、相対パスに直す（§3）                              |
+| `<img src="..." alt="..." />`                   | 画像                            | `![alt](...)` に直し、上と同じく相対パスにする                          |
+| JSX のコンポーネント（例: `<PhoneIcon />`）     | React の部品                    | 自動では直さない。一覧に出し、手で Markdown に直す                      |
+| コードブロック                                  | Prism でハイライト              | そのまま（Expressive Code）。言語名の無いものは `text` にして一覧に出す |
+| 本文中の `# 見出し`（h1）                       | h1                              | 全体を 1 段下げる（ページの h1 はタイトルだけ）。飛ばしたレベルも詰める |
+| 200 字を超える・改行を含む抜粋                  | 一覧の抜粋                      | 1 行にし、200 字までの最後の「。」で切る                                |
 
-本文を MDX として構文解析し（`remark-mdx`）、JSX の要素・式・`import` が残っている記事を一覧に出す。手で直すまで、その記事は `draft: true` にしておく。
+コードの外に JSX の要素（大文字で始まるタグ）・`import`・`export` が残っている記事を一覧に出す。手で直すまで、その記事は `draft: true` にしておく。
 
 ## 3. 画像
 
@@ -72,18 +70,24 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 
 ## 4. スクリプト
 
-- 置き場所: `scripts/migrate-microcms.ts`。実行: `make migrate`
-- `.env` の `MICROCMS_SERVICE_DOMAIN`・`MICROCMS_API_KEY`・`MICROCMS_GLOBAL_DRAFT_KEY` を読む（コミットしない）
-- 何度実行しても同じ結果になる（出力先を消してから書く）
-- 最後に報告を出す: 公開記事数・下書き数・カテゴリ数・画像数、要対応の一覧（JSX が残る記事、`description` を作った記事、`pubDate` を仮に入れた下書き、`alt` の無い画像、言語名の無いコードブロック、取得に失敗した画像）
+- 置き場所: `scripts/migrate-legacy.ts`（変換の関数は `scripts/migrate-legacy.test.ts` で確かめる）。実行: `make migrate`
+- `https://tkc310.com` のトップと `/articles/page/<n>` の一覧から記事の ID を集め、各記事のページの `__NEXT_DATA__` を読む。API キーは使わない
+- 何度実行しても同じ結果になる（`src/content/posts/`・`src/content/categories/`・`src/assets/posts/` を消してから書く）
+- 最後に報告を出す: 公開記事数・下書き数・カテゴリ数・画像数、要対応の一覧（JSX が残る記事、`description` を作った・縮めた記事、言語名の無いコードブロック、見出しを直した記事、`alt` の無い画像、取得に失敗した画像）
+
+### 2026-10-19 の実行結果
+
+公開記事 15 本・下書き 1 本・カテゴリ 5 個・画像 12 枚。要対応は 1 件だけ。
+
+- `g8crnjuuxpgt`（テスト用の記事）: `<PhoneIcon />` が残るので `draft: true`。旧 URL は `/` へ 301 にした。要らなければ消す
 
 ## 5. 確かめること
 
-- [ ] 公開記事数と下書き数が、microCMS の管理画面の数と一致する
+- [x] 公開記事数が旧サイトの一覧と一致する（16 本。うち 1 本はテスト用で下書き）
 - [ ] 本番ビルドに下書きが出ず、プレビュー URL にだけ出る
-- [ ] `make build` が通る（Zod スキーマの検査を含む）
+- [x] `make build` が通る（Zod スキーマの検査を含む）
 - [ ] 旧サイトのサイトマップの URL がすべて、新しいサイトで 200 か 301 を返す
-- [ ] 本文中の内部リンク（`/articles/...`）が切れていない
+- [x] 本文中の内部リンク（`/articles/...`）が切れていない（本文に内部リンクは無かった）
 - [ ] 要対応の一覧をすべて片付けた
 - [ ] 目視で、画像・コード・リンクカードの多い記事を 5 本ほどプレビュー URL で見比べる
 
@@ -92,7 +96,7 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 本番のドメインは旧サイトと同じものを使い、Cloudflare の DNS で切り替える。
 
 1. 移行を実行して PR を出し、プレビュー URL で確かめてマージする
-2. 切り替えの直前に移行をもう一度実行し、差分が無いことを確かめる（移行のあとに microCMS で書いた記事を取りこぼさないため）
+2. 切り替えの直前に `make migrate` をもう一度実行し、差分が無いことを確かめる（移行のあとに microCMS で書いた記事を取りこぼさないため）。旧サイトを消すと再実行できない（ADR-0018）
 3. Cloudflare で本番のドメインを新しい Worker のカスタムドメインにし、Vercel を向いていた DNS のレコードを置き換える
 4. 本番のドメインで、旧 URL の一覧が 200 か 301 を返すことを確かめる
 5. microCMS の Webhook（記事の更新で Vercel のビルドを走らせるもの）を止める

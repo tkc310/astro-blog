@@ -8,7 +8,7 @@ ARGS ?=
 VP := pnpm exec vp
 
 .DEFAULT_GOAL := help
-.PHONY: help setup install dev build preview deploy check typecheck lint fmt fmt-fix test check-output outdated update clean
+.PHONY: help setup install dev build preview deploy check typecheck lint fmt fmt-fix test check-output migrate outdated update clean
 
 help: ## コマンドの一覧を出す
 	@awk 'BEGIN { FS = ":.*## " } /^[a-zA-Z_-]+:.*## / { printf "  make %-14s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -58,6 +58,9 @@ test: ## テストを回す（Vitest）
 
 check-output: ## ビルド結果（dist/）を検査する（make build の後）
 	pnpm run check-output $(ARGS)
+
+migrate: ## 旧ブログ（tkc310.com）の記事を Markdown に移す（docs/specs/microcms-migration.md。何度実行しても同じ結果）
+	pnpm run migrate $(ARGS)
 
 outdated: ## 新しい版がある依存パッケージを一覧する
 	pnpm outdated $(ARGS)
