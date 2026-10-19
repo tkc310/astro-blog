@@ -19,3 +19,6 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# リンクカードの OGP 画像（ビルド時に取り直す）
+public/remark-link-card-plus/
