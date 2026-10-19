@@ -15,29 +15,29 @@
 
 ## 開発環境
 
-ツールの版は [`.tool-versions`](./.tool-versions) にまとめてあり、[mise](https://mise.jdx.dev/) で入れます。CI も同じファイルを読みます。
+Node.js と pnpm の版は [`.tool-versions`](./.tool-versions) にまとめてあり、[mise](https://mise.jdx.dev/)（または asdf）で入れます。CI も同じファイルを読みます。
 
-| ツール  | `.tool-versions` の名前 | 用途                                                     |
-| ------- | ----------------------- | -------------------------------------------------------- |
-| Node.js | `node`                  | 実行環境                                                 |
-| pnpm    | `pnpm`                  | パッケージ管理（`package.json` の `packageManager`）     |
-| Vite+   | `viteplus`              | `vp` コマンド（`make` の中で検査・テスト・ビルドに使う） |
+| ツール  | 置き場所                                              | 用途                                            |
+| ------- | ----------------------------------------------------- | ----------------------------------------------- |
+| Node.js | `.tool-versions` の `node`                            | 実行環境                                        |
+| pnpm    | `.tool-versions` の `pnpm`（`packageManager` と同じ） | パッケージ管理。`make` のコマンドもこれで動く   |
+| Vite+   | `package.json` の `vite-plus`                         | 検査・テスト（`make` が `pnpm exec vp` で呼ぶ） |
 
 ```bash
 git clone https://github.com/tkc310/astro-blog.git
 cd astro-blog
-make setup   # .tool-versions の node・pnpm・vp を mise で入れ、依存パッケージを入れる
+make setup   # mise で node・pnpm を入れ、pnpm install で依存（Vite+ を含む）を入れる
 make dev     # http://localhost:4321
 ```
 
-`viteplus` は mise のレジストリの名前で、asdf にはプラグインがありません。asdf を使う場合は node と pnpm だけを入れ、`vp` は Vite+ の公式のインストーラー（`curl -fsSL https://vite.plus | bash`）で入れてください。
+`vp` をグローバルに入れる必要はありません。`make` はプロジェクトに入れた `vite-plus` を `pnpm exec vp` で呼ぶので、いつも `package.json` の版で動きます。
 
-版を上げるときは、`.tool-versions` と一緒に次も同じ版にします。ずれていると `make test`（`scripts/tool-versions.test.ts`）が失敗します。
+版を上げるときは、次も同じ版にします。ずれていると `make test`（`scripts/tool-versions.test.ts`）が失敗します。
 
-- pnpm: `package.json` の `packageManager`
+- pnpm: `.tool-versions` の `pnpm` と、`package.json` の `packageManager`
 - Vite+: `package.json` の `vite-plus` と、`pnpm-workspace.yaml` の `vite` の置き換え先
 
-コマンドは `make` にまとめてあり、`make` で一覧が出ます（[`Makefile`](./Makefile)）。追加の引数は `ARGS` で渡します（例: `make test ARGS="src/lib"`）。中身は `vp`（Vite+）と `mise` を呼ぶだけです。コマンドを足すときは `Makefile` に足し、ドキュメントには `make` の形で書いてください。
+コマンドは `make` にまとめてあり、`make` で一覧が出ます（[`Makefile`](./Makefile)）。追加の引数は `ARGS` で渡します（例: `make test ARGS="src/lib"`）。中身は `pnpm`・`vp`（Vite+）・`mise` を呼ぶだけです。コマンドを足すときは `Makefile` に足し、ドキュメントには `make` の形で書いてください。
 
 ## 開発の流れ
 
