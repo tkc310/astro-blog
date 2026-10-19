@@ -1,5 +1,5 @@
 ---
-// 管理者について: 自己 PR（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012）。
+// About: 自己紹介（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012）。
 import Base from "../layouts/Base.astro";
 import { site } from "../site.config";
 
@@ -8,30 +8,20 @@ const laprasProfile = `https://lapras.com/public/${author.accounts.lapras}`;
 const laprasApi = `${laprasProfile}.json`;
 ---
 
-<Base title="管理者について" description={`${site.name} の管理者 ${author.name} の自己紹介と活動`}>
-  <h1>管理者について</h1>
+<Base title="About" description={`${site.name} を書いている ${author.name} について`}>
+  <h1>{author.name}</h1>
+  <p class="intro">{author.description}</p>
 
-  <table class="bevel profile">
-    <tbody>
-      <tr>
-        <th scope="row">名前</th>
-        <td>{author.name}</td>
-      </tr>
-      <tr>
-        <th scope="row">自己紹介</th>
-        <td>{author.description}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>★★★ 最近の活動 ★★★</h2>
-  <p class="note">
-    <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった活動の記録を、開いたときに読み込みます。
-  </p>
-  <div class="activities" data-lapras-api={laprasApi} data-lapras-profile={laprasProfile}>
-    <p class="status" data-status>読み込み中です……</p>
-    <ol class="list" data-list hidden></ol>
-  </div>
+  <section class="activity" aria-labelledby="activity-heading">
+    <h2 id="activity-heading">最近の活動</h2>
+    <p class="note">
+      <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった記録を、開いたときに読み込みます。
+    </p>
+    <div class="activities" data-lapras-api={laprasApi} data-lapras-profile={laprasProfile}>
+      <p class="status" data-status>読み込み中…</p>
+      <ol class="list" data-list hidden></ol>
+    </div>
+  </section>
 </Base>
 
 <script>
@@ -53,7 +43,7 @@ const laprasApi = `${laprasProfile}.json`;
     blog: "ブログ",
     speaker_deck: "Speaker Deck",
     teratail: "teratail",
-    connpass: "connpass（イベント参加）",
+    connpass: "connpass",
   };
 
   const root = document.querySelector<HTMLElement>("[data-lapras-api]");
@@ -77,7 +67,7 @@ const laprasApi = `${laprasProfile}.json`;
         const item = document.createElement("li");
         const date = document.createElement("time");
         date.dateTime = activity.date;
-        date.textContent = activity.date.slice(0, 10).replaceAll("-", "/");
+        date.textContent = activity.date.slice(0, 10).replaceAll("-", ".");
         const link = document.createElement("a");
         link.href = activity.url;
         link.target = "_blank";
@@ -86,7 +76,7 @@ const laprasApi = `${laprasProfile}.json`;
         const type = document.createElement("span");
         type.className = "type";
         type.textContent = TYPE_LABELS[activity.type] ?? activity.type;
-        item.append(date, " ", link, " ", type);
+        item.append(date, link, type);
         list.append(item);
       }
       status.remove();
@@ -120,45 +110,73 @@ const laprasApi = `${laprasProfile}.json`;
 </script>
 
 <style>
-  .profile {
-    max-width: var(--measure);
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: 2rem;
   }
 
-  .profile th {
-    white-space: nowrap;
-    text-align: left;
+  .intro {
+    max-width: var(--measure);
+    margin: 0 0 4rem;
+    font-size: 1.1rem;
+  }
+
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
   }
 
   .note {
-    font-size: 0.9em;
+    margin: 0 0 1.25rem;
+    font-size: 0.88rem;
+    color: var(--muted);
   }
 
   /* 取得前から高さを確保し、読み込んでもレイアウトをずらさない（rules/architecture.md）。 */
   .activities {
-    height: 24em;
+    height: 28rem;
     overflow-y: auto;
-    border: 2px var(--bevel-in) var(--frame-hi);
-    padding: 0.5em 0.8em;
     max-width: var(--measure);
   }
 
   .status {
     margin: 0;
+    color: var(--muted);
   }
 
   .list {
     margin: 0;
-    padding-left: 1.5em;
-    font-size: 0.95em;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list :global(li) {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    gap: 0 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.94rem;
   }
 
   .list :global(time) {
-    font-family: var(--mono);
-    font-size: 0.9em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 
   .list :global(.type) {
-    font-size: 0.85em;
-    color: var(--quiet);
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  @media (width < 36rem) {
+    .list :global(li) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .list :global(a) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
   }
 </style>

@@ -65,53 +65,21 @@ mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 const failures = [];
 
-for (const scheme of ["light", "dark"]) {
-  for (const viewport of viewports) {
-    const context = await browser.newContext({
-      viewport: { width: viewport.width, height: viewport.height },
-      colorScheme: scheme,
-      reducedMotion: "reduce",
-    });
-    // LAPRAS の API は外へ出ないよう止める（撮影の結果を毎回同じにするため）。
-    await context.route("https://lapras.com/**", (route) => route.abort());
-    const page = await context.newPage();
-    page.on("pageerror", (error) => failures.push(`${viewport.name}/${scheme}: ${error.message}`));
-    for (const target of pages) {
-      await page.goto(`${base}${target.path}`, { waitUntil: "networkidle" });
-      await page.screenshot({
-        path: join(OUT, `${target.name}-${viewport.name}-${scheme}.png`),
-        fullPage: true,
-      });
-    }
-    await context.close();
-  }
-}
-
-// 表示の切り替え（ADR-0015）: OS の設定と逆の表示を選んだ場合も撮る。
-for (const [scheme, theme] of [
-  ["light", "dark"],
-  ["dark", "light"],
-]) {
+// 白地だけなので（ADR-0016）、OS の設定は light で撮る。
+for (const viewport of viewports) {
   const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    colorScheme: scheme,
+    viewport: { width: viewport.width, height: viewport.height },
+    colorScheme: "light",
     reducedMotion: "reduce",
   });
-  await context.addInitScript((value) => {
-    try {
-      localStorage.setItem("theme", value);
-    } catch {
-      // 撮影には関係しない
-    }
-  }, theme);
+  // LAPRAS の API は外へ出ないよう止める（撮影の結果を毎回同じにするため）。
+  await context.route("https://lapras.com/**", (route) => route.abort());
   const page = await context.newPage();
-  page.on("pageerror", (error) => failures.push(`forced-${theme}: ${error.message}`));
-  for (const target of pages.slice(0, 2)) {
+  page.on("pageerror", (error) => failures.push(`${viewport.name}: ${error.message}`));
+  for (const target of pages) {
     await page.goto(`${base}${target.path}`, { waitUntil: "networkidle" });
-    const applied = await page.evaluate(() => document.documentElement.dataset.theme);
-    if (applied !== theme) failures.push(`forced-${theme}: data-theme が ${applied} になった`);
     await page.screenshot({
-      path: join(OUT, `${target.name}-pc-forced-${theme}.png`),
+      path: join(OUT, `${target.name}-${viewport.name}.png`),
       fullPage: true,
     });
   }

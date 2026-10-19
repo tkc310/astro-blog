@@ -3,16 +3,28 @@ import Base from "../layouts/Base.astro";
 ---
 
 <Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。">
+  <p class="code numeric">404</p>
   <h1>ページが見つかりません</h1>
-  <p class="notice">
-    お探しのページは見つかりませんでした。<br />
-    移転したか、削除された可能性があります。
-  </p>
-  <p><a href="/">掲示板のトップへ戻る</a></p>
+  <p class="text">移動したか、削除された可能性があります。</p>
+  <p><a href="/">記事の一覧へ</a></p>
 </Base>
 
 <style>
-  .notice {
-    font-weight: bold;
+  .code {
+    margin: 0;
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  h1 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.6rem;
+  }
+
+  .text {
+    margin: 0 0 1.5rem;
+    color: var(--muted);
   }
 </style>

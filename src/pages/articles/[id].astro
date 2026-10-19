@@ -1,23 +1,15 @@
 ---
-// 記事: 投稿の見出し、目次、本文、前後の記事（docs/specs/design.md §4・§5）。
+// 記事: 見出し（カテゴリ・日付・題名）、目次、本文、前後の記事（docs/specs/design.md §4・§5）。
 import type { GetStaticPaths } from "astro";
 import { render } from "astro:content";
 
 import "../../styles/prose.css";
-import CategoryMark from "../../components/CategoryMark.astro";
+import CategoryLabel from "../../components/CategoryLabel.astro";
 import Toc from "../../components/Toc.astro";
 import Base from "../../layouts/Base.astro";
-import { neighbors } from "../../lib/board";
-import { formatBbsDate, toIsoDate } from "../../lib/format";
-import {
-  articlePath,
-  categoryPath,
-  getCategory,
-  getPostNumbers,
-  getPosts,
-  type Post,
-} from "../../lib/posts";
-import { site } from "../../site.config";
+import { formatDate, toIsoDate } from "../../lib/format";
+import { neighbors } from "../../lib/listing";
+import { articlePath, getCategory, getPosts, type Post } from "../../lib/posts";
 
 export const getStaticPaths = (async () => {
   const posts = await getPosts();
@@ -31,32 +23,26 @@ interface Props {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const category = await getCategory(post);
-const number = (await getPostNumbers()).get(post.id);
 const { older, newer } = neighbors(await getPosts(), post.id);
-const { pubDate, updatedDate } = post.data;
+const { title, description, pubDate, updatedDate, draft } = post.data;
 ---
 
-<Base title={post.data.title} description={post.data.description}>
-  <article class="post">
-    <header class="post-header">
-      <h1 style={`view-transition-name: post-${post.id}`}>
-        <span class="no">[{number === undefined ? "下書き" : `No.${number}`}]</span>
-        {post.data.title}
-      </h1>
+<Base title={title} description={description} wide>
+  <article>
+    <header class="heading">
       <p class="meta">
-        <span>投稿者：<a href="/about" rel="author">{site.author.name}</a></span>
-        <span>投稿日：<time datetime={toIsoDate(pubDate)}>{formatBbsDate(pubDate)}</time></span>
+        <CategoryLabel category={category} />
+        <time datetime={toIsoDate(pubDate)}>{formatDate(pubDate)}</time>
         {
           updatedDate && (
             <span>
-              更新日：<time datetime={toIsoDate(updatedDate)}>{formatBbsDate(updatedDate)}</time>
+              更新 <time datetime={toIsoDate(updatedDate)}>{formatDate(updatedDate)}</time>
             </span>
           )
         }
-        <span>
-          カテゴリ：<CategoryMark category={category} /><a href={categoryPath(category.id)}>{category.data.name}</a>
-        </span>
+        {draft && <span class="draft">下書き</span>}
       </p>
+      <h1 style={`view-transition-name: post-${post.id}`}>{title}</h1>
     </header>
 
     <div class="body">
@@ -67,70 +53,125 @@ const { pubDate, updatedDate } = post.data;
     </div>
   </article>
 
-  <hr />
-  <nav class="neighbors" aria-label="前後の書き込み">
-    {older ? <a href={articlePath(older.id)} rel="prev">◀ 前の書き込み</a> : <span>◀ 前の書き込み</span>}
-    <span aria-hidden="true">｜</span>
-    <a href="/">掲示板に戻る</a>
-    <span aria-hidden="true">｜</span>
-    {newer ? <a href={articlePath(newer.id)} rel="next">次の書き込み ▶</a> : <span>次の書き込み ▶</span>}
-  </nav>
+  {
+    (older || newer) && (
+      <nav class="neighbors" aria-label="前後の記事">
+        {older ? (
+          <a class="older" href={articlePath(older.id)} rel="prev">
+            <span class="label">前の記事</span>
+            <span class="neighbor-title">{older.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {newer && (
+          <a class="newer" href={articlePath(newer.id)} rel="next">
+            <span class="label">次の記事</span>
+            <span class="neighbor-title">{newer.data.title}</span>
+          </a>
+        )}
+      </nav>
+    )
+  }
 </Base>
 
 <style>
-  .post-header {
-    border: 2px var(--bevel-out) var(--frame-hi);
-    padding: 0.4em 0.8em;
-    margin: 0 0 1.5em;
-  }
-
-  .post-header h1 {
-    font-size: 1.6em;
-    margin: 0.2em 0;
-  }
-
-  .no {
-    font-family: var(--mono);
-    font-size: 0.7em;
-    margin-right: 0.3em;
-    vertical-align: 0.1em;
+  .heading {
+    max-width: var(--measure);
+    margin-bottom: 3rem;
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0 1.5em;
+    align-items: center;
+    gap: 0.25rem 1.25rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .draft {
+    padding: 0 0.5em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+
+  h1 {
     margin: 0;
-    font-family: var(--mono);
-    font-size: 0.85em;
+    font-size: 2rem;
+    line-height: 1.45;
   }
 
   /* PC では目次を本文の右に置く。 */
-  @media (width >= 72em) {
+  @media (width >= 64rem) {
     .body {
       display: grid;
-      grid-template-columns: minmax(0, var(--measure)) 15em;
-      gap: 2em;
+      grid-template-columns: minmax(0, var(--measure)) 14rem;
+      justify-content: space-between;
+      gap: 3rem;
       align-items: start;
     }
 
     .body > :global(.toc) {
       order: 2;
       position: sticky;
-      top: 1em;
-      max-height: calc(100vh - 2em);
+      top: 2rem;
+      max-height: calc(100vh - 4rem);
       overflow-y: auto;
     }
   }
 
   .neighbors {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.3em 0.8em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: var(--measure);
+    margin-top: 4.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
   }
 
-  .neighbors span:not([aria-hidden]) {
-    color: var(--quiet);
+  .neighbors a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+
+  .newer {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .label {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .neighbor-title {
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .neighbors a:hover .neighbor-title {
+    text-decoration: underline;
+  }
+
+  h1 {
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2rem);
+  }
+
+  @media (width < 36rem) {
+    .neighbors {
+      grid-template-columns: 1fr;
+    }
+
+    .newer {
+      grid-column: 1;
+      text-align: left;
+    }
   }
 </style>

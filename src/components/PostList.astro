@@ -1,0 +1,138 @@
+---
+// 記事の一覧を年でまとめて出す。年の数字がこのサイトでいちばん目立つ要素（docs/specs/design.md §4）。
+import { formatMonthDay, toIsoDate } from "../lib/format";
+import { groupByYear } from "../lib/listing";
+import { articlePath, getCategory, type Post } from "../lib/posts";
+import CategoryLabel from "./CategoryLabel.astro";
+
+interface Props {
+  posts: Post[];
+}
+
+const groups = groupByYear(Astro.props.posts);
+const categories = new Map(
+  await Promise.all(Astro.props.posts.map(async (post) => [post.id, await getCategory(post)] as const)),
+);
+---
+
+{
+  groups.length === 0 ? (
+    <p class="empty">まだ記事はありません。</p>
+  ) : (
+    groups.map((group) => (
+      <section class="year" aria-labelledby={`year-${group.year}`}>
+        <h2 class="year-label numeric" id={`year-${group.year}`}>
+          {group.year}
+        </h2>
+        <ol class="posts">
+          {group.items.map((post) => {
+            const category = categories.get(post.id);
+            return (
+              <li class="post">
+                <time class="date" datetime={toIsoDate(post.data.pubDate)}>
+                  {formatMonthDay(post.data.pubDate)}
+                </time>
+                <div class="body">
+                  <h3 class="title">
+                    <a href={articlePath(post.id)} style={`view-transition-name: post-${post.id}`}>
+                      {post.data.title}
+                    </a>
+                    {post.data.draft && <span class="draft">下書き</span>}
+                  </h3>
+                  <p class="description">{post.data.description}</p>
+                  {category && <CategoryLabel category={category} />}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))
+  )
+}
+
+<style>
+  .year + .year {
+    margin-top: 3.5rem;
+  }
+
+  .year-label {
+    margin: 0 0 1.25rem;
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+  }
+
+  .posts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .post {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+  }
+
+  .post + .post {
+    margin-top: 2rem;
+  }
+
+  .date {
+    padding-top: 0.3rem;
+    font-size: 0.94rem;
+    color: var(--muted);
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+
+  .title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  .draft {
+    margin-left: 0.6em;
+    padding: 0.05em 0.5em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--muted);
+    vertical-align: 0.15em;
+  }
+
+  .description {
+    margin: 0.3rem 0 0.5rem;
+    font-size: 0.94rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+
+  @media (width < 36rem) {
+    .post {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .date {
+      padding-top: 0;
+      font-size: 0.85rem;
+    }
+  }
+</style>

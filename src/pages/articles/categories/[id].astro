@@ -1,11 +1,10 @@
 ---
-// カテゴリ別の書き込み（/articles/categories/<id>）。
+// カテゴリ別の記事（/articles/categories/<id>）。
 import type { GetStaticPaths } from "astro";
 
-import BoardTable from "../../../components/BoardTable.astro";
-import CategoryMark from "../../../components/CategoryMark.astro";
+import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
-import { getCategories, getPostNumbers, getPosts, type Category } from "../../../lib/posts";
+import { getCategories, getPosts, type Category } from "../../../lib/posts";
 
 export const getStaticPaths = (async () => {
   const categories = await getCategories();
@@ -18,13 +17,36 @@ interface Props {
 
 const { category } = Astro.props;
 const posts = (await getPosts()).filter((post) => post.data.category.id === category.id);
-const numbers = await getPostNumbers();
-const title = `${category.data.name} の書き込み`;
+const { name, description } = category.data;
 ---
 
-<Base title={title} description={category.data.description ?? title}>
-  <h1><CategoryMark category={category} />{title}</h1>
-  {category.data.description && <p>{category.data.description}</p>}
-  <BoardTable posts={posts} numbers={numbers} caption={title} />
-  <p><a href="/">掲示板のトップに戻る</a></p>
+<Base title={name} description={description ?? `${name}の記事`}>
+  <header class="heading">
+    <p class="kind">カテゴリ</p>
+    <h1>{name}</h1>
+    {description && <p class="description">{description}</p>}
+  </header>
+  <PostList posts={posts} />
 </Base>
+
+<style>
+  .heading {
+    margin-bottom: 3.5rem;
+  }
+
+  .kind {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  h1 {
+    margin: 0.2rem 0 0.6rem;
+    font-size: 2rem;
+  }
+
+  .description {
+    margin: 0;
+    color: var(--muted);
+  }
+</style>

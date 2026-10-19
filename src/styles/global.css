@@ -1,77 +1,29 @@
 /*
- * 見た目は HTML 3.2、中身は 2026（ADR-0013・docs/specs/design.md）。
+ * 白地のシンプルなデザイン（ADR-0016・docs/specs/design.md）。
  * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
  */
 
-/*
- * 色は CSS 変数だけで切り替える（ADR-0015）。
- * - <html> に data-theme が無いとき（自動）は OS の設定（prefers-color-scheme）に従う
- * - data-theme="light"・"dark" のときはそれに従う（<head> のスクリプトが描く前に付ける）
- * 部品の側で prefers-color-scheme を直接見ない。昼と夜で変わるものは、ここのトークンにする。
- */
 :root {
   color-scheme: light;
 
   --paper: #ffffff;
-  --ink: #000000;
-  --link: #0000ee;
-  --visited: #551a8b;
-  --alert: #ff0000;
-  --frame-hi: #dfdfdf;
-  --frame-lo: #808080;
-  --bevel-out: outset;
-  --bevel-in: inset;
-  --counter-bg: #000000;
-  --counter-ink: #33ff33;
-  --quiet: #555555;
+  --ink: #1f2328;
+  --muted: #5e6772;
+  --line: #e7e9ec;
+  --accent: #24489c;
+  --wash: #f5f6f8;
 
-  --serif: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "MS PMincho", serif;
-  --mono: ui-monospace, "Osaka-Mono", "MS Gothic", "SFMono-Regular", Menlo, monospace;
-  --body-font: var(--serif);
+  --sans:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui,
+    sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  --measure: 40em;
-  --menu-width: 11em;
-  --space: 1rem;
+  --measure: 38em;
+  --column: 44rem;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
 }
 
-/* 夜はパソコン通信の端末風（ADR-0013）。自動で OS が夜のときと、夜を選んだときの 2 か所に同じ値を書く。 */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --paper: #000000;
-    --ink: #33ff33;
-    --link: #ffff55;
-    --visited: #55ffff;
-    --alert: #ff5555;
-    --frame-hi: #33ff33;
-    --frame-lo: #118811;
-    --bevel-out: solid;
-    --bevel-in: solid;
-    --quiet: #22bb22;
-    /* カテゴリの「■」を、カテゴリの色ではなく文字と同じ緑にする。 */
-    --mark: var(--ink);
-    --body-font: var(--mono);
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --paper: #000000;
-  --ink: #33ff33;
-  --link: #ffff55;
-  --visited: #55ffff;
-  --alert: #ff5555;
-  --frame-hi: #33ff33;
-  --frame-lo: #118811;
-  --bevel-out: solid;
-  --bevel-in: solid;
-  --quiet: #22bb22;
-  /* カテゴリの「■」を、カテゴリの色ではなく文字と同じ緑にする。 */
-  --mark: var(--ink);
-  --body-font: var(--mono);
-}
-
-/* ページの移り変わりを CSS だけで滑らかにする（ADR-0013）。 */
+/* ページの移り変わりを CSS だけで滑らかにする（ADR-0016）。 */
 @view-transition {
   navigation: auto;
 }
@@ -83,7 +35,6 @@
 }
 
 html {
-  font-size: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -92,59 +43,39 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--body-font);
-  font-size: 1rem;
+  font-family: var(--sans);
+  font-size: 1.0625rem;
   line-height: 1.9;
   font-kerning: normal;
   text-wrap: pretty;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+  color: var(--accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
-a:visited {
-  color: var(--visited);
-}
-
-a:active {
-  color: var(--alert);
+a:hover {
+  text-decoration-thickness: 2px;
 }
 
 :focus-visible {
-  outline: 2px dotted var(--ink);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  line-height: 1.4;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
   text-wrap: balance;
-}
-
-h1 {
-  font-size: 2em;
-  margin: 0.67em 0;
-}
-
-h2 {
-  font-size: 1.5em;
-  margin: 1.6em 0 0.6em;
-}
-
-h3 {
-  font-size: 1.17em;
-  margin: 1.4em 0 0.5em;
-}
-
-hr {
-  border: none;
-  border-top: 2px groove var(--frame-lo);
-  margin: 1.5em 0;
 }
 
 img {
@@ -157,21 +88,11 @@ kbd,
 samp,
 pre {
   font-family: var(--mono);
-  font-size: 0.9em;
 }
 
-/* 昔の表。凹凸の枠（outset の表に inset のセル）。 */
-table.bevel {
-  border: 2px var(--bevel-out) var(--frame-hi);
-  border-collapse: separate;
-  border-spacing: 2px;
-}
-
-table.bevel th,
-table.bevel td {
-  border: 1px var(--bevel-in) var(--frame-hi);
-  padding: 0.2em 0.5em;
-  vertical-align: top;
+time,
+.numeric {
+  font-variant-numeric: tabular-nums;
 }
 
 .visually-hidden {
@@ -184,21 +105,7 @@ table.bevel td {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-
   @view-transition {
     navigation: none;
-  }
-}
-
-@media print {
-  body {
-    background: #ffffff;
-    color: #000000;
   }
 }

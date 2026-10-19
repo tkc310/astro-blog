@@ -2,11 +2,11 @@
 // 一覧の 2 ページ目以降（/articles/page/<n>）。1 ページ目はトップ。
 import type { GetStaticPaths } from "astro";
 
-import BoardTable from "../../../components/BoardTable.astro";
 import Pager from "../../../components/Pager.astro";
+import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
-import { slicePage } from "../../../lib/board";
-import { getPostNumbers, getPosts } from "../../../lib/posts";
+import { slicePage } from "../../../lib/listing";
+import { getPosts } from "../../../lib/posts";
 import { site } from "../../../site.config";
 
 export const getStaticPaths = (async () => {
@@ -18,13 +18,12 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const page = Number(Astro.params.page);
-const posts = await getPosts();
-const numbers = await getPostNumbers();
-const slice = slicePage(posts, page, site.perPage);
+const slice = slicePage(await getPosts(), page, site.perPage);
+const title = `記事の一覧（${slice.page} ページ目）`;
 ---
 
-<Base title={`書き込みの一覧（${slice.page} ページ目）`}>
-  <h1>書き込みの一覧（{slice.page} ページ目）</h1>
-  <BoardTable posts={slice.items} numbers={numbers} caption={`書き込みの一覧 ${slice.page} ページ目`} />
-  <Pager page={slice.page} totalPages={slice.totalPages} perPage={site.perPage} />
+<Base title={title} description={`${site.name} の${title}`}>
+  <h1 class="visually-hidden">{title}</h1>
+  <PostList posts={slice.items} />
+  <Pager page={slice.page} totalPages={slice.totalPages} />
 </Base>

@@ -1,23 +1,7 @@
-// 掲示板の見た目に使う、純粋な計算（No.・ページ送り・前後の記事）。
+// 一覧に使う、純粋な計算（年でまとめる・ページ送り・前後の記事）。
 // Astro に依存させず、テストできる形にしておく。
 
-export interface BoardPost {
-  id: string;
-  data: { pubDate: Date; draft: boolean };
-}
-
-/**
- * 公開日の古い順に 1 から振った No. を返す。下書きには振らない。
- * 同じ日に公開した記事は、id の順で並べる。
- */
-export function numberPosts(posts: readonly BoardPost[]): Map<string, number> {
-  const published = posts
-    .filter((post) => !post.data.draft)
-    .toSorted(
-      (a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime() || a.id.localeCompare(b.id),
-    );
-  return new Map(published.map((post, index) => [post.id, index + 1]));
-}
+import { yearOf } from "./format";
 
 /** 一覧の n ページ目の URL。1 ページ目はトップ。 */
 export function listPageHref(page: number): string {
@@ -38,7 +22,7 @@ export function slicePage<T>(items: readonly T[], page: number, perPage: number)
   return { items: items.slice(start, start + perPage), page: current, totalPages };
 }
 
-/** 新しい順の一覧で、ひとつ古い記事（前の書き込み）と新しい記事（次の書き込み）。 */
+/** 新しい順の一覧で、ひとつ古い記事（前の記事）と新しい記事（次の記事）。 */
 export function neighbors<T extends { id: string }>(
   items: readonly T[],
   id: string,
@@ -46,4 +30,23 @@ export function neighbors<T extends { id: string }>(
   const index = items.findIndex((item) => item.id === id);
   if (index === -1) return {};
   return { older: items[index + 1], newer: index > 0 ? items[index - 1] : undefined };
+}
+
+export interface YearGroup<T> {
+  year: number;
+  items: T[];
+}
+
+/** 新しい順に並んだ記事を、公開した年（日本時間）でまとめる。並びは保つ。 */
+export function groupByYear<T extends { data: { pubDate: Date } }>(
+  items: readonly T[],
+): YearGroup<T>[] {
+  const groups: YearGroup<T>[] = [];
+  for (const item of items) {
+    const year = yearOf(item.data.pubDate);
+    const last = groups.at(-1);
+    if (last && last.year === year) last.items.push(item);
+    else groups.push({ year, items: [item] });
+  }
+  return groups;
 }

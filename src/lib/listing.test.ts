@@ -1,37 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 
-import { listPageHref, neighbors, numberPosts, slicePage } from "./board";
-
-const post = (id: string, date: string, draft = false) => ({
-  id,
-  data: { pubDate: new Date(date), draft },
-});
-
-describe("numberPosts", () => {
-  test("公開日の古い順に 1 から振る", () => {
-    const numbers = numberPosts([
-      post("c", "2026-03-01"),
-      post("a", "2026-01-01"),
-      post("b", "2026-02-01"),
-    ]);
-    expect([numbers.get("a"), numbers.get("b"), numbers.get("c")]).toEqual([1, 2, 3]);
-  });
-
-  test("下書きには振らず、公開した記事の番号を詰めない", () => {
-    const numbers = numberPosts([
-      post("a", "2026-01-01"),
-      post("draft", "2026-01-15", true),
-      post("b", "2026-02-01"),
-    ]);
-    expect(numbers.get("draft")).toBeUndefined();
-    expect(numbers.get("b")).toBe(2);
-  });
-
-  test("同じ日の記事は id の順", () => {
-    const numbers = numberPosts([post("b", "2026-01-01"), post("a", "2026-01-01")]);
-    expect([numbers.get("a"), numbers.get("b")]).toEqual([1, 2]);
-  });
-});
+import { groupByYear, listPageHref, neighbors, slicePage } from "./listing";
 
 describe("listPageHref", () => {
   test("1 ページ目はトップ、2 ページ目からは /articles/page/<n>", () => {
@@ -66,5 +35,30 @@ describe("neighbors", () => {
   test("端では片方だけ", () => {
     expect(neighbors(list, "new")).toEqual({ older: { id: "mid" }, newer: undefined });
     expect(neighbors(list, "old")).toEqual({ older: undefined, newer: { id: "mid" } });
+  });
+});
+
+describe("groupByYear", () => {
+  const post = (id: string, date: string) => ({ id, data: { pubDate: new Date(date) } });
+
+  test("新しい順のまま、年ごとにまとめる", () => {
+    const groups = groupByYear([
+      post("c", "2026-03-01T00:00:00+09:00"),
+      post("b", "2026-01-01T00:00:00+09:00"),
+      post("a", "2025-12-01T00:00:00+09:00"),
+    ]);
+    expect(groups.map((group) => [group.year, group.items.map((item) => item.id)])).toEqual([
+      [2026, ["c", "b"]],
+      [2025, ["a"]],
+    ]);
+  });
+
+  test("年は日本時間で決める（UTC の大晦日の夜は日本の元日）", () => {
+    const [group] = groupByYear([post("a", "2025-12-31T16:00:00Z")]);
+    expect(group?.year).toBe(2026);
+  });
+
+  test("記事が無ければ空", () => {
+    expect(groupByYear([])).toEqual([]);
   });
 });

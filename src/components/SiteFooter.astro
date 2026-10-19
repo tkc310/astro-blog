@@ -1,5 +1,5 @@
 ---
-// ページの下の注意書きと著作権表示（docs/specs/design.md §4）。
+// フッター: 各 SNS へのリンクと著作権表示（docs/specs/design.md §4）。
 import { site } from "../site.config";
 
 const since = 2021;
@@ -15,45 +15,60 @@ const profiles = [
 ---
 
 <footer class="footer">
-  <hr />
-  <p class="profiles">
+  <ul class="profiles">
     {
-      profiles.map((profile, index) => (
-        <>
-          {index > 0 && " ｜ "}
+      profiles.map((profile) => (
+        <li>
           <a href={profile.href} rel="me noopener" target="_blank">
             {profile.label}
           </a>
-        </>
+        </li>
       ))
     }
-  </p>
-  <p class="notice">
-    当ブログはリンクフリーです。<br />
-    記事の引用は、出典を書いていただければ歓迎します。
-  </p>
-  <p class="copyright">
-    <small>Copyright (C) {since}-{year} {site.author.name}. All Rights Reserved.</small>
-  </p>
+  </ul>
+  <p class="copyright"><small>© {since}–{year} {site.author.name}</small></p>
 </footer>
 
 <style>
   .footer {
-    text-align: center;
-    margin-top: 3em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-top: 6rem;
+    padding: 1.5rem 0 3rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.88rem;
+    color: var(--muted);
   }
 
   .profiles {
-    margin: 0 0 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .notice {
-    font-weight: bold;
-    margin: 0 0 1em;
+  .profiles a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .profiles a:hover {
+    color: var(--ink);
+    text-decoration: underline;
   }
 
   .copyright {
     margin: 0;
-    color: var(--quiet);
+  }
+
+  @media print {
+    .profiles {
+      display: none;
+    }
   }
 </style>

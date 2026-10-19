@@ -74,14 +74,14 @@ jobs:
             const raw = (name) => `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branch}/${name}`;
             const pages = ["top", "article", "category", "about", "404"];
             const rows = pages.map((page) =>
-              `| ${page} | <img src="${raw(`${page}-pc-light.png`)}" width="320"> | <img src="${raw(`${page}-sp-light.png`)}" width="120"> | <img src="${raw(`${page}-pc-dark.png`)}" width="320"> |`);
+              `| ${page} | <img src="${raw(`${page}-pc.png`)}" width="360"> | <img src="${raw(`${page}-sp.png`)}" width="140"> |`);
             const marker = "<!-- screenshots -->";
             const body = [
               marker,
               `### スクリーンショット（${sha}）`,
               "",
-              "| ページ | PC（昼） | スマホ（昼） | PC（夜） |",
-              "| --- | --- | --- | --- |",
+              "| ページ | PC | スマホ |",
+              "| --- | --- | --- |",
               ...rows,
               "",
               `全部の画像: [\`${branch}\`](https://github.com/${context.repo.owner}/${context.repo.repo}/tree/${branch})`,
