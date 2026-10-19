@@ -22,4 +22,4 @@ Workers の `html_handling` は既定の `auto-trailing-slash` のままにし�
 
 ## 確かめ方
 
-ビルドの後に `vp run check-output` を実行すると、`articles/<id>/index.html` の形で出ていないかを確かめます。
+ビルドの後に `make check-output` を実行すると、`articles/<id>/index.html` の形で出ていないかを確かめます。
