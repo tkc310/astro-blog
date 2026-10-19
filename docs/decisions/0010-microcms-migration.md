@@ -9,7 +9,7 @@
 
 ## 決定
 
-- 移行は一度きりのスクリプト（`scripts/migrate-microcms.ts`、`vp run migrate` で実行）で行い、結果の Markdown と画像をコミットする
+- 移行は一度きりのスクリプト（`scripts/migrate-microcms.ts`、`make migrate` で実行）で行い、結果の Markdown と画像をコミットする
 - 記事・カテゴリ・プロフィールを移す。一度も公開していない下書きの記事も `draft: true` で移す。タグ、アイキャッチ画像、ノート、寄付の設定は移さない
 - 本番のドメインは Cloudflare の DNS で新しい Worker に切り替え、その後に microCMS の Webhook を止めて、Vercel の旧サイトを消す
 - 本文中の画像はダウンロードしてリポジトリに置き、microCMS への依存を残さない

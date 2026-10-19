@@ -27,9 +27,9 @@ description: ブログ自体を改善するときに使う。「バックログ�
    - 旧 URL・リンク切れ → 旧 URL の一覧と内部リンクの検査
    - 記事の書き方 → `rules/content.md` と `write-post` スキル
    - 判断基準 → `rules/*.md`・`AGENTS.md` か ADR
-   - 手順 → `package.json` のスクリプト（`vp run`）か `.cursor/skills/` のスキル
+   - 手順 → `Makefile` のコマンドか `.cursor/skills/` のスキル
 5. **確かめる**
-   - 雛形ができていれば `vp check`・`vp test`・`vp run typecheck`・`vp run build` が通ること
+   - `make check` が通ること
    - 見た目や構造化データを変えたら、PR のプレビュー URL で見る
 6. **記録して出す**
    - `docs/improvement/log.md` の表の先頭に 1 行追記（日付・種別・内容・再発防止）。仕組みにできなければ再発防止は「—」とし、理由をバックログに残す

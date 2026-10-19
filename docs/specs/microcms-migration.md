@@ -72,7 +72,7 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 
 ## 4. スクリプト
 
-- 置き場所: `scripts/migrate-microcms.ts`。実行: `vp run migrate`
+- 置き場所: `scripts/migrate-microcms.ts`。実行: `make migrate`
 - `.env` の `MICROCMS_SERVICE_DOMAIN`・`MICROCMS_API_KEY`・`MICROCMS_GLOBAL_DRAFT_KEY` を読む（コミットしない）
 - 何度実行しても同じ結果になる（出力先を消してから書く）
 - 最後に報告を出す: 公開記事数・下書き数・カテゴリ数・画像数、要対応の一覧（JSX が残る記事、`description` を作った記事、`pubDate` を仮に入れた下書き、`alt` の無い画像、言語名の無いコードブロック、取得に失敗した画像）
@@ -81,7 +81,7 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 
 - [ ] 公開記事数と下書き数が、microCMS の管理画面の数と一致する
 - [ ] 本番ビルドに下書きが出ず、プレビュー URL にだけ出る
-- [ ] `vp run build` が通る（Zod スキーマの検査を含む）
+- [ ] `make build` が通る（Zod スキーマの検査を含む）
 - [ ] 旧サイトのサイトマップの URL がすべて、新しいサイトで 200 か 301 を返す
 - [ ] 本文中の内部リンク（`/articles/...`）が切れていない
 - [ ] 要対応の一覧をすべて片付けた

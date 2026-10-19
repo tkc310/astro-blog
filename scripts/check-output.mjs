@@ -1,4 +1,4 @@
-// ビルド結果（dist/）を検査する。CI で `vp run check-output` として回す（docs/improvement-loop.md）。
+// ビルド結果（dist/）を検査する。CI で `make check-output` として回す（docs/improvement-loop.md）。
 // 規則を足したら、ここにも検査を足す。
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -19,7 +19,7 @@ function htmlFiles(dir) {
 }
 
 if (!existsSync(DIST)) {
-  console.error(`${DIST}/ がありません。先に vp run build を実行してください。`);
+  console.error(`${DIST}/ がありません。先に make build を実行してください。`);
   process.exit(1);
 }
 

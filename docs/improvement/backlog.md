@@ -10,7 +10,7 @@
 
 ## 人が Cloudflare・GitHub で行う設定
 
-- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `vp run build`、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする
+- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `pnpm run build`（Workers Builds には `vp` と `make` の前提が無いので、`package.json` のスクリプトを直接呼ぶ）、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする
 - [ ] GitHub の Settings で「Automatically delete head branches」を有効にする
 
 ## Markdown の拡張（その PR で確かめる）

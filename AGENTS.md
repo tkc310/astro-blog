@@ -8,18 +8,23 @@
 
 ## 開発者用のコマンド
 
-コマンドは Vite+ の `vp` で実行する（ADR-0003）。コマンドを足したら、`package.json` のスクリプトに書き、ここと `CONTRIBUTING.md` の両方に `vp` の形で書く。
+コマンドは `make` で実行する（`Makefile`、ADR-0014）。一覧は `make help`。追加の引数は `ARGS="..."` で渡す。コマンドを足すときは `Makefile` に `## 説明` 付きで足し、ここと `CONTRIBUTING.md` に `make` の形で書く（`scripts/makefile.test.ts` が検査する）。中身は `vp`（Vite+）と `mise` を呼ぶだけ。
 
-- ツールを入れる: `mise install`（`.tool-versions` の node・pnpm・vp）
-- 依存パッケージを入れる: `vp install`
-- 開発サーバ起動: `vp run dev`（`astro dev`）。下書きも見るなら `SHOW_DRAFTS=true vp run dev`
-- ビルド: `vp run build`（`astro build`）
-- ビルド結果の検査: `vp run check-output`（`vp run build` の後）
-- まとめて検査（フォーマット・静的・型）: `vp check`（直すなら `vp check --fix`）
-- `.astro` の型検査: `vp run typecheck`（`astro check`）
-- テスト: `vp test`
-- 手元で Workers として確かめる: `vp run preview`
-- CI と同じ順: `vp run typecheck` → `vp check` → `vp test` → `vp run build` → `vp run check-output`
+- ツールと依存パッケージを入れる: `make setup`（`.tool-versions` の node・pnpm・vp を mise で入れ、依存を入れる）
+- 依存パッケージだけを入れる: `make install`
+- 開発サーバ起動: `make dev`。下書きも見るなら `SHOW_DRAFTS=true make dev`
+- ビルド: `make build`
+- ビルド結果の検査: `make check-output`（`make build` の後）
+- CI と同じ検査をすべて: `make check`（typecheck → lint → test → build → check-output）
+- `.astro` を含めた型検査: `make typecheck`（`astro check`）
+- フォーマット・静的検査・型検査: `make lint`（`vp check`）
+- フォーマットだけを検査: `make fmt`（直すなら `make fmt-fix`）
+- テスト: `make test`（例: `make test ARGS="src/lib"`）
+- 手元で Workers として確かめる: `make preview`
+- 手動でデプロイ: `make deploy`（ふだんは Workers Builds が行う）
+- 新しい版がある依存パッケージを一覧: `make outdated`（範囲内で上げるなら `make update`）
+- ビルド結果と生成物を消す: `make clean`
+- コマンドの一覧: `make help`
 
 npm のレジストリに届かない環境（一部のエージェントの作業環境）では、`docs/ai-agents.md` の「npm に届かない環境で作業するとき」に従う。
 
@@ -41,7 +46,7 @@ npm のレジストリに届かない環境（一部のエージェントの作�
 - `rules/` の規則に従う。`architecture.md`（SSG・クライアント JS・境界）、`content.md`（記事の形式）、`seo.md`（構造化データ・メタタグ・性能）。検査を通すために規則を緩めない（緩めるなら ADR に理由を書き、人の承認を得る）
 - コミットメッセージは Conventional Commits（`type(scope): 説明`）で書く。書き方は `CONTRIBUTING.md` の「コミットメッセージ」と `.claude/skills/conventional-commits/SKILL.md`
 - 1 PR 1 改善。直したら再発防止（検査・テスト・ルール・スキル）を足す
-- 変更したら CI と同じ順の検査（上のコマンド）を通し、`docs/improvement/log.md` の表の先頭に 1 行記録する
+- 変更したら `make check` を通し、`docs/improvement/log.md` の表の先頭に 1 行記録する
 - 値や方針を変えたら `docs/decisions/` に ADR を足す。古い ADR は消さず「廃止（→ NNNN）」にする
 - 会話で受けた指摘も `log.md` に残し、同じ種類の指摘が続いたらルール文書か検査に格上げする
 - 秘密情報（microCMS の API キー、OAuth のクライアントシークレット、Cloudflare のトークン）をコミットしない
