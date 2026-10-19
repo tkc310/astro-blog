@@ -24,6 +24,7 @@
 | 配信・プレビュー | Cloudflare Workers の静的アセット ＋ Workers Builds                | 0005 |
 | URL              | 旧 URL を保つ（`/articles/<id>`、末尾スラッシュなし）              | 0006 |
 | UI               | Astro コンポーネント ＋ scoped CSS（UI フレームワークなし）        | 0007 |
+| デザイン | 昔の個人ホームページと掲示板のパロディ（[`design.md`](./design.md)） | 0013 |
 | Markdown         | `unified()` ＋ remark-link-card-plus ＋ Expressive Code            | 0008 |
 | 計測             | Cloudflare Web Analytics                                           | 0005 |
 

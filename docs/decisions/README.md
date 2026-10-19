@@ -17,6 +17,7 @@
 | [0010](./0010-microcms-migration.md)          | microCMS からの移行は一度きりのスクリプトで行い、画像もリポジトリに移す               | 採用               |
 | [0011](./0011-rich-jsonld-graph.md)           | JSON-LD は `@graph` でページ内の情報をできるだけ多く結んで出す                        | 採用               |
 | [0012](./0012-lapras-activities-on-client.md) | About の LAPRAS の活動一覧は、クライアントで取得して表示する                          | 採用               |
+| [0013](./0013-retro-homepage-design.md)       | 見た目は平成初期の個人ホームページと掲示板のパロディにし、中身は今の技術で作る        | 採用               |
 | [0014](./0014-makefile.md)                    | コマンドの入口を Makefile にまとめる（中身は vp と mise）                             | 採用               |
 
 ## テンプレート
