@@ -1,7 +1,9 @@
 # 0005 Cloudflare Workers の静的アセットで配信し、プレビューは Workers Builds のブランチ URL
 
 - 日付: 2026-10-19
-- 状態: 採用
+- 状態: 一部廃止（→ 0017）
+
+> トップ（`/`）だけは Astro の Cloudflare アダプターで Worker に描かせ、Cloudflare にキャッシュする（ADR-0017）。ほかのページは静的アセットのまま。
 
 ## 背景
 

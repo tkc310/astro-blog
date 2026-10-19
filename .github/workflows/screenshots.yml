@@ -8,6 +8,8 @@ on:
       - "src/**"
       - "public/**"
       - "astro.config.mjs"
+      - "wrangler.jsonc"
+      - "package.json"
       - "scripts/screenshots/**"
       - ".github/workflows/screenshots.yml"
 
@@ -47,9 +49,25 @@ jobs:
           npm install --no-audit --no-fund playwright@1.64.1
           npx playwright install --with-deps chromium
 
+      # make preview と同じ astro preview（workerd）で、静的アセットとトップの Worker を動かす（ADR-0017）。
+      - name: Start preview server
+        run: |
+          pnpm exec astro preview --port 4321 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          for _ in $(seq 60); do
+            curl -sf -o /dev/null http://localhost:4321/articles && exit 0
+            sleep 1
+          done
+          echo "::error title=preview::プレビューのサーバが起動しませんでした"
+          tail -n 120 "$RUNNER_TEMP/preview.log"
+          exit 1
+
       - name: Capture
         run: |
-          scripts/ci-step.sh "screenshots" node "$RUNNER_TEMP/capture/capture.mjs" "$GITHUB_WORKSPACE/dist" "$RUNNER_TEMP/shots"
+          scripts/ci-step.sh "screenshots" node "$RUNNER_TEMP/capture/capture.mjs" http://localhost:4321 "$RUNNER_TEMP/shots"
+
+      - name: Preview server log
+        if: failure()
+        run: tail -n 120 "$RUNNER_TEMP/preview.log" || true
 
       - name: Publish to screenshots branch
         env:

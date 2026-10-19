@@ -1,9 +1,11 @@
 // ビルド結果（dist/）を検査する。CI で `make check-output` として回す（docs/improvement-loop.md）。
 // 規則を足したら、ここにも検査を足す。
+// Cloudflare アダプターを使うので、静的アセットは dist/client、Worker は dist/server に出る（ADR-0017）。
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const DIST = "dist";
+const DIST = "dist/client";
+const SERVER = "dist/server";
 const errors = [];
 
 function fail(message) {
@@ -24,8 +26,26 @@ if (!existsSync(DIST)) {
 }
 
 // 末尾スラッシュなしの URL を返すため、ページは <path>.html で出す（ADR-0006）。
-for (const file of ["index.html", "404.html", "articles.html", "_redirects"]) {
+for (const file of ["404.html", "articles.html", "_redirects"]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
+}
+
+// トップ（/）は Worker で描く（ADR-0017）。静的な index.html があると、アセットが先に返して Worker に届かない。
+if (existsSync(join(DIST, "index.html"))) {
+  fail("index.html があります。トップは prerender = false にして Worker で描いてください");
+}
+
+// Worker の設定: Workers Cache が有効で、セッションの KV と Images のバインディングを作らない。
+const wranglerConfig = join(SERVER, "wrangler.json");
+if (!existsSync(wranglerConfig)) {
+  fail(`${wranglerConfig} がありません（Cloudflare アダプターが Worker を出していません）`);
+} else {
+  const config = JSON.parse(readFileSync(wranglerConfig, "utf8"));
+  if (config.cache?.enabled !== true)
+    fail(`${wranglerConfig}: cache.enabled が true ではありません`);
+  if ((config.kv_namespaces ?? []).length > 0)
+    fail(`${wranglerConfig}: KV のバインディングがあります`);
+  if (config.images) fail(`${wranglerConfig}: Images のバインディングがあります`);
 }
 
 const articles = join(DIST, "articles");

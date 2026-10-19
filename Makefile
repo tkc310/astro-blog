@@ -20,13 +20,13 @@ setup: ## ツール（.tool-versions の node・pnpm）と依存パッケージ�
 install: ## 依存パッケージを入れる
 	pnpm install $(ARGS)
 
-dev: ## 開発サーバを起動する（下書きも見るなら SHOW_DRAFTS=true make dev）
+dev: ## 開発サーバを workerd で起動する。トップは毎回描画する（下書きも見るなら SHOW_DRAFTS=true make dev）
 	pnpm run dev $(ARGS)
 
 build: ## 本番と同じビルドをする（dist/）
 	pnpm run build $(ARGS)
 
-preview: ## ビルドして、手元で Workers として動かす
+preview: ## ビルドして、手元で Workers として動かす（トップのキャッシュもここで確かめる）
 	pnpm run preview $(ARGS)
 
 deploy: ## ビルドして Cloudflare に手動でデプロイする（ふだんは Workers Builds が行う）
@@ -66,4 +66,4 @@ update: ## 依存パッケージを、package.json の範囲で新しくする
 	pnpm update $(ARGS)
 
 clean: ## ビルド結果と生成物を消す
-	rm -rf dist .astro
+	rm -rf dist .astro .wrangler

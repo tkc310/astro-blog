@@ -1,15 +1,32 @@
 ---
-// トップ（/）: 自己紹介。最近の記事と、LAPRAS の活動一覧（クライアントで取得、ADR-0012）。
+// トップ（/）: 自己紹介。最近の記事と、LAPRAS の活動一覧（ADR-0017）。
 // /about は public/_redirects でここへ 301 する（docs/specs/design.md §5）。
+//
+// このページだけをリクエストのときにサーバ（Worker）で描画する。LAPRAS の API はブラウザから
+// 呼ぶと CORS で止まるため。開発中（make dev）は毎回描画し、本番は Cloudflare のキャッシュに置いて
+// 期限が切れたら裏で描き直す（ISR と同じ動き）。
 import { formatDate, toIsoDate } from "../lib/format";
+import { fetchActivities, formatActivityDate, laprasProfileUrl, TYPE_LABELS } from "../lib/lapras";
 import { articlePath, getPosts } from "../lib/posts";
 import Base from "../layouts/Base.astro";
 import { site } from "../site.config";
 
+export const prerender = false;
+
+/** 取れたときのキャッシュ: 1 時間は新しいとみなし、その後 1 日は古いものを返しながら描き直す。 */
+const CACHE_OK = { maxAge: 60 * 60, swr: 60 * 60 * 24 };
+/** 取れなかったときのキャッシュ: 5 分で取り直す（LAPRAS に何度も行かないように）。 */
+const CACHE_FAILED = { maxAge: 60 * 5 };
+
 const { author } = site;
-const laprasProfile = `https://lapras.com/public/${author.accounts.lapras}`;
-const laprasApi = `${laprasProfile}.json`;
+const laprasProfile = laprasProfileUrl(author.accounts.lapras);
 const recent = (await getPosts()).slice(0, 3);
+const activities = await fetchActivities(author.accounts.lapras, { limit: 10 });
+
+// cache.enabled は開発中とキャッシュの設定が無いときは false（毎回描画する）。
+if (Astro.cache.enabled) {
+  Astro.cache.set({ ...(activities.ok ? CACHE_OK : CACHE_FAILED), tags: ["lapras"] });
+}
 ---
 
 <Base description={`${author.name} の自己紹介と、${site.description}`}>
@@ -34,99 +51,41 @@ const recent = (await getPosts()).slice(0, 3);
   <section class="activity" aria-labelledby="activity-heading">
     <h2 id="activity-heading">最近の活動</h2>
     <p class="note">
-      <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった記録を、開いたときに読み込みます。
+      <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった GitHub・Zenn・Qiita などの記録です。
     </p>
-    <div class="activities" data-lapras-api={laprasApi} data-lapras-profile={laprasProfile}>
-      <p class="status" data-status>読み込み中…</p>
-      <ol class="list" data-list hidden></ol>
-    </div>
+    {
+      !activities.ok ? (
+        <p class="status">
+          活動を読み込めませんでした。
+          <a href={laprasProfile} target="_blank" rel="noopener">
+            LAPRAS のプロフィールを見る
+          </a>
+        </p>
+      ) : activities.activities.length === 0 ? (
+        <p class="status">まだ活動の記録はありません。</p>
+      ) : (
+        <>
+          <ol class="list">
+            {activities.activities.map((activity) => (
+              <li>
+                <time datetime={activity.date}>{formatActivityDate(activity.date)}</time>
+                <a href={activity.url} target="_blank" rel="noopener">
+                  {activity.title}
+                </a>
+                <span class="type">{TYPE_LABELS[activity.type] ?? activity.type}</span>
+              </li>
+            ))}
+          </ol>
+          <p class="more">
+            <a href={laprasProfile} target="_blank" rel="noopener">
+              LAPRAS ですべての活動を見る
+            </a>
+          </p>
+        </>
+      )
+    }
   </section>
 </Base>
-
-<script>
-  // LAPRAS の公開 API から活動を取り、新しい順に出す（ADR-0012）。
-  // 枠の高さは CSS で確保してあるので、読み込んでもページはずれない。
-  interface Activity {
-    title: string;
-    url: string;
-    date: string;
-    type: string;
-  }
-
-  const LIMIT = 20;
-  const TYPE_LABELS: Record<string, string> = {
-    github: "GitHub",
-    qiita: "Qiita",
-    zenn: "Zenn",
-    note: "note",
-    blog: "ブログ",
-    speaker_deck: "Speaker Deck",
-    teratail: "teratail",
-    connpass: "connpass",
-  };
-
-  const root = document.querySelector<HTMLElement>("[data-lapras-api]");
-
-  async function load(container: HTMLElement): Promise<void> {
-    const status = container.querySelector<HTMLElement>("[data-status]");
-    const list = container.querySelector<HTMLOListElement>("[data-list]");
-    if (!status || !list) return;
-    try {
-      const response = await fetch(container.dataset.laprasApi ?? "");
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = (await response.json()) as { activities?: Activity[] };
-      const activities = (data.activities ?? [])
-        .toSorted((a, b) => b.date.localeCompare(a.date))
-        .slice(0, LIMIT);
-      if (activities.length === 0) {
-        status.textContent = "まだ活動の記録はありません。";
-        return;
-      }
-      for (const activity of activities) {
-        const item = document.createElement("li");
-        const date = document.createElement("time");
-        date.dateTime = activity.date;
-        date.textContent = activity.date.slice(0, 10).replaceAll("-", ".");
-        const link = document.createElement("a");
-        link.href = activity.url;
-        link.target = "_blank";
-        link.rel = "noopener";
-        link.textContent = activity.title;
-        const type = document.createElement("span");
-        type.className = "type";
-        type.textContent = TYPE_LABELS[activity.type] ?? activity.type;
-        item.append(date, link, type);
-        list.append(item);
-      }
-      status.remove();
-      list.hidden = false;
-    } catch {
-      status.replaceChildren(
-        "活動を読み込めませんでした。",
-        Object.assign(document.createElement("a"), {
-          href: container.dataset.laprasProfile ?? "",
-          textContent: "LAPRAS のプロフィールを見る",
-          target: "_blank",
-          rel: "noopener",
-        }),
-      );
-    }
-  }
-
-  if (root) {
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          observer.disconnect();
-          void load(root);
-        }
-      });
-      observer.observe(root);
-    } else {
-      void load(root);
-    }
-  }
-</script>
 
 <style>
   h1 {
@@ -195,25 +154,19 @@ const recent = (await getPosts()).slice(0, 3);
     color: var(--muted);
   }
 
-  /* 取得前から高さを確保し、読み込んでもレイアウトをずらさない（rules/architecture.md）。 */
-  .activities {
-    height: 28rem;
-    overflow-y: auto;
-    max-width: var(--measure);
-  }
-
   .status {
     margin: 0;
     color: var(--muted);
   }
 
   .list {
+    max-width: var(--measure);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .list :global(li) {
+  .list li {
     display: grid;
     grid-template-columns: 6.5rem minmax(0, 1fr) auto;
     gap: 0 1rem;
@@ -222,22 +175,26 @@ const recent = (await getPosts()).slice(0, 3);
     font-size: 0.94rem;
   }
 
-  .list :global(time) {
+  .list time {
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
 
-  .list :global(.type) {
+  .list a {
+    word-break: auto-phrase;
+  }
+
+  .list .type {
     font-size: 0.82rem;
     color: var(--muted);
   }
 
   @media (width < 36rem) {
-    .list :global(li) {
+    .list li {
       grid-template-columns: minmax(0, 1fr) auto;
     }
 
-    .list :global(a) {
+    .list a {
       grid-column: 1 / -1;
       grid-row: 2;
     }
