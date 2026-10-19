@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+.wrangler/
+
+# environment (microCMS の API キーなど)
+.env
+.env.*
+!.env.example
+
+# logs
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
