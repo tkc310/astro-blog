@@ -43,7 +43,7 @@ make dev     # http://localhost:4321
 
 1. `main` から作業ブランチを切る（例: `feat/toc`、`fix/jsonld-date`、`post/astro-6-migration`）
 2. 変更する。機能を足す・大きく変えるときは、先に `docs/specs/` に指示書を書く
-3. 検査を通す: `make check`（CI も同じ順で、同じ `make` のコマンドを回す）。フォーマットの崩れは `make fmt-fix` で直せる
+3. 検査を通す: `make check`（CI も同じ順で、同じ `make` のコマンドを回す）。フォーマットの崩れは `make fmt-fix` で直せる。PR では Lighthouse ワークフローも主なページを測り、性能・アクセシビリティ・SEO が 95 点を下回ると落ちる（`lighthouserc.json`）
 4. Pull Request を作り、テンプレートのチェックリストを埋める
 5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする（Cloudflare 側の設定が済んでから。[バックログ](./docs/improvement/backlog.md)）。見た目と構造化データをそこで確かめる
 6. `main` にマージすると本番に反映される

@@ -22,3 +22,6 @@ dist/
 
 # リンクカードの OGP 画像（ビルド時に取り直す）
 public/remark-link-card-plus/
+
+# Lighthouse CI の結果
+.lighthouseci/

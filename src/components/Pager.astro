@@ -14,7 +14,7 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 {
   totalPages > 1 && (
     <nav class="pager" aria-label="ページ送り">
-      {page > 1 ? <a href={listPageHref(page - 1)} rel="prev">前へ</a> : <span class="off">前へ</span>}
+      {page > 1 ? <a href={listPageHref(page - 1)} rel="prev">前へ</a> : <span class="off" aria-hidden="true">前へ</span>}
       <ol>
         {pages.map((n) => (
           <li>
@@ -26,7 +26,7 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
           </li>
         ))}
       </ol>
-      {page < totalPages ? <a href={listPageHref(page + 1)} rel="next">次へ</a> : <span class="off">次へ</span>}
+      {page < totalPages ? <a href={listPageHref(page + 1)} rel="next">次へ</a> : <span class="off" aria-hidden="true">次へ</span>}
     </nav>
   )
 }
@@ -65,6 +65,7 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     text-underline-offset: 0.2em;
   }
 
+  /* 先が無いときの「前へ」「次へ」。位置をそろえるための飾りなので、支援技術には読ませない（aria-hidden）。 */
   .off {
     color: var(--faint);
   }
