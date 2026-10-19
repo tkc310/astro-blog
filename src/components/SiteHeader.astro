@@ -2,7 +2,8 @@
 // ヘッダー: 左にサイト名、右に「記事」「About」（docs/specs/design.md §4）。
 import { site } from "../site.config";
 
-const path = Astro.url.pathname;
+// build.format: 'file' では /about.html・/index.html の形で来るので、拡張子と index を外してそろえる。
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
 const isArticles = path === "/" || path.startsWith("/articles");
 const links = [
   { href: "/", label: "記事", current: isArticles },
