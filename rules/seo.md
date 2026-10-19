@@ -14,7 +14,7 @@
 | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `<site>/#website`  | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                            |
 | `<site>/#blog`     | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                          |
-| `<site>/about#person` | `Person` | `name`・`alternateName`（ハンドル名）・`url`（About）・`image`・`description`・`jobTitle`・`knowsAbout`・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS） |
+| `<site>/about#person` | `Person` | `name`・`alternateName`（ハンドル名）・`url`（About）・`image`・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
 
 ページごとに出すノード:
 
@@ -34,14 +34,12 @@
 - `image`（`ImageObject`。`url`・`width`・`height`。既定の OGP 画像）・`thumbnailUrl`
 - `articleSection`・`keywords`（どちらもカテゴリ名）
 - `inLanguage`（`ja`）・`isAccessibleForFree`（`true`）・`wordCount`（本文の文字数）
-- `timeRequired`（ISO 8601 の期間。画面に読了時間を出すときだけ）
 - `hasPart`: 本文のコードブロックごとに `SoftwareSourceCode`（`programmingLanguage`、ファイル名があれば `name`）
 - `citation`: 本文のリンクカードと外部リンクごとに `CreativeWork`（`url`、取れたら `name`）
-- `license`: 画面にライセンスを書いたときだけ
 
 `WebPage`（`@id` は `<記事の URL>#webpage`）には `url`・`name`・`isPartOf`（→ WebSite）・`breadcrumb`（→ BreadcrumbList）・`primaryImageOfPage`・`datePublished`・`dateModified`・`inLanguage` を入れる。
 
-使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。
+使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。読了時間とライセンスは画面に出さないので、`timeRequired`・`license` も出さない。About は自己 PR だけで肩書や得意分野の欄を持たないので、`Person` の `jobTitle`・`knowsAbout` も出さない。About の LAPRAS の活動一覧はクライアントで取得するので、JSON-LD に入れない。
 
 下書き、`/admin/`、404 は `noindex` にし、サイトマップと RSS に入れない。
 

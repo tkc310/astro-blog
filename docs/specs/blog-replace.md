@@ -34,8 +34,9 @@
 | 記事一覧（トップ）       | 作る     | 新しい順、ページ送りあり（1 ページの件数は旧ブログの設定に合わせる） |
 | 記事詳細                 | 作る     | 目次、リンクカード、コードブロックの装飾                     |
 | カテゴリ別一覧           | 作る     | 1 記事 1 カテゴリ。カテゴリの色を表示に使う                  |
-| About                    | 作る     | プロフィールの静的ページ。JSON-LD の `Person` の元にもする   |
-| 下書き                   | 作る     | `draft: true`。本番ビルドでは除き、プレビューでだけ出す      |
+| About                    | 作る     | 自己 PR（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012） |
+| 下書き                   | 作る     | `draft: true`。本番ビルドでは除き、プレビューでだけ出す。microCMS の下書きも移す |
+| 読了時間・ライセンス表示 | 作らない |                                                              |
 | RSS・サイトマップ・llms.txt | 作る  | ビルド時に作る                                               |
 | 404                      | 作る     | 静的な `404.html`                                            |
 | タグ                     | 作らない | 旧 URL は 301（ADR-0006）                                    |
@@ -96,7 +97,16 @@
 - **画像**: `astro:assets` で最適化し、`width`・`height` を必ず出す。最初の画像以外は `loading="lazy"`
 - **外部リンク**: `target="_blank" rel="noopener noreferrer"`
 
-## 6. SEO・構造化データ
+## 6. About
+
+- **自己 PR**: サイト設定の自己 PR（旧ブログの `configs.profile.pr`）を静的な HTML で出す
+- **LAPRAS の活動一覧**（ADR-0012）
+  - 自己 PR の下に置く。取得前から高さを確保した枠を出し、表示してもレイアウトをずらさない
+  - 枠が画面に入ったら `https://lapras.com/public/<share_id>.json` を `fetch` し、`activities` を新しい順に出す（日付・種類・タイトルのリンク）
+  - 取れなかったときは、LAPRAS のプロフィールへのリンクだけを出す
+  - スクリプトは About だけで読み込み、ライブラリは使わない
+
+## 7. SEO・構造化データ
 
 JSON-LD はできるだけリッチにする（ADR-0011）。1 ページに 1 つの `@graph` を出し、サイト共通の `WebSite`・`Blog`・`Person` を固定の `@id` で結ぶ。
 
@@ -108,18 +118,20 @@ JSON-LD はできるだけリッチにする（ADR-0011）。1 ページに 1 �
 | About        | `ProfilePage`（`mainEntity` → `Person`）＋ `BreadcrumbList` ＋ 共通の 3 ノード                  |
 
 - `BlogPosting` には、日付・作者・画像・カテゴリ・文字数に加え、本文のコードブロックを `hasPart`（`SoftwareSourceCode`）、リンクカードと外部リンクを `citation` として入れる
-- `Person` は全記事の `author` と `publisher` を兼ね、`sameAs` に GitHub・X・Zenn・Qiita・LAPRAS を入れる。About ページに、`jobTitle`・`knowsAbout`・各 SNS へのリンクを表示する（画面に無いことは JSON-LD に書かないため）
+- `Person` は全記事の `author` と `publisher` を兼ね、`sameAs` に GitHub・X・Zenn・Qiita・LAPRAS を入れる。各 SNS へのリンクは共通のフッターに表示する（画面に無いことは JSON-LD に書かないため）
+- 出さない項目: 読了時間とライセンスは表示しないので `timeRequired`・`license`、About に肩書や得意分野の欄が無いので `jobTitle`・`knowsAbout`、クライアントで取得する LAPRAS の活動一覧
 - 項目の一覧は [`rules/seo.md`](../../rules/seo.md)。組み立ては `src/lib/jsonld/` にまとめ、ページの種類ごとにテストで形を固定する
 
-## 7. 受け入れ基準
+## 8. 受け入れ基準
 
 - 旧ブログの全記事が `/articles/<id>` で 200 を返し、旧 URL の一覧がすべて 200 か 301 を返す
-- 記事詳細のクライアント JS が、目次とコードのコピーボタンの分だけである
+- 記事詳細のクライアント JS が、目次とコードのコピーボタンの分だけである。About は、それに LAPRAS の活動一覧の取得が加わるだけである
+- About で LAPRAS の活動一覧を表示しても、CLS が 0.1 を超えない
 - すべてのページの JSON-LD が `rules/seo.md` の表のノードと項目をそろえ、Google のリッチリザルト テストと Schema.org Validator で警告が出ない
 - Lighthouse（モバイル）で性能・SEO・アクセシビリティが 95 点以上
 - Web Analytics で、切り替え後の LCP・CLS・INP が旧サイトより悪くない
 
-## 8. 進め方
+## 9. 進め方
 
 1. 雛形（Astro 7 ＋ Vite+、Workers へのデプロイ、プレビュー）と、バックログの「雛形」の確認
 2. レイアウト・記事一覧・記事詳細・カテゴリ・About

@@ -16,6 +16,7 @@
 | [0009](./0009-improvement-loop.md)          | AI 駆動開発の改善ループ（バックログ・ログ・ADR・指示書・スキル）を置く                | 採用 |
 | [0010](./0010-microcms-migration.md)        | microCMS からの移行は一度きりのスクリプトで行い、画像もリポジトリに移す               | 採用 |
 | [0011](./0011-rich-jsonld-graph.md)         | JSON-LD は `@graph` でページ内の情報をできるだけ多く結んで出す                        | 採用 |
+| [0012](./0012-lapras-activities-on-client.md) | About の LAPRAS の活動一覧は、クライアントで取得して表示する                        | 採用 |
 
 ## テンプレート
 
