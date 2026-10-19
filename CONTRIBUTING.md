@@ -15,19 +15,28 @@
 
 ## 開発環境
 
-| ツール  | バージョン                               |
-| ------- | ---------------------------------------- |
-| Node.js | 24（[`.node-version`](./.node-version)） |
-| pnpm    | 11（`package.json` の `packageManager`） |
-| Vite+   | 1.3（`vp`。グローバルに入れる）          |
+ツールの版は [`.tool-versions`](./.tool-versions) にまとめてあり、[mise](https://mise.jdx.dev/) で入れます。CI も同じファイルを読みます。
+
+| ツール  | `.tool-versions` の名前 | 用途                                                 |
+| ------- | ----------------------- | ---------------------------------------------------- |
+| Node.js | `node`                  | 実行環境                                             |
+| pnpm    | `pnpm`                  | パッケージ管理（`package.json` の `packageManager`） |
+| Vite+   | `viteplus`              | `vp` コマンド（検査・テスト・タスク実行）            |
 
 ```bash
-curl -fsSL https://vite.plus | bash   # vp を入れる（初回だけ）
 git clone https://github.com/tkc310/astro-blog.git
 cd astro-blog
-vp install
-vp run dev   # http://localhost:4321
+mise install   # .tool-versions の node・pnpm・vp を入れる
+vp install     # 依存パッケージを入れる
+vp run dev     # http://localhost:4321
 ```
+
+`viteplus` は mise のレジストリの名前で、asdf にはプラグインがありません。asdf を使う場合は node と pnpm だけを入れ、`vp` は Vite+ の公式のインストーラー（`curl -fsSL https://vite.plus | bash`）で入れてください。
+
+版を上げるときは、`.tool-versions` と一緒に次も同じ版にします。ずれていると `vp test`（`scripts/tool-versions.test.ts`）が失敗します。
+
+- pnpm: `package.json` の `packageManager`
+- Vite+: `package.json` の `vite-plus` と、`pnpm-workspace.yaml` の `vite` の置き換え先
 
 コマンドの一覧は [`AGENTS.md`](./AGENTS.md) の「開発者用のコマンド」にあります。`package.json` のスクリプトは `vp run <名前>` で、検査とテストは `vp check`・`vp test` で実行します。
 

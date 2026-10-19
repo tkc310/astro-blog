@@ -10,6 +10,7 @@
 
 コマンドは Vite+ の `vp` で実行する（ADR-0003）。コマンドを足したら、`package.json` のスクリプトに書き、ここと `CONTRIBUTING.md` の両方に `vp` の形で書く。
 
+- ツールを入れる: `mise install`（`.tool-versions` の node・pnpm・vp）
 - 依存パッケージを入れる: `vp install`
 - 開発サーバ起動: `vp run dev`（`astro dev`）。下書きも見るなら `SHOW_DRAFTS=true vp run dev`
 - ビルド: `vp run build`（`astro build`）
