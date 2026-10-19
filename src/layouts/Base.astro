@@ -90,8 +90,10 @@ const speculationRules = {
   }
 
   @media (width < 48em) {
+    /* 余った高さを本文の行にだけ回す（メニューの行が伸びて空白ができないように）。 */
     .frames {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
     }
 
     .menu-frame {

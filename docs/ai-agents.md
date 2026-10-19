@@ -39,6 +39,7 @@
 - **フォーマット**: Oxfmt の単体のバイナリを GitHub Releases（`oxc-project/oxc` の `oxfmt_v<版>`）から取り、`oxfmt .` で直す。版は `vite-plus` が使うもの（`vp check` と同じ結果になる版）にそろえる
 - **検査・テスト・ビルド**: PR を出し、GitHub Actions の CI に回してもらう
 - **CI の結果を読む**: ログ本体を開けない環境でも、失敗した手順の出力の末尾が注釈に出る（`scripts/ci-step.sh`）。`gh api repos/<owner>/<repo>/check-runs/<job id>/annotations` で読む
+- **見た目を確かめる**: 見た目に関わる PR では、Screenshots ワークフローが主なページを PC・スマホ × 昼・夜で撮り、`screenshots/<ブランチ名>` ブランチに置く（PR にもコメントする）。`git clone --depth 1 -b screenshots/<ブランチ名> <リポジトリ>` で取って画像を開く。直したらもう一度撮って見比べる
 
 ## 指摘の伝え方
 
