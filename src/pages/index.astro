@@ -1,10 +1,14 @@
 ---
-// トップ（/）: 私について。自己紹介と、LAPRAS の活動一覧（ADR-0017）。記事の一覧は置かない。
+// トップ（/）: 私について。自己紹介（src/content/profile/about.md）と、LAPRAS の活動一覧（ADR-0017）。
+// 記事の一覧は置かない。
 // 旧ブログの /about へのリンクは、public/_redirects でここへ 301 する（docs/specs/design.md §5）。
 //
 // このページだけをリクエストのときにサーバ（Worker）で描画する。LAPRAS の API はブラウザから
 // 呼ぶと CORS で止まるため。開発中（make dev）は毎回描画し、本番は Cloudflare のキャッシュに置いて
 // 期限が切れたら裏で描き直す（ISR と同じ動き）。
+import { getEntry, render } from "astro:content";
+
+import "../styles/prose.css";
 import PageHeader from "../components/PageHeader.astro";
 import { fetchActivities, formatActivityDate, laprasProfileUrl, TYPE_LABELS } from "../lib/lapras";
 import Base from "../layouts/Base.astro";
@@ -18,6 +22,9 @@ const CACHE_OK = { maxAge: 60 * 60, swr: 60 * 60 * 24 };
 const CACHE_FAILED = { maxAge: 60 * 5 };
 
 const { author } = site;
+const profile = await getEntry("profile", "about");
+if (!profile) throw new Error("自己紹介（src/content/profile/about.md）がありません");
+const { Content: Profile } = await render(profile);
 const laprasProfile = laprasProfileUrl(author.accounts.lapras);
 const activities = await fetchActivities(author.accounts.lapras, { limit: 10 });
 
@@ -28,9 +35,11 @@ if (Astro.cache.enabled) {
 ---
 
 <Base title="私について" description={`${author.name} の自己紹介と、最近の活動`}>
-  <PageHeader title={author.name}>
-    <p class="intro">{author.description}</p>
-  </PageHeader>
+  <PageHeader title="私について" kicker={author.name} lead={author.description} />
+
+  <section class="profile prose" aria-label="自己紹介">
+    <Profile />
+  </section>
 
   <section class="activity" aria-labelledby="activity-heading">
     <h2 id="activity-heading">最近の活動</h2>
@@ -74,18 +83,17 @@ if (Astro.cache.enabled) {
 </Base>
 
 <style>
-  .intro {
-    max-width: var(--measure);
-    margin: var(--space-6) 0 0;
-    color: var(--ink);
-    font-size: var(--text-md);
-    line-height: 2.1;
+  /* 自己紹介と最近の活動は、線と広い余白で分ける。 */
+  .activity {
+    margin-top: var(--space-10);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--line);
   }
 
   h2 {
     margin: 0 0 var(--space-2);
-    font-size: var(--text-sm);
-    letter-spacing: 0.16em;
+    font-size: var(--text-lg);
+    line-height: 1.6;
   }
 
   .note {

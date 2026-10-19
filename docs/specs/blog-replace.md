@@ -100,7 +100,8 @@
 
 ## 6. About
 
-- **自己 PR**: サイト設定の自己 PR（旧ブログの `configs.profile.pr`）を静的な HTML で出す
+- **自己 PR**: コンテンツ `profile`（`src/content/profile/about.md`。Markdown、見出しは `##` から、frontmatter は `updatedDate` だけ）を差し込む。ページの題は「私について」で、上に名前、下にサイト設定の一言（`author.description`）。Sveltia CMS の PR で、このファイルも編集できるようにする
+- **区切り**: 自己 PR と最近の活動のあいだは、線と広い余白で分ける
 - **LAPRAS の活動一覧**（ADR-0017。ブラウザからは CORS で取れないため、ADR-0012 から変えた）
   - 自己 PR の下に置く
   - トップを Worker で描くときに、サーバから `https://lapras.com/public/<share_id>.json` を取り、`activities` を新しい順に 10 件出す（日付・種類・タイトルのリンク）。3 秒で打ち切る

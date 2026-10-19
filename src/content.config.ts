@@ -43,4 +43,16 @@ const categories = defineCollection({
     .strict(),
 });
 
-export const collections = { posts, categories };
+// 私について（/）の自己紹介。本文を Markdown で書き、ページに差し込む（docs/specs/blog-replace.md §6）。
+// 1 ファイル（about.md）だけを置く。見出しは ## から。
+const profile = defineCollection({
+  loader: glob({ base: "./src/content/profile", pattern: "about.md" }),
+  schema: z
+    .object({
+      /** 更新した日。画面には出さず、見直しの目安にする。 */
+      updatedDate: z.coerce.date(),
+    })
+    .strict(),
+});
+
+export const collections = { posts, categories, profile };

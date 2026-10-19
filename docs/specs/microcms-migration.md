@@ -46,7 +46,7 @@ microCMS で一度も公開していない記事も移し、`draft: true` を付
 
 ### 設定
 
-`configs` の `siteTitle`・`siteDescription`・`host`・`perPage` と `profile`（名前・フルネーム・自己紹介・自己 PR・各 SNS のアカウント）を `src/site.config.ts` に写す。`siteImage` はダウンロードして既定の OGP 画像にする。`donations` は捨てる。
+`configs` の `siteTitle`・`siteDescription`・`host`・`perPage` と `profile`（名前・フルネーム・自己紹介・自己 PR・各 SNS のアカウント）を `src/site.config.ts` に写す（自己 PR は `src/content/profile/about.md` に Markdown で書く）。`siteImage` はダウンロードして既定の OGP 画像にする。`donations` は捨てる。
 
 ## 2. 本文の変換
 
