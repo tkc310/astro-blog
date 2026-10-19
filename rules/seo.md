@@ -10,11 +10,11 @@
 
 サイト全体で共通のノードには固定の `@id` を付け、ほかのノードからは `{"@id": …}` で参照する。
 
-| `@id`             | 型        | 項目                                                                                                                                                           |
-| ----------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `<site>/#website` | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                                           |
-| `<site>/#blog`    | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                                         |
-| `<site>/#person`  | `Person`  | `name`・`alternateName`（ハンドル名）・`url`（トップ）・`image`・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
+| `@id`             | 型        | 項目                                                                                                                                                                                    |
+| ----------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<site>/#website` | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                                                                    |
+| `<site>/#blog`    | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                                                                  |
+| `<site>/#person`  | `Person`  | `name`・`alternateName`（ハンドル名）・`url`（トップ）・`image`（`/profile.png`、512px）・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
 
 ページごとに出すノード:
 

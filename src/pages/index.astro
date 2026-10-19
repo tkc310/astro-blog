@@ -35,7 +35,12 @@ if (Astro.cache.enabled) {
 ---
 
 <Base title="私について" description={`${author.name} の自己紹介と、最近の活動`}>
-  <PageHeader title="私について" kicker={author.name} lead={author.description} />
+  <PageHeader title="私について" lead={author.description}>
+    <p class="byline" slot="before">
+      <img src={author.image.src} alt="" width="56" height="56" decoding="async" />
+      <span>{author.name}</span>
+    </p>
+  </PageHeader>
 
   <section class="profile prose" aria-label="自己紹介">
     <Profile />
@@ -83,6 +88,24 @@ if (Astro.cache.enabled) {
 </Base>
 
 <style>
+  /* 題の上に、アイコンと名前を並べる。名前があるので画像の alt は空にする。 */
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-5);
+    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+  }
+
+  .byline img {
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+  }
+
   /* 自己紹介と最近の活動は、線と広い余白で分ける。 */
   .activity {
     margin-top: var(--space-10);

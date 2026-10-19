@@ -26,7 +26,17 @@ if (!existsSync(DIST)) {
 }
 
 // 末尾スラッシュなしの URL を返すため、ページは <path>.html で出す（ADR-0006）。
-for (const file of ["404.html", "articles.html", "_redirects"]) {
+for (const file of [
+  "404.html",
+  "articles.html",
+  "_redirects",
+  // アイコン（Base.astro の <link rel="icon">・私について）
+  "favicon.ico",
+  "icon-192.png",
+  "apple-touch-icon.png",
+  "profile.webp",
+  "profile.png",
+]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
 }
 

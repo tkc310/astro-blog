@@ -13,6 +13,8 @@ export const site = {
     name: "tkc310",
     handle: "tkc310",
     description: "Web エンジニア。",
+    /** プロフィールの画像（public/）。私について・JSON-LD の Person.image に使う。 */
+    image: { src: "/profile.webp", large: "/profile.png", width: 512, height: 512 },
     accounts: {
       github: "tkc310",
       x: "tkc310",
