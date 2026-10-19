@@ -66,20 +66,6 @@
   letter-spacing: 0;
 }
 
-/* 左の余白が広い画面では「##」を列の外へぶら下げ、見出しの文字の左端を本文にそろえる。 */
-@media (width >= 56rem) {
-  :is(.prose :is(h2, h3, h4, h5, h6), .permalink) {
-    position: relative;
-  }
-
-  :is(.prose :is(h2, h3, h4, h5, h6), .permalink)::before {
-    position: absolute;
-    right: 100%;
-    margin-right: 0.5em;
-    white-space: nowrap;
-  }
-}
-
 :is(.prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]) {
   cursor: pointer;
   scroll-margin-top: var(--space-6);
