@@ -6,8 +6,9 @@ import PageHeader from "../../../components/PageHeader.astro";
 import Pager from "../../../components/Pager.astro";
 import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
-import { slicePage } from "../../../lib/listing";
-import { getPosts } from "../../../lib/posts";
+import { listGraph } from "../../../lib/jsonld";
+import { listPageHref, slicePage } from "../../../lib/listing";
+import { articlePath, getPosts } from "../../../lib/posts";
 import { site } from "../../../site.config";
 
 export const getStaticPaths = (async () => {
@@ -21,9 +22,16 @@ export const getStaticPaths = (async () => {
 const page = Number(Astro.params.page);
 const slice = slicePage(await getPosts(), page, site.perPage);
 const title = `記事の一覧（${slice.page} ページ目）`;
+const description = `${site.name} の${title}`;
+const graph = listGraph({
+  path: listPageHref(slice.page),
+  name: title,
+  description,
+  items: slice.items.map((post) => articlePath(post.id)),
+});
 ---
 
-<Base title={title} description={`${site.name} の${title}`}>
+<Base title={title} description={description} graph={graph}>
   <PageHeader title="記事" kicker={`${slice.page} ページ目`} />
   <PostList posts={slice.items} />
   <Pager page={slice.page} totalPages={slice.totalPages} />

@@ -12,6 +12,7 @@ import "../styles/prose.css";
 import HeadingLink from "../components/HeadingLink.astro";
 import PageHeader from "../components/PageHeader.astro";
 import WithToc from "../components/WithToc.astro";
+import { profileGraph } from "../lib/jsonld";
 import { fetchActivities, formatActivityDate, laprasProfileUrl, TYPE_LABELS } from "../lib/lapras";
 import Base from "../layouts/Base.astro";
 import { site } from "../site.config";
@@ -31,6 +32,9 @@ const ACTIVITY_HEADING: MarkdownHeading = {
 };
 
 const { author } = site;
+const description = `${author.name} の自己紹介と、最近の活動`;
+// LAPRAS の活動一覧はこのサイトの著作物ではなく、キャッシュの間に変わるので JSON-LD に入れない（ADR-0017）。
+const graph = profileGraph({ path: "/about", name: "私について", description });
 const profile = await getEntry("profile", "about");
 if (!profile) throw new Error("自己紹介（src/content/profile/about.md）がありません");
 const { Content: Profile, headings: profileHeadings } = await render(profile);
@@ -44,8 +48,8 @@ if (Astro.cache.enabled) {
 }
 ---
 
-<Base title="私について" description={`${author.name} の自己紹介と、最近の活動`}>
-  <PageHeader title="私について">
+<Base title="私について" description={description} graph={graph}>
+  <PageHeader title="私について" lead={author.description}>
     <p class="byline" slot="before">
       <img src={author.image.src} alt="" width="56" height="56" decoding="async" />
       <span>{author.name}</span>

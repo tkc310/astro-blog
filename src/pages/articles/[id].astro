@@ -10,8 +10,9 @@ import HeadingLink from "../../components/HeadingLink.astro";
 import WithToc from "../../components/WithToc.astro";
 import Base from "../../layouts/Base.astro";
 import { formatDate, toIsoDate } from "../../lib/format";
+import { articleGraph } from "../../lib/jsonld";
 import { neighbors } from "../../lib/listing";
-import { articlePath, getCategory, getPosts, type Post } from "../../lib/posts";
+import { articlePath, categoryPath, getCategory, getPosts, type Post } from "../../lib/posts";
 
 export const getStaticPaths = (async () => {
   const posts = await getPosts();
@@ -27,9 +28,18 @@ const { Content, headings } = await render(post);
 const category = await getCategory(post);
 const { older, newer } = neighbors(await getPosts(), post.id);
 const { title, description, pubDate, updatedDate, draft } = post.data;
+const graph = articleGraph({
+  path: articlePath(post.id),
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  category: { name: category.data.name, path: categoryPath(category.id) },
+  body: post.body ?? "",
+});
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} ogType="article" noindex={draft} graph={graph}>
   <article>
     <header class="heading">
       <p class="meta">

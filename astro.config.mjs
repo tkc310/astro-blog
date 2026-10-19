@@ -1,7 +1,10 @@
 // @ts-check
 import cloudflare from "@astrojs/cloudflare";
 import { cacheCloudflare } from "@astrojs/cloudflare/cache";
+import { readdirSync, readFileSync } from "node:fs";
+
 import { unified } from "@astrojs/markdown-remark";
+import sitemap from "@astrojs/sitemap";
 import expressiveCode from "astro-expressive-code";
 import { defineConfig } from "astro/config";
 import rehypeExternalLinks from "rehype-external-links";
@@ -10,6 +13,15 @@ import remarkLinkCard from "remark-link-card-plus";
 import { shouldShowDrafts } from "./src/lib/drafts.ts";
 import { rehypeLinkCardImages } from "./src/lib/markdown/link-card-images.ts";
 import { SITE_URL } from "./src/site.config.ts";
+
+// 下書きの記事の URL。プレビューのビルドでもサイトマップに入れない（rules/seo.md）。
+const POSTS_DIR = "./src/content/posts";
+const draftUrls = new Set(
+  readdirSync(POSTS_DIR)
+    .filter((name) => name.endsWith(".md"))
+    .filter((name) => /^draft:\s*true\s*$/m.test(readFileSync(`${POSTS_DIR}/${name}`, "utf8")))
+    .map((name) => `${SITE_URL}/articles/${name.replace(/\.md$/, "")}`),
+);
 
 // ページはビルド時に作り、末尾スラッシュなしの URL で配信する（ADR-0001・ADR-0006）。
 // 私について（/about）だけは LAPRAS の活動を載せるため、Worker で描画して Cloudflare にキャッシュする（ADR-0017）。
@@ -37,6 +49,11 @@ export default defineConfig({
   },
   // コードブロックは Expressive Code（ADR-0008）。白地に合わせて枠と影を消し、地は --wash に寄せる（ADR-0016）。
   integrations: [
+    // /sitemap-index.xml。Worker で描く /about は手で足す。下書きと /admin/ は入れない。
+    sitemap({
+      customPages: [`${SITE_URL}/about`],
+      filter: (page) => !draftUrls.has(page) && !page.startsWith(`${SITE_URL}/admin`),
+    }),
     expressiveCode({
       themes: ["github-light"],
       useDarkModeMediaQuery: false,

@@ -6,16 +6,24 @@ import PageHeader from "../components/PageHeader.astro";
 import Pager from "../components/Pager.astro";
 import PostList from "../components/PostList.astro";
 import Base from "../layouts/Base.astro";
+import { listGraph } from "../lib/jsonld";
 import { slicePage } from "../lib/listing";
-import { getCategories, getPosts } from "../lib/posts";
+import { articlePath, getCategories, getPosts } from "../lib/posts";
 import { site } from "../site.config";
 
 const posts = await getPosts();
 const categories = await getCategories();
 const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
+const description = `${site.description}の記事の一覧`;
+const graph = listGraph({
+  path: "/",
+  name: "記事",
+  description,
+  items: items.map((post) => articlePath(post.id)),
+});
 ---
 
-<Base title="記事" description={`${site.description}の記事の一覧`}>
+<Base title="記事" description={description} graph={graph}>
   <PageHeader title="記事">
     {
       categories.length > 0 && (

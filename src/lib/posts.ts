@@ -16,6 +16,11 @@ export async function getPosts(): Promise<Post[]> {
   );
 }
 
+/** RSS・サイトマップ・llms.txt に載せる記事。プレビューのビルドでも下書きは入れない（rules/seo.md）。 */
+export async function getPublishedPosts(): Promise<Post[]> {
+  return (await getPosts()).filter((post) => !post.data.draft);
+}
+
 export async function getCategories(): Promise<Category[]> {
   const categories = await getCollection("categories");
   return categories.sort((a, b) => a.data.name.localeCompare(b.data.name, "ja"));
