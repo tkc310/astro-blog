@@ -39,7 +39,7 @@
 
 `WebPage`（`@id` は `<記事の URL>#webpage`）には `url`・`name`・`isPartOf`（→ WebSite）・`breadcrumb`（→ BreadcrumbList）・`primaryImageOfPage`・`datePublished`・`dateModified`・`inLanguage` を入れる。
 
-使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。読了時間とライセンスは画面に出さないので、`timeRequired`・`license` も出さない。About は自己 PR だけで肩書や得意分野の欄を持たないので、`Person` の `jobTitle`・`knowsAbout` も出さない。About の LAPRAS の活動一覧はクライアントで取得するので、JSON-LD に入れない。
+使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。読了時間とライセンスは画面に出さないので、`timeRequired`・`license` も出さない。About は自己 PR だけで肩書や得意分野の欄を持たないので、`Person` の `jobTitle`・`knowsAbout` も出さない。トップの LAPRAS の活動一覧は、このサイトの著作物ではなく、キャッシュの間に変わるので、JSON-LD に入れない（ADR-0017）。
 
 下書き、`/admin/`、404 は `noindex` にし、サイトマップと RSS に入れない。
 

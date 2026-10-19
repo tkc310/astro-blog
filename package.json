@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro build && wrangler dev",
+    "preview": "astro build && astro preview",
     "typecheck": "astro check",
     "check-output": "node scripts/check-output.mjs",
     "deploy": "astro build && wrangler deploy",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.4.0",
     "astro": "^7.4.0"
   },
   "devDependencies": {

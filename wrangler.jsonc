@@ -1,13 +1,13 @@
 {
-  // ブログ本体は静的アセットだけを配信する Worker（ADR-0005）。Worker のコードは書かない。
+  // ページの多くは静的アセットで返し、トップ（/）だけを Worker で描く（ADR-0005・ADR-0017）。
+  // Worker の入口（main）とアセットの置き場所は、Astro の Cloudflare アダプターがビルドのときに足す。
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "astro-blog",
   "compatibility_date": "2026-10-19",
   "assets": {
-    "directory": "./dist",
     // /articles/<id>.html を /articles/<id> で返す（ADR-0006）。既定値だが、意図を残すために書く。
+    // アセットに無いパスは Worker に渡り、Astro が 404 のページを返す。
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page",
   },
   "observability": {
     "enabled": true,
