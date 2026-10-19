@@ -1,0 +1,97 @@
+# Sveltia CMS の設定（ADR-0004）。frontmatter の項目は src/content.config.ts の Zod スキーマとそろえる（rules/content.md）。
+# 両方を直したら scripts/cms-config.test.ts も通ること。
+backend:
+  name: github
+  repo: tkc310/astro-blog
+  branch: main
+  # 認証の Worker（sveltia-cms-auth）を置いたら、その URL を base_url に書く。それまでは「トークンでサインイン」で入る。
+# 保存は記事ごとのブランチとプルリクエストにし、プレビュー URL で確かめてからマージする。
+publish_mode: editorial_workflow
+site_url: https://tkc310.com
+media_folder: /src/assets
+public_folder: /src/assets
+output:
+  # 空の任意項目を書かない。Zod の optional() は空文字や null を受け付けない。
+  omit_empty_optional_fields: true
+
+collections:
+  - name: posts
+    label: 記事
+    label_singular: 記事
+    folder: src/content/posts
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    # ファイル名が URL（/articles/<id>）になる。英小文字・数字・- だけで書き、公開したら変えない。
+    slug:
+      editable: [create]
+      hint: "URL になる ID。英小文字・数字・- だけ（例: astro-blog-replace）"
+      pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "英小文字・数字・- だけで書いてください"]
+    # 画像は src/assets/posts/<id>/ に置き、本文から相対パスで参照する。
+    media_folder: /src/assets/posts/{{filename}}
+    public_folder: ../../assets/posts/{{filename}}
+    preview_path: articles/{{filename}}
+    sortable_fields:
+      fields: [pubDate, title]
+      default: { field: pubDate, direction: descending }
+    summary: "{{pubDate | date('YYYY.MM.DD')}} {{title}}"
+    fields:
+      - { name: title, label: タイトル, widget: string, pattern: ["^.{1,110}$", "110 字以内"] }
+      - name: description
+        label: 説明
+        widget: text
+        hint: "120 字前後で、記事の要点を 1〜2 文で。検索結果と AI の要約に使われる"
+        pattern: ["^[\\s\\S]{1,200}$", "200 字以内"]
+      - { name: pubDate, label: 公開日, widget: datetime }
+      - {
+          name: updatedDate,
+          label: 更新日,
+          widget: datetime,
+          required: false,
+          hint: "中身を大きく直したときだけ",
+        }
+      - name: category
+        label: カテゴリ
+        widget: relation
+        collection: categories
+        value_field: "{{slug}}"
+        display_fields: [name]
+        search_fields: [name]
+      - { name: draft, label: 下書き, widget: boolean, default: false, required: false }
+      - {
+          name: body,
+          label: 本文,
+          widget: markdown,
+          hint: "見出しは ## から。URL だけの行はリンクカードになる",
+        }
+
+  - name: categories
+    label: カテゴリ
+    label_singular: カテゴリ
+    folder: src/content/categories
+    extension: yml
+    format: yaml
+    create: true
+    identifier_field: name
+    slug:
+      editable: [create]
+      hint: "URL（/articles/categories/<id>）になる ID。英小文字・数字・- だけ"
+      pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "英小文字・数字・- だけで書いてください"]
+    fields:
+      - { name: name, label: 名前, widget: string }
+      - name: color
+        label: 色
+        widget: select
+        options: [blue, green, red, pink, orange, yellow, cyan, teal, purple, black, gray]
+      - { name: description, label: 説明, widget: string, required: false }
+
+  - name: pages
+    label: ページ
+    files:
+      - name: about
+        label: 私について
+        file: src/content/profile/about.md
+        format: yaml-frontmatter
+        fields:
+          - { name: updatedDate, label: 更新日, widget: datetime }
+          - { name: body, label: 自己紹介, widget: markdown, hint: "見出しは ## から" }

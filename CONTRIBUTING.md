@@ -81,6 +81,9 @@ post: Astro 7 への移行メモを公開する
 記事は `src/content/posts/` の Markdown が正本です（ADR-0002）。形式は [`rules/content.md`](./rules/content.md) に従います。
 
 - エディタで書くか、`/admin/` の Sveltia CMS で書きます（ADR-0004）
+  - CMS で保存すると、記事ごとのブランチとプルリクエストができます（Editorial Workflow）。プレビュー URL で確かめてからマージします
+  - 認証の Worker を置くまでは「Sign In Using Access Token」で入ります。fine-grained トークンに Contents と Pull requests の読み書きを付けます
+  - `make dev` では `/admin/` ではなく `/admin/index.html` を開きます（Astro の開発サーバはフォルダの `index.html` を返さない）
 - 公開前の記事は frontmatter に `draft: true` を付けます。プレビュー URL でだけ表示されます
 - 記事だけの変更は `post` の type でコミットします
 

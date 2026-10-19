@@ -30,7 +30,8 @@
     "schema-dts": "2.1.0",
     "typescript": "^6.0.0",
     "vite-plus": "1.3.0",
-    "wrangler": "^4.151.1"
+    "wrangler": "^4.151.1",
+    "yaml": "2.8.3"
   },
   "engines": {
     "node": ">=24"

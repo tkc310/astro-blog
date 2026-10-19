@@ -93,9 +93,17 @@ if (!existsSync(articles)) {
   }
 }
 
+// 管理画面（Sveltia CMS、ADR-0004）は検索に出さず、ページの検査から外す。
+const ADMIN = join(DIST, "admin", "index.html");
+if (!existsSync(ADMIN)) fail("admin/index.html がありません");
+else if (!readFileSync(ADMIN, "utf8").includes('<meta name="robots" content="noindex"'))
+  fail("admin/index.html: noindex がありません");
+if (!existsSync(join(DIST, "admin", "config.yml"))) fail("admin/config.yml がありません");
+
 for (const file of htmlFiles(DIST)) {
   const html = readFileSync(file, "utf8");
   const name = relative(DIST, file);
+  if (name.startsWith("admin/")) continue;
   if (!/<html[^>]*\blang="ja"/.test(html)) fail(`${name}: <html lang="ja"> がありません`);
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${name}: <title> がありません`);
   if (!/<meta name="description" content="[^"]+"/.test(html))

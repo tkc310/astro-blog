@@ -1,6 +1,6 @@
 ---
 // カテゴリ: 小さな丸（カテゴリの色）＋名前。色は旧ブログの色の名前を、落ち着いた色に置き換える。
-import type { categoryColors } from "../content.config";
+import type { CategoryColor } from "../lib/category-colors";
 import { categoryPath, type Category } from "../lib/posts";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 const { category, link = true } = Astro.props;
 
-const palette: Record<(typeof categoryColors)[number], string> = {
+const palette: Record<CategoryColor, string> = {
   blue: "#3b6fd4",
   green: "#2f8a5b",
   red: "#c94a4a",
