@@ -1,5 +1,5 @@
 // サイト全体の設定。JSON-LD・メタタグ・About の元になる（rules/seo.md）。
-// 値は microCMS の configs から移す（docs/specs/microcms-migration.md）。それまでは仮の値。
+// 値は旧ブログ（microCMS の configs）から移した（docs/specs/microcms-migration.md）。
 
 export const SITE_URL = "https://tkc310.com";
 
@@ -8,13 +8,14 @@ export const site = {
   name: "tkc310.com",
   /** WebSite.alternateName。旧ブログの名前。 */
   alternateName: "tkc310_log",
-  description: "Web エンジニア tkc310 の開発ブログ",
+  description: "Web系技術のアウトプットや生活のログを残しています。",
   language: "ja",
-  perPage: 10,
+  perPage: 5,
   author: {
     name: "tkc310",
     handle: "tkc310",
-    description: "Web エンジニア。",
+    description:
+      "Web系エンジニアです。フルスタックTypescriptが好みですが他のLL言語も触れます。ハードコアな瞑想オタクです。",
     /** プロフィールの画像（public/）。私について・JSON-LD の Person.image に使う。 */
     image: { src: "/profile.webp", large: "/profile.png", width: 512, height: 512 },
     accounts: {
