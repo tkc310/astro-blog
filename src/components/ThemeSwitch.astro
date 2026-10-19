@@ -2,9 +2,9 @@
 // 表示の切り替え（自動・昼・夜）。ADR-0015・docs/specs/design.md §6。
 // 選んだ表示は <html data-theme> と localStorage に入れる。描く前の適用は Base.astro の <head> のスクリプトが行う。
 const options = [
-  { value: "auto", label: "自動" },
-  { value: "light", label: "昼（ホームページ）" },
-  { value: "dark", label: "夜（パソコン通信）" },
+  { value: "auto", label: "自動", hint: "" },
+  { value: "light", label: "昼", hint: "（ホームページ）" },
+  { value: "dark", label: "夜", hint: "（パソコン通信）" },
 ] as const;
 ---
 
@@ -15,6 +15,7 @@ const options = [
       <label>
         <input type="radio" name="theme" value={option.value} checked={option.value === "auto"} />
         {option.label}
+        {option.hint && <span class="hint">{option.hint}</span>}
       </label>
     ))
   }
@@ -84,6 +85,14 @@ const options = [
     accent-color: var(--link);
   }
 
+  /* 狭いメニュー列で途中から折り返さないよう、括弧の名前は次の行に下げる。 */
+  .hint {
+    display: block;
+    padding-left: 1.4em;
+    font-size: 0.85em;
+    color: var(--quiet);
+  }
+
   /* JS が動かないときは出さない（押しても何も起きない部品を見せない）。 */
   :global(html:not(.js)) .theme {
     display: none;
@@ -95,6 +104,11 @@ const options = [
       display: flex;
       flex-wrap: wrap;
       gap: 0 1em;
+    }
+
+    .hint {
+      display: inline;
+      padding-left: 0;
     }
   }
 </style>
