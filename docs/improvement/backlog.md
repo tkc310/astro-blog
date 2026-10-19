@@ -9,7 +9,6 @@
 
 ## 雛形（実装の最初の PR で確かめる）
 
-- [ ] LAPRAS の公開 API（`https://lapras.com/public/<share_id>.json`）をブラウザから呼べるか（CORS）。呼べなければ ADR-0012 の代わりの手を選ぶ
 - [ ] Astro 7 と Vite+ の組み合わせで `vp run dev`・`vp run build` が通るか（Vite+ は `vite` を `@voidzero-dev/vite-plus-core` に置き換える）
 - [ ] `markdown.processor: unified()` で、remark-link-card-plus と Expressive Code が一緒に動くか
 - [ ] Astro 7 の `render()` が見出しの一覧（`headings`）を返すか。返さなければ目次の作り方を指示書で決め直す
