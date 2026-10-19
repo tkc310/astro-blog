@@ -2,6 +2,7 @@
 // - Makefile の公開ターゲット（`## 説明` 付き）は、AGENTS.md に `make <名前>` の形で書く
 // - CI のワークフローは make で回す（vp を直接呼ばない）
 // - 入れ子の make には ARGS= を付ける
+// - レシピは vp を直接呼ばず、pnpm 経由（$(VP) = pnpm exec vp、pnpm run）で呼ぶ
 import { readdirSync, readFileSync } from "node:fs";
 
 import { describe, expect, test } from "vite-plus/test";
@@ -31,6 +32,12 @@ describe("Makefile", () => {
   test("公開ターゲットはすべて AGENTS.md に make の形で書く", () => {
     const agents = read("AGENTS.md");
     for (const target of targets) expect(agents, target).toContain(`make ${target}`);
+  });
+
+  test("レシピは vp を直接呼ばない（グローバルの vp に頼らない）", () => {
+    const recipes = makefile.split("\n").filter((line) => line.startsWith("\t"));
+    for (const line of recipes) expect(line.trim()).not.toMatch(/^@?vp\s/);
+    expect(makefile).toMatch(/^VP := pnpm exec vp$/m);
   });
 
   test("入れ子の make には ARGS= を付ける", () => {
