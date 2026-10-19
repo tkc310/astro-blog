@@ -7,6 +7,8 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 export const LEGACY_SITE = "https://tkc310.com";
+/** 移さない記事。旧 URL は `public/_redirects` で `/` へ 301 にする。 */
+export const EXCLUDED_IDS = new Set(["g8crnjuuxpgt"]); // テスト用の記事
 const POSTS_DIR = "src/content/posts";
 const CATEGORIES_DIR = "src/content/categories";
 const ASSETS_DIR = "src/assets/posts";
@@ -311,7 +313,7 @@ async function articleIds(): Promise<string[]> {
     );
     const articles = props?.articles as { id: string }[] | undefined;
     if (!articles?.length) break;
-    ids.push(...articles.map((article) => article.id));
+    ids.push(...articles.map((article) => article.id).filter((id) => !EXCLUDED_IDS.has(id)));
   }
   return ids;
 }

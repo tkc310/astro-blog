@@ -1,6 +1,7 @@
 // サイト全体の設定。JSON-LD・メタタグ・About の元になる（rules/seo.md）。
 // 値は旧ブログ（microCMS の configs）から移した（docs/specs/microcms-migration.md）。
 
+/** 本番のドメイン。旧ブログと同じ（2026-10-20 に確かめた）。 */
 export const SITE_URL = "https://tkc310.com";
 
 export const site = {
