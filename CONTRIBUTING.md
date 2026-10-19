@@ -17,34 +17,33 @@
 
 ツールの版は [`.tool-versions`](./.tool-versions) にまとめてあり、[mise](https://mise.jdx.dev/) で入れます。CI も同じファイルを読みます。
 
-| ツール  | `.tool-versions` の名前 | 用途                                                 |
-| ------- | ----------------------- | ---------------------------------------------------- |
-| Node.js | `node`                  | 実行環境                                             |
-| pnpm    | `pnpm`                  | パッケージ管理（`package.json` の `packageManager`） |
-| Vite+   | `viteplus`              | `vp` コマンド（検査・テスト・タスク実行）            |
+| ツール  | `.tool-versions` の名前 | 用途                                                     |
+| ------- | ----------------------- | -------------------------------------------------------- |
+| Node.js | `node`                  | 実行環境                                                 |
+| pnpm    | `pnpm`                  | パッケージ管理（`package.json` の `packageManager`）     |
+| Vite+   | `viteplus`              | `vp` コマンド（`make` の中で検査・テスト・ビルドに使う） |
 
 ```bash
 git clone https://github.com/tkc310/astro-blog.git
 cd astro-blog
-mise install   # .tool-versions の node・pnpm・vp を入れる
-vp install     # 依存パッケージを入れる
-vp run dev     # http://localhost:4321
+make setup   # .tool-versions の node・pnpm・vp を mise で入れ、依存パッケージを入れる
+make dev     # http://localhost:4321
 ```
 
 `viteplus` は mise のレジストリの名前で、asdf にはプラグインがありません。asdf を使う場合は node と pnpm だけを入れ、`vp` は Vite+ の公式のインストーラー（`curl -fsSL https://vite.plus | bash`）で入れてください。
 
-版を上げるときは、`.tool-versions` と一緒に次も同じ版にします。ずれていると `vp test`（`scripts/tool-versions.test.ts`）が失敗します。
+版を上げるときは、`.tool-versions` と一緒に次も同じ版にします。ずれていると `make test`（`scripts/tool-versions.test.ts`）が失敗します。
 
 - pnpm: `package.json` の `packageManager`
 - Vite+: `package.json` の `vite-plus` と、`pnpm-workspace.yaml` の `vite` の置き換え先
 
-コマンドの一覧は [`AGENTS.md`](./AGENTS.md) の「開発者用のコマンド」にあります。`package.json` のスクリプトは `vp run <名前>` で、検査とテストは `vp check`・`vp test` で実行します。
+コマンドは `make` にまとめてあり、`make` で一覧が出ます（[`Makefile`](./Makefile)）。追加の引数は `ARGS` で渡します（例: `make test ARGS="src/lib"`）。中身は `vp`（Vite+）と `mise` を呼ぶだけです。コマンドを足すときは `Makefile` に足し、ドキュメントには `make` の形で書いてください。
 
 ## 開発の流れ
 
 1. `main` から作業ブランチを切る（例: `feat/toc`、`fix/jsonld-date`、`post/astro-6-migration`）
 2. 変更する。機能を足す・大きく変えるときは、先に `docs/specs/` に指示書を書く
-3. 検査を通す: `vp run typecheck`・`vp check`・`vp test`・`vp run build`・`vp run check-output`（CI も同じ順で回す）
+3. 検査を通す: `make check`（CI も同じ順で、同じ `make` のコマンドを回す）。フォーマットの崩れは `make fmt-fix` で直せる
 4. Pull Request を作り、テンプレートのチェックリストを埋める
 5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする（Cloudflare 側の設定が済んでから。[バックログ](./docs/improvement/backlog.md)）。見た目と構造化データをそこで確かめる
 6. `main` にマージすると本番に反映される

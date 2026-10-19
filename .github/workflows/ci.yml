@@ -26,19 +26,19 @@ jobs:
           run-install: |
             - args: ['--frozen-lockfile']
 
+      # 手元と同じ make のコマンドで回す（ADR-0014）。Makefile が壊れれば CI で気づける。
       # 失敗したときは scripts/ci-step.sh が出力の末尾を注釈に出す（docs/ai-agents.md）。
-      # astro check は型の生成（.astro/types.d.ts）も行うので、vp check より先に回す。
       - name: Type check (.astro)
-        run: scripts/ci-step.sh "astro check" vp run typecheck
+        run: scripts/ci-step.sh "make typecheck" make typecheck
 
       - name: Format, lint, type check
-        run: scripts/ci-step.sh "vp check" vp check
+        run: scripts/ci-step.sh "make lint" make lint
 
       - name: Test
-        run: scripts/ci-step.sh "vp test" vp test
+        run: scripts/ci-step.sh "make test" make test
 
       - name: Build
-        run: scripts/ci-step.sh "astro build" vp run build
+        run: scripts/ci-step.sh "make build" make build
 
       - name: Check build output
-        run: scripts/ci-step.sh "check-output" vp run check-output
+        run: scripts/ci-step.sh "make check-output" make check-output

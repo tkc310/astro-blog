@@ -10,6 +10,6 @@ React・Vue・Svelte などの UI フレームワークとアイランド（`cli
 
 記事の URL は `/articles/<id>` で、末尾にスラッシュを付けない（`trailingSlash: 'never'`・`build.format: 'file'`）。公開済みの URL を変えたら、`_redirects` に 301 を書く。
 
-コマンドは `vp` で実行する。新しいコマンドは `package.json` のスクリプトに書き、`AGENTS.md` と `CONTRIBUTING.md` に `vp run <名前>` の形で足す。
+コマンドは `make` で実行する（ADR-0014）。新しいコマンドは `Makefile` に `## 説明` 付きで足し、`AGENTS.md` と `CONTRIBUTING.md` に `make <名前>` の形で書く。CI も `make` で回し、`vp` を直接呼ばない。
 
 秘密情報（microCMS の API キー、OAuth のクライアントシークレット、Cloudflare のトークン）はコードに書かず、コミットしない。`.env` だけに置く。
