@@ -1,5 +1,5 @@
 /*
- * 白地のシンプルなデザイン（ADR-0016・docs/specs/design.md）。
+ * 白地のシンプルなデザイン（ADR-0016・docs/specs/design.md）。白と黒とグレーだけで組み、色はカテゴリの丸にだけ使う。
  * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
  */
 
@@ -7,11 +7,12 @@
   color-scheme: light;
 
   --paper: #ffffff;
-  --ink: #1f2328;
-  --muted: #5e6772;
-  --line: #e7e9ec;
-  --accent: #24489c;
-  --wash: #f5f6f8;
+  --strong: #000000;
+  --ink: #222222;
+  --muted: #6b6b6b;
+  --faint: #b5b5b5;
+  --line: #e6e6e6;
+  --wash: #f7f7f7;
 
   --sans:
     "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui,
@@ -44,26 +45,32 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 1.0625rem;
-  line-height: 1.9;
+  font-size: 1rem;
+  line-height: 2;
+  letter-spacing: 0.04em;
   font-kerning: normal;
   text-wrap: pretty;
+  /* 和文と欧文のあいだを空け、行頭の約物を詰める（対応するブラウザだけ）。 */
+  text-autospace: normal;
+  text-spacing-trim: trim-start;
   -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--accent);
+  color: inherit;
   text-decoration-line: underline;
+  text-decoration-color: var(--faint);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.15s;
 }
 
 a:hover {
-  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--strong);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -72,9 +79,12 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 700;
-  line-height: 1.45;
-  letter-spacing: 0.01em;
+  color: var(--strong);
+  font-weight: 600;
+  line-height: 1.6;
+  /* 見出しはかなを詰め（palt）、字間を少し開けて整える。 */
+  font-feature-settings: "palt";
+  letter-spacing: 0.06em;
   /* 日本語を文節の切れ目で折り返し（対応するブラウザ）、行の長さをそろえる。 */
   word-break: auto-phrase;
   text-wrap: balance;

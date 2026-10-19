@@ -5,7 +5,7 @@ export const SITE_URL = "https://tkc310.com";
 
 export const site = {
   url: SITE_URL,
-  name: "tkc310_log",
+  name: "tkc310.com",
   description: "Web エンジニア tkc310 の開発ブログ",
   language: "ja",
   perPage: 10,
