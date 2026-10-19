@@ -1,17 +1,9 @@
 ---
 // フッター: 各 SNS へのリンクと著作権表示（docs/specs/design.md §4）。
-import { site } from "../site.config";
+import { profiles, site } from "../site.config";
 
 const since = 2021;
 const year = new Date().getFullYear();
-const { accounts } = site.author;
-const profiles = [
-  { href: `https://github.com/${accounts.github}`, label: "GitHub" },
-  { href: `https://x.com/${accounts.x}`, label: "X" },
-  { href: `https://zenn.dev/${accounts.zenn}`, label: "Zenn" },
-  { href: `https://qiita.com/${accounts.qiita}`, label: "Qiita" },
-  { href: `https://lapras.com/public/${accounts.lapras}`, label: "LAPRAS" },
-];
 ---
 
 <footer class="footer">

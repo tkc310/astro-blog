@@ -36,6 +36,12 @@ for (const file of [
   "apple-touch-icon.png",
   "profile.webp",
   "profile.png",
+  // SEO（rules/seo.md・docs/specs/blog-replace.md §4）
+  "og.png",
+  "robots.txt",
+  "rss/feed.xml",
+  "sitemap-index.xml",
+  "llms.txt",
 ]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
 }
@@ -94,6 +100,29 @@ for (const file of htmlFiles(DIST)) {
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${name}: <title> がありません`);
   if (!/<meta name="description" content="[^"]+"/.test(html))
     fail(`${name}: meta description がありません`);
+
+  // どのページも canonical・OGP・Twitter Card を出す。JSON-LD は 1 つの @graph で、404 だけ出さず noindex（rules/seo.md）。
+  const canonical = /<link rel="canonical" href="(https:\/\/[^"]+)"/.exec(html)?.[1];
+  if (!canonical) fail(`${name}: canonical がありません`);
+  else if (canonical !== new URL(canonical).origin + "/" && canonical.endsWith("/"))
+    fail(`${name}: canonical の末尾にスラッシュがあります: ${canonical}`);
+  for (const property of ["og:title", "og:description", "og:url", "og:image"]) {
+    if (!html.includes(`<meta property="${property}" content="`))
+      fail(`${name}: ${property} がありません`);
+  }
+  if (!html.includes('<meta name="twitter:card" content="summary_large_image"'))
+    fail(`${name}: twitter:card がありません`);
+  const graphs = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+  if (name === "404.html") {
+    if (graphs.length > 0) fail(`${name}: JSON-LD を出しています`);
+    if (!html.includes('<meta name="robots" content="noindex"'))
+      fail(`${name}: noindex がありません`);
+  } else if (graphs.length !== 1) {
+    fail(`${name}: JSON-LD が ${graphs.length} 個あります（1 つの @graph にまとめる）`);
+  } else {
+    const graph = JSON.parse(graphs[0][1]);
+    if (!Array.isArray(graph["@graph"])) fail(`${name}: JSON-LD が @graph になっていません`);
+  }
 
   // 外部へのリンクは別タブで開き、opener と参照元を渡さない（docs/specs/blog-replace.md §5）。
   for (const [tag] of html.matchAll(/<a\b[^>]*\bhref="https?:\/\/[^"]*"[^>]*>/g)) {

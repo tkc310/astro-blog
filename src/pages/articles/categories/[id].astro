@@ -5,7 +5,14 @@ import type { GetStaticPaths } from "astro";
 import PageHeader from "../../../components/PageHeader.astro";
 import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
-import { getCategories, getPosts, type Category } from "../../../lib/posts";
+import { listGraph } from "../../../lib/jsonld";
+import {
+  articlePath,
+  categoryPath,
+  getCategories,
+  getPosts,
+  type Category,
+} from "../../../lib/posts";
 
 export const getStaticPaths = (async () => {
   const categories = await getCategories();
@@ -19,9 +26,17 @@ interface Props {
 const { category } = Astro.props;
 const posts = (await getPosts()).filter((post) => post.data.category.id === category.id);
 const { name, description } = category.data;
+const summary = description ?? `${name}の記事`;
+const graph = listGraph({
+  path: categoryPath(category.id),
+  name,
+  description: summary,
+  items: posts.map((post) => articlePath(post.id)),
+  breadcrumb: true,
+});
 ---
 
-<Base title={name} description={description ?? `${name}の記事`}>
+<Base title={name} description={summary} graph={graph}>
   <PageHeader title={name} kicker="カテゴリ" lead={description} />
   <PostList posts={posts} />
 </Base>

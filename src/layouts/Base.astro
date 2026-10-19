@@ -1,20 +1,37 @@
 ---
 // 全ページの枠。中央の 1 列に、ヘッダー・本文・フッターを置く（docs/specs/design.md §3）。
-// メタタグと構造化データは SEO の PR で足す（docs/specs/blog-replace.md の「進め方」4）。
+// <title>・meta description・canonical・OGP・Twitter Card・JSON-LD をここから出す（rules/seo.md）。
+import type { Graph } from "schema-dts";
+
 import "../styles/global.css";
 
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import { site } from "../site.config";
+import { canonicalPath } from "../lib/paths";
+import { absoluteUrl, site } from "../site.config";
 
 interface Props {
   title?: string;
   description?: string;
+  /** 記事は article、ほかは website。 */
+  ogType?: "article" | "website";
+  /** 下書き・404 は検索に出さない。 */
+  noindex?: boolean;
+  /** 1 ページに 1 つの @graph（src/lib/jsonld）。404 では出さない。 */
+  graph?: Graph;
 }
 
 // どのページも同じ幅の 1 列にし、ページを移ってもヘッダーと本文の左端が動かないようにする。
-const { title, description = site.description } = Astro.props;
+const {
+  title,
+  description = site.description,
+  ogType = "website",
+  noindex = false,
+  graph,
+} = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
+const canonical = absoluteUrl(canonicalPath(Astro.url.pathname));
+const ogImage = absoluteUrl(site.ogImage.src);
 
 // 同じサイトのページを、リンクにカーソルを載せた時点で先読みする（ADR-0016）。JS は実行しない。
 const speculationRules = {
@@ -36,11 +53,27 @@ const speculationRules = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(site.ogImage.width)} />
+    <meta property="og:image:height" content={String(site.ogImage.height)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${site.author.accounts.x}`} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss/feed.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
+    {graph && <script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />}
   </head>
   <body>
     <a class="skip" href="#main">本文へ移動</a>

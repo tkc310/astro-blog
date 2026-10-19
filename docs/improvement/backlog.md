@@ -21,7 +21,7 @@
 
 - [ ] `.astro` のフォーマットと静的検査。Oxfmt・Oxlint は `.astro` を対象にしない（Oxfmt 0.73 で確かめた）。型は `astro check` が見る。フォーマットは Prettier と `prettier-plugin-astro` を `.astro` だけに使うかを決める
 - [ ] コミットメッセージを検査する仕組み（`commit-msg` フックと CI）
-- [ ] ビルド出力の検査を広げる（JSON-LD・canonical・OGP の有無、内部リンク切れ、ページごとの JS の量）
+- [ ] ビルド出力の検査を広げる（内部リンク切れ、ページごとの JS の量）。JSON-LD・canonical・OGP の有無は SEO の PR で足した
 - [ ] 旧 URL の一覧を作り、移行後に 200 か 301 で返るかを CI で確かめる
 - [ ] Lighthouse CI の閾値を決める
 - [ ] Issue テンプレート「改善提案」で起票されたものを、バックログに転記する流れを決める

@@ -1,9 +1,9 @@
 ---
 // ヘッダー: 左にサイト名、右に「記事」「私について」（docs/specs/design.md §4）。
+import { canonicalPath } from "../lib/paths";
 import { site } from "../site.config";
 
-// build.format: 'file' では /articles.html・/index.html の形で来るので、拡張子と index を外してそろえる。
-const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
+const path = canonicalPath(Astro.url.pathname);
 // トップ（/）は記事一覧、私については /about（docs/specs/design.md §5）。
 const links = [
   { href: "/", label: "記事", current: path === "/" || path.startsWith("/articles") },
