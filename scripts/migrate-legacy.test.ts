@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+
 import { describe, expect, test } from "vite-plus/test";
 
 import {
@@ -5,6 +7,7 @@ import {
   convertArticle,
   descriptionFromBody,
   emptyReport,
+  EXCLUDED_IDS,
   fitDescription,
   hasJsx,
   labelCodeBlocks,
@@ -148,5 +151,13 @@ describe("convertArticle", () => {
       emptyReport(),
     );
     expect(markdown).not.toContain("updatedDate");
+  });
+});
+
+describe("EXCLUDED_IDS", () => {
+  const redirects = readFileSync("public/_redirects", "utf8");
+  test.each([...EXCLUDED_IDS])("%s は記事が無く、旧 URL を 301 にする", (id) => {
+    expect(existsSync(`src/content/posts/${id}.md`)).toBe(false);
+    expect(redirects).toMatch(new RegExp(`^/articles/${id}\\s+/\\s+301$`, "m"));
   });
 });

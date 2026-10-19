@@ -3,11 +3,9 @@
 改善候補と、まだ決まっていないことの一覧です。Issue があればリンクします。優先度の決め方は [`../improvement-loop.md`](../improvement-loop.md) を参照。
 着手したら `- [x]` にし、完了したら [`log.md`](./log.md) に 1 行記録してここから消します。
 
-## 決めること
+## 本番の切り替え
 
-- [ ] 本番を切り替える日（移行の PR はマージ済み。手順は `docs/specs/microcms-migration.md` の「切り替え」）
-- [ ] 旧ブログのテスト用の記事 `g8crnjuuxpgt`（下書き）を消すか直すか決める
-- [ ] 本番のドメインが `https://tkc310.com` で合っているか（`src/site.config.ts` の `SITE_URL` に仮で入れた。旧ブログはドメインを環境変数に持っていた）
+- [ ] 本番の切り替え（下の Cloudflare の設定ができたらすぐ行う。手順は `docs/specs/microcms-migration.md` の「切り替え」。本番のドメインは `https://tkc310.com`）
 
 ## 人が Cloudflare・GitHub で行う設定
 
