@@ -30,6 +30,21 @@ for (const file of ["404.html", "articles.html", "_redirects"]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
 }
 
+// 公開済みの URL を 301 で生かす（ADR-0006）。旧ブログの /about は、私について（/）へ。
+if (existsSync(join(DIST, "_redirects"))) {
+  const rules = readFileSync(join(DIST, "_redirects"), "utf8")
+    .split("\n")
+    .map((line) => line.replace(/#.*/, "").trim().split(/\s+/))
+    .filter((parts) => parts.length === 3);
+  for (const [from, to] of [
+    ["/about", "/"],
+    ["/about/", "/"],
+  ]) {
+    if (!rules.some((rule) => rule[0] === from && rule[1] === to && rule[2] === "301"))
+      fail(`_redirects に ${from} → ${to} の 301 がありません`);
+  }
+}
+
 // トップ（/）は Worker で描く（ADR-0017）。静的な index.html があると、アセットが先に返して Worker に届かない。
 if (existsSync(join(DIST, "index.html"))) {
   fail("index.html があります。トップは prerender = false にして Worker で描いてください");

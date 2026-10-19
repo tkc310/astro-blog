@@ -1,31 +1,23 @@
 ---
+import PageHeader from "../components/PageHeader.astro";
 import Base from "../layouts/Base.astro";
 ---
 
 <Base title="ページが見つかりません" description="お探しのページは見つかりませんでした。">
-  <p class="code numeric">404</p>
-  <h1>ページが見つかりません</h1>
-  <p class="text">移動したか、削除された可能性があります。</p>
-  <p><a href="/articles">記事の一覧へ</a></p>
+  <PageHeader title="404" lead="お探しのページは見つかりませんでした。移動したか、削除された可能性があります。" />
+  <p class="links">
+    <a href="/articles">記事の一覧へ</a>
+    <a href="/">私について</a>
+  </p>
 </Base>
 
 <style>
-  .code {
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
     margin: 0;
-    font-size: 3.5rem;
-    font-weight: 200;
-    line-height: 1;
-    letter-spacing: 0.02em;
-    color: var(--strong);
-  }
-
-  h1 {
-    margin: 1rem 0 0.5rem;
-    font-size: 1.6rem;
-  }
-
-  .text {
-    margin: 0 0 1.5rem;
-    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
   }
 </style>

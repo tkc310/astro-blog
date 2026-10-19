@@ -1,27 +1,53 @@
 /*
  * 白地のシンプルなデザイン（ADR-0016・docs/specs/design.md）。白と黒とグレーだけで組み、色はカテゴリの丸にだけ使う。
+ * 飾りは足さず、文字の大きさ・太さ・字間と余白だけで階層をつくる。
  * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
  */
 
 :root {
   color-scheme: light;
 
+  /* 色: 白と黒と、そのあいだのグレー 4 段。色を使うのはカテゴリの丸だけ。 */
   --paper: #ffffff;
   --strong: #000000;
-  --ink: #222222;
-  --muted: #6b6b6b;
-  --faint: #b5b5b5;
-  --line: #e6e6e6;
-  --wash: #f7f7f7;
+  --ink: #1c1c1c;
+  --muted: #6f6f6f;
+  --faint: #c2c2c2;
+  --line: #ececec;
+  --wash: #f6f6f6;
 
   --sans:
-    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui,
-    sans-serif;
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Noto Sans CJK JP",
+    "Yu Gothic UI", Meiryo, system-ui, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  --measure: 38em;
-  --column: 44rem;
-  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+  /* 文字の大きさ: 1.25 倍ずつの階段。見出しの大きな文字だけ画面の幅で伸び縮みする。 */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
+  --text-display: clamp(2.25rem, 1.5rem + 3vw, 3.25rem);
+
+  /* 余白: 4px を単位にした階段。 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  --measure: 36em;
+  --column: 42rem;
+  --gutter: clamp(1.25rem, 6vw, 3rem);
+  /* 一覧の日付の列。記事の一覧と活動の一覧でそろえる。 */
+  --date-column: 7rem;
 }
 
 /* ページの移り変わりを CSS だけで滑らかにする（ADR-0016）。 */
@@ -45,9 +71,9 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 2;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   font-kerning: normal;
   text-wrap: pretty;
   /* 和文と欧文のあいだを空け、行頭の約物を詰める（対応するブラウザだけ）。 */
@@ -56,13 +82,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+::selection {
+  background: var(--strong);
+  color: var(--paper);
+}
+
 a {
   color: inherit;
   text-decoration-line: underline;
   text-decoration-color: var(--faint);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-  transition: text-decoration-color 0.15s;
+  text-underline-offset: 0.35em;
+  transition:
+    color 0.2s,
+    text-decoration-color 0.2s;
 }
 
 a:hover {
@@ -82,9 +115,9 @@ h4 {
   color: var(--strong);
   font-weight: 600;
   line-height: 1.6;
-  /* 見出しはかなを詰め（palt）、字間を少し開けて整える。 */
+  /* 見出しはかなを詰め（palt）、詰めたぶん字間を開けて、文字の並びを均す。 */
   font-feature-settings: "palt";
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   /* 日本語を文節の切れ目で折り返し（対応するブラウザ）、行の長さをそろえる。 */
   word-break: auto-phrase;
   text-wrap: balance;
@@ -119,5 +152,11 @@ time,
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
   }
 }

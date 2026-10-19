@@ -10,11 +10,10 @@ import { site } from "../site.config";
 interface Props {
   title?: string;
   description?: string;
-  /** 記事のページは、本文の右に目次を置くため列を広げる。 */
-  wide?: boolean;
 }
 
-const { title, description = site.description, wide = false } = Astro.props;
+// どのページも同じ幅の 1 列にし、ページを移ってもヘッダーと本文の左端が動かないようにする。
+const { title, description = site.description } = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
 
 // 同じサイトのページを、リンクにカーソルを載せた時点で先読みする（ADR-0016）。JS は実行しない。
@@ -42,7 +41,7 @@ const speculationRules = {
   </head>
   <body>
     <a class="skip" href="#main">本文へ移動</a>
-    <div class:list={["page", { wide }]}>
+    <div class="page">
       <SiteHeader />
       <main id="main">
         <slot />
@@ -59,12 +58,8 @@ const speculationRules = {
     padding: 0 var(--gutter);
   }
 
-  .page.wide {
-    max-width: calc(62rem + var(--gutter) * 2);
-  }
-
   main {
-    padding-top: 4rem;
+    padding-top: var(--space-10);
   }
 
   .skip {
@@ -73,9 +68,9 @@ const speculationRules = {
   }
 
   .skip:focus {
-    left: 1rem;
-    top: 1rem;
-    padding: 0.4rem 0.8rem;
+    left: var(--space-4);
+    top: var(--space-4);
+    padding: var(--space-2) var(--space-3);
     background: var(--paper);
     border: 1px solid var(--line);
     z-index: 1;
@@ -83,7 +78,7 @@ const speculationRules = {
 
   @media (width < 36rem) {
     main {
-      padding-top: 2.5rem;
+      padding-top: var(--space-8);
     }
   }
 </style>

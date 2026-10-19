@@ -52,45 +52,74 @@ const items = Astro.props.headings.filter((heading) => heading.depth === 2 || he
 
 <style>
   .toc {
-    font-size: 0.88rem;
-    line-height: 1.6;
-    margin: 0 0 2.5rem;
-    padding: 0 0 0 1rem;
-    border-left: 1px solid var(--line);
+    margin: 0 0 var(--space-7);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    letter-spacing: 0.05em;
   }
 
   summary {
-    color: var(--muted);
-    font-weight: 700;
+    color: var(--strong);
+    font-weight: 600;
+    letter-spacing: 0.12em;
     cursor: pointer;
-    list-style-position: outside;
   }
 
   ol {
+    margin: var(--space-3) 0 0;
+    padding: 0 0 0 var(--space-4);
+    border-left: 1px solid var(--line);
     list-style: none;
-    margin: 0.6rem 0 0;
-    padding: 0;
   }
 
   li + li {
-    margin-top: 0.45rem;
+    margin-top: var(--space-2);
   }
 
   .depth-3 {
-    padding-left: 1rem;
+    padding-left: var(--space-4);
   }
 
   a {
+    display: block;
     color: var(--muted);
     text-decoration: none;
   }
 
   a:hover,
   [aria-current] {
-    color: var(--ink);
+    color: var(--strong);
   }
 
+  /* 今読んでいる見出しは、左の線に黒い印を重ねて示す。 */
   [aria-current] {
-    font-weight: 700;
+    position: relative;
+  }
+
+  [aria-current]::before {
+    content: "";
+    position: absolute;
+    inset: 0.15em auto 0.15em calc(var(--space-4) * -1 - 1px);
+    width: 1px;
+    background: var(--strong);
+  }
+
+  .depth-3 [aria-current]::before {
+    left: calc(var(--space-4) * -2 - 1px);
+  }
+
+  @media (width >= 80rem) {
+    .toc {
+      margin: 0;
+    }
+
+    summary {
+      pointer-events: none;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
   }
 </style>

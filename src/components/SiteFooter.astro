@@ -35,18 +35,19 @@ const profiles = [
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    margin-top: 6rem;
-    padding: 1.5rem 0 3rem;
+    gap: var(--space-3) var(--space-5);
+    margin-top: var(--space-10);
+    padding: var(--space-6) 0 var(--space-8);
     border-top: 1px solid var(--line);
-    font-size: 0.88rem;
     color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
   }
 
   .profiles {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.25rem;
+    gap: var(--space-2) var(--space-5);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -54,16 +55,26 @@ const profiles = [
 
   .profiles a {
     color: var(--muted);
-    text-decoration: none;
+    text-decoration-color: transparent;
   }
 
   .profiles a:hover {
-    color: var(--ink);
-    text-decoration: underline;
+    color: var(--strong);
+    text-decoration-color: currentColor;
   }
 
   .copyright {
     margin: 0;
+  }
+
+  .copyright small {
+    font-size: inherit;
+  }
+
+  @media (width < 36rem) {
+    .footer {
+      margin-top: var(--space-9);
+    }
   }
 
   @media print {

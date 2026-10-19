@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 
-import { groupByYear, listPageHref, neighbors, slicePage } from "./listing";
+import { listPageHref, neighbors, slicePage } from "./listing";
 
 describe("listPageHref", () => {
   test("1 ページ目は /articles、2 ページ目からは /articles/page/<n>", () => {
@@ -35,30 +35,5 @@ describe("neighbors", () => {
   test("端では片方だけ", () => {
     expect(neighbors(list, "new")).toEqual({ older: { id: "mid" }, newer: undefined });
     expect(neighbors(list, "old")).toEqual({ older: undefined, newer: { id: "mid" } });
-  });
-});
-
-describe("groupByYear", () => {
-  const post = (id: string, date: string) => ({ id, data: { pubDate: new Date(date) } });
-
-  test("新しい順のまま、年ごとにまとめる", () => {
-    const groups = groupByYear([
-      post("c", "2026-03-01T00:00:00+09:00"),
-      post("b", "2026-01-01T00:00:00+09:00"),
-      post("a", "2025-12-01T00:00:00+09:00"),
-    ]);
-    expect(groups.map((group) => [group.year, group.items.map((item) => item.id)])).toEqual([
-      [2026, ["c", "b"]],
-      [2025, ["a"]],
-    ]);
-  });
-
-  test("年は日本時間で決める（UTC の大晦日の夜は日本の元日）", () => {
-    const [group] = groupByYear([post("a", "2025-12-31T16:00:00Z")]);
-    expect(group?.year).toBe(2026);
-  });
-
-  test("記事が無ければ空", () => {
-    expect(groupByYear([])).toEqual([]);
   });
 });

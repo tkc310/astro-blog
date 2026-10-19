@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 
-import { formatDate, formatMonthDay, toIsoDate, yearOf } from "./format";
+import { formatDate, toIsoDate, yearOf } from "./format";
 
 describe("formatDate", () => {
   test("2026.10.19 の形で出す", () => {
@@ -9,12 +9,6 @@ describe("formatDate", () => {
 
   test("UTC の前日の夜は、日本時間の翌日になる", () => {
     expect(formatDate(new Date("2026-10-18T16:00:00Z"))).toBe("2026.10.19");
-  });
-});
-
-describe("formatMonthDay", () => {
-  test("10.19 の形で出す", () => {
-    expect(formatMonthDay(new Date("2026-10-19T00:00:00+09:00"))).toBe("10.19");
   });
 });
 

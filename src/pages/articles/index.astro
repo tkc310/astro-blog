@@ -1,7 +1,8 @@
 ---
-// 記事の一覧（/articles）: カテゴリへのリンクと、年でまとめた記事（docs/specs/design.md §5）。
+// 記事の一覧（/articles）: カテゴリへのリンクと、新しい順の記事（docs/specs/design.md §5）。
 // 2 ページ目からは /articles/page/<n>。
 import CategoryLabel from "../../components/CategoryLabel.astro";
+import PageHeader from "../../components/PageHeader.astro";
 import Pager from "../../components/Pager.astro";
 import PostList from "../../components/PostList.astro";
 import Base from "../../layouts/Base.astro";
@@ -15,8 +16,7 @@ const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
 ---
 
 <Base title="記事" description={`${site.description}の記事の一覧`}>
-  <header class="heading">
-    <h1>記事</h1>
+  <PageHeader title="記事">
     {
       categories.length > 0 && (
         <nav aria-label="カテゴリ">
@@ -30,26 +30,17 @@ const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
         </nav>
       )
     }
-  </header>
+  </PageHeader>
 
   <PostList posts={items} />
   <Pager page={page} totalPages={totalPages} />
 </Base>
 
 <style>
-  .heading {
-    margin-bottom: 4rem;
-  }
-
-  h1 {
-    margin: 0 0 1rem;
-    font-size: 1.5rem;
-  }
-
   .categories {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.5rem;
+    gap: var(--space-2) var(--space-5);
     margin: 0;
     padding: 0;
     list-style: none;
