@@ -15,58 +15,58 @@
 
 ## 1. 技術スタック
 
-| レイヤー         | 使うもの                                                             | ADR  |
-| ---------------- | -------------------------------------------------------------------- | ---- |
-| フレームワーク   | Astro 7（`output: 'static'`）                                        | 0001 |
-| コンテンツ       | Markdown + Content Collections（`glob` ローダー、Zod スキーマ）      | 0002 |
-| ツールチェーン   | Vite+（`vp`：Oxfmt・Oxlint・Vitest・タスク実行）                     | 0003 |
-| CMS              | Sveltia CMS（`/admin/`）＋ `sveltia-cms-auth`（Cloudflare Worker）   | 0004 |
-| 配信・プレビュー | Cloudflare Workers の静的アセット ＋ Workers Builds                  | 0005 |
-| URL              | 旧 URL を保つ（`/articles/<id>`、末尾スラッシュなし）                | 0006 |
-| UI               | Astro コンポーネント ＋ scoped CSS（UI フレームワークなし）          | 0007 |
-| Markdown         | `unified()` ＋ remark-link-card-plus ＋ Expressive Code              | 0008 |
-| 計測             | Cloudflare Web Analytics                                             | 0005 |
+| レイヤー         | 使うもの                                                           | ADR  |
+| ---------------- | ------------------------------------------------------------------ | ---- |
+| フレームワーク   | Astro 7（`output: 'static'`）                                      | 0001 |
+| コンテンツ       | Markdown + Content Collections（`glob` ローダー、Zod スキーマ）    | 0002 |
+| ツールチェーン   | Vite+（`vp`：Oxfmt・Oxlint・Vitest・タスク実行）                   | 0003 |
+| CMS              | Sveltia CMS（`/admin/`）＋ `sveltia-cms-auth`（Cloudflare Worker） | 0004 |
+| 配信・プレビュー | Cloudflare Workers の静的アセット ＋ Workers Builds                | 0005 |
+| URL              | 旧 URL を保つ（`/articles/<id>`、末尾スラッシュなし）              | 0006 |
+| UI               | Astro コンポーネント ＋ scoped CSS（UI フレームワークなし）        | 0007 |
+| Markdown         | `unified()` ＋ remark-link-card-plus ＋ Expressive Code            | 0008 |
+| 計測             | Cloudflare Web Analytics                                           | 0005 |
 
 ## 2. 機能
 
-| 機能                     | 対応     | 備考                                                         |
-| ------------------------ | -------- | ------------------------------------------------------------ |
-| 記事一覧（トップ）       | 作る     | 新しい順、ページ送りあり（1 ページの件数は旧ブログの設定に合わせる） |
-| 記事詳細                 | 作る     | 目次、リンクカード、コードブロックの装飾                     |
-| カテゴリ別一覧           | 作る     | 1 記事 1 カテゴリ。カテゴリの色を表示に使う                  |
-| About                    | 作る     | 自己 PR（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012） |
-| 下書き                   | 作る     | `draft: true`。本番ビルドでは除き、プレビューでだけ出す。microCMS の下書きも移す |
-| 読了時間・ライセンス表示 | 作らない |                                                              |
-| RSS・サイトマップ・llms.txt | 作る  | ビルド時に作る                                               |
-| 404                      | 作る     | 静的な `404.html`                                            |
-| タグ                     | 作らない | 旧 URL は 301（ADR-0006）                                    |
-| ノート・寄付・認証       | 作らない | 旧 URL は 301                                                |
-| MDX                      | 使わない |                                                              |
-| 記事ごとのアイキャッチ   | 使わない | OGP 画像はサイト共通の 1 枚                                  |
-| 検索                     | 後で     | 足すなら Pagefind を検索ページだけで読み込む                 |
+| 機能                        | 対応     | 備考                                                                             |
+| --------------------------- | -------- | -------------------------------------------------------------------------------- |
+| 記事一覧（トップ）          | 作る     | 新しい順、ページ送りあり（1 ページの件数は旧ブログの設定に合わせる）             |
+| 記事詳細                    | 作る     | 目次、リンクカード、コードブロックの装飾                                         |
+| カテゴリ別一覧              | 作る     | 1 記事 1 カテゴリ。カテゴリの色を表示に使う                                      |
+| About                       | 作る     | 自己 PR（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012）              |
+| 下書き                      | 作る     | `draft: true`。本番ビルドでは除き、プレビューでだけ出す。microCMS の下書きも移す |
+| 読了時間・ライセンス表示    | 作らない |                                                                                  |
+| RSS・サイトマップ・llms.txt | 作る     | ビルド時に作る                                                                   |
+| 404                         | 作る     | 静的な `404.html`                                                                |
+| タグ                        | 作らない | 旧 URL は 301（ADR-0006）                                                        |
+| ノート・寄付・認証          | 作らない | 旧 URL は 301                                                                    |
+| MDX                         | 使わない |                                                                                  |
+| 記事ごとのアイキャッチ      | 使わない | OGP 画像はサイト共通の 1 枚                                                      |
+| 検索                        | 後で     | 足すなら Pagefind を検索ページだけで読み込む                                     |
 
 ## 3. コンテンツモデル
 
 ### 記事（`src/content/posts/<id>.md`）
 
-| frontmatter   | 型                                   | 必須 | 用途                                          |
-| ------------- | ------------------------------------ | ---- | --------------------------------------------- |
-| `title`       | string                               | ○    | タイトル、OGP、JSON-LD の `headline`          |
-| `description` | string                               | ○    | meta description、OGP、一覧の抜粋             |
-| `pubDate`     | date                                 | ○    | `datePublished`                               |
-| `updatedDate` | date                                 |      | `dateModified`（無ければ `pubDate`）          |
-| `category`    | `reference('categories')`            | ○    | カテゴリページ、パンくず                      |
-| `draft`       | boolean（既定 `false`）              |      | 下書き                                        |
+| frontmatter   | 型                        | 必須 | 用途                                 |
+| ------------- | ------------------------- | ---- | ------------------------------------ |
+| `title`       | string                    | ○    | タイトル、OGP、JSON-LD の `headline` |
+| `description` | string                    | ○    | meta description、OGP、一覧の抜粋    |
+| `pubDate`     | date                      | ○    | `datePublished`                      |
+| `updatedDate` | date                      |      | `dateModified`（無ければ `pubDate`） |
+| `category`    | `reference('categories')` | ○    | カテゴリページ、パンくず             |
+| `draft`       | boolean（既定 `false`）   |      | 下書き                               |
 
 ファイル名（拡張子を除く）が URL の `<id>` になる。
 
 ### カテゴリ（`src/content/categories/<slug>.yml`）
 
-| 項目          | 型     | 必須 | 用途                                   |
-| ------------- | ------ | ---- | -------------------------------------- |
-| `name`        | string | ○    | 表示名                                 |
-| `color`       | enum   | ○    | 旧ブログの色（blue・green・red など）  |
-| `description` | string |      | カテゴリページの説明                   |
+| 項目          | 型     | 必須 | 用途                                  |
+| ------------- | ------ | ---- | ------------------------------------- |
+| `name`        | string | ○    | 表示名                                |
+| `color`       | enum   | ○    | 旧ブログの色（blue・green・red など） |
+| `description` | string |      | カテゴリページの説明                  |
 
 ### サイト設定（`src/site.config.ts`）
 
@@ -74,17 +74,17 @@
 
 ## 4. ルーティング
 
-| パス                          | 内容                                     |
-| ----------------------------- | ---------------------------------------- |
-| `/`                           | 記事一覧の 1 ページ目                    |
-| `/articles/page/<n>`          | 記事一覧の n ページ目                    |
-| `/articles/<id>`              | 記事詳細                                 |
-| `/articles/categories/<slug>` | カテゴリ別一覧                           |
-| `/about`                      | About                                    |
-| `/rss/feed.xml`               | RSS                                      |
-| `/sitemap-index.xml`          | サイトマップ（`@astrojs/sitemap`）       |
-| `/llms.txt`                   | 記事のタイトル・URL・概要の一覧          |
-| `/admin/`                     | Sveltia CMS（`noindex`）                 |
+| パス                          | 内容                               |
+| ----------------------------- | ---------------------------------- |
+| `/`                           | 記事一覧の 1 ページ目              |
+| `/articles/page/<n>`          | 記事一覧の n ページ目              |
+| `/articles/<id>`              | 記事詳細                           |
+| `/articles/categories/<slug>` | カテゴリ別一覧                     |
+| `/about`                      | About                              |
+| `/rss/feed.xml`               | RSS                                |
+| `/sitemap-index.xml`          | サイトマップ（`@astrojs/sitemap`） |
+| `/llms.txt`                   | 記事のタイトル・URL・概要の一覧    |
+| `/admin/`                     | Sveltia CMS（`noindex`）           |
 
 旧 URL からのリダイレクトは ADR-0006 の表に従い `_redirects` に書く。
 
@@ -110,12 +110,12 @@
 
 JSON-LD はできるだけリッチにする（ADR-0011）。1 ページに 1 つの `@graph` を出し、サイト共通の `WebSite`・`Blog`・`Person` を固定の `@id` で結ぶ。
 
-| ページ       | `@graph` に入れるノード                                                                         |
-| ------------ | ----------------------------------------------------------------------------------------------- |
-| 記事詳細     | `WebPage` ＋ `BlogPosting` ＋ `BreadcrumbList` ＋ 共通の 3 ノード                               |
-| トップ・一覧 | `CollectionPage` ＋ `ItemList` ＋ 共通の 3 ノード                                               |
-| カテゴリ     | `CollectionPage` ＋ `ItemList` ＋ `BreadcrumbList` ＋ 共通の 3 ノード                           |
-| About        | `ProfilePage`（`mainEntity` → `Person`）＋ `BreadcrumbList` ＋ 共通の 3 ノード                  |
+| ページ       | `@graph` に入れるノード                                                        |
+| ------------ | ------------------------------------------------------------------------------ |
+| 記事詳細     | `WebPage` ＋ `BlogPosting` ＋ `BreadcrumbList` ＋ 共通の 3 ノード              |
+| トップ・一覧 | `CollectionPage` ＋ `ItemList` ＋ 共通の 3 ノード                              |
+| カテゴリ     | `CollectionPage` ＋ `ItemList` ＋ `BreadcrumbList` ＋ 共通の 3 ノード          |
+| About        | `ProfilePage`（`mainEntity` → `Person`）＋ `BreadcrumbList` ＋ 共通の 3 ノード |
 
 - `BlogPosting` には、日付・作者・画像・カテゴリ・文字数に加え、本文のコードブロックを `hasPart`（`SoftwareSourceCode`）、リンクカードと外部リンクを `citation` として入れる
 - `Person` は全記事の `author` と `publisher` を兼ね、`sameAs` に GitHub・X・Zenn・Qiita・LAPRAS を入れる。各 SNS へのリンクは共通のフッターに表示する（画面に無いことは JSON-LD に書かないため）

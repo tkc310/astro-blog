@@ -8,7 +8,7 @@
 
 ## 確認
 
-- [ ] 検査が通る（雛形ができてから: `vp check`・`vp test`・`vp run typecheck`・`vp run build`）
+- [ ] 検査が通る（`vp run typecheck`・`vp check`・`vp test`・`vp run build`・`vp run check-output`）
 - [ ] コミットメッセージが Conventional Commits の形になっている
 - [ ] 見た目・構造化データを変えたときは、プレビュー URL で確かめた
 - [ ] 記事の frontmatter を変えたときは、Zod スキーマと Sveltia の設定の両方を直した

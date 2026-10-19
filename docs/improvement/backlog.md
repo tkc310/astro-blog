@@ -6,20 +6,23 @@
 ## 決めること
 
 - [ ] 本番を切り替える日（移行の PR をマージしてから決める。手順は `docs/specs/microcms-migration.md` の「切り替え」）
+- [ ] 本番のドメインが `https://tkc310.com` で合っているか（`src/site.config.ts` の `SITE_URL` に仮で入れた。旧ブログはドメインを環境変数に持っていた）
 
-## 雛形（実装の最初の PR で確かめる）
+## 人が Cloudflare・GitHub で行う設定
 
-- [ ] Astro 7 と Vite+ の組み合わせで `vp run dev`・`vp run build` が通るか（Vite+ は `vite` を `@voidzero-dev/vite-plus-core` に置き換える）
+- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `vp run build`、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする
+- [ ] GitHub の Settings で「Automatically delete head branches」を有効にする
+
+## Markdown の拡張（その PR で確かめる）
+
 - [ ] `markdown.processor: unified()` で、remark-link-card-plus と Expressive Code が一緒に動くか
-- [ ] Astro 7 の `render()` が見出しの一覧（`headings`）を返すか。返さなければ目次の作り方を指示書で決め直す
-- [ ] Oxlint・Oxfmt が `.astro` をどこまで扱えるか。足りなければ `.astro` だけ別の道具に分ける
-- [ ] `build.format: 'file'` と Workers の `html_handling`（既定の `auto-trailing-slash`）で、`/articles/<id>` がリダイレクトなしに 200 で返るか
+- [ ] Workers にデプロイしたあと、`/articles/<id>` がリダイレクトなしに 200 で返るか（ビルドが `articles/<id>.html` を出すことは `check-output` で確かめ済み）
 
 ## 仕組み
 
-- [ ] コミットメッセージを検査する仕組み（`commit-msg` フックと CI）を雛形と一緒に入れる
-- [ ] CI（GitHub Actions、`voidzero-dev/setup-vp`）で `vp check`・`vp test`・`vp run typecheck`・ビルドを回す
-- [ ] ビルド出力の検査スクリプト（JSON-LD・canonical・OGP の有無、内部リンク切れ、ページごとの JS の量）
+- [ ] `.astro` のフォーマットと静的検査。Oxfmt・Oxlint は `.astro` を対象にしない（Oxfmt 0.73 で確かめた）。型は `astro check` が見る。フォーマットは Prettier と `prettier-plugin-astro` を `.astro` だけに使うかを決める
+- [ ] コミットメッセージを検査する仕組み（`commit-msg` フックと CI）
+- [ ] ビルド出力の検査を広げる（JSON-LD・canonical・OGP の有無、内部リンク切れ、ページごとの JS の量）
 - [ ] 旧 URL の一覧を作り、移行後に 200 か 301 で返るかを CI で確かめる
 - [ ] Lighthouse CI の閾値を決める
 - [ ] Issue テンプレート「改善提案」で起票されたものを、バックログに転記する流れを決める

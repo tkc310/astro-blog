@@ -21,5 +21,5 @@
 
 ## 影響・トレードオフ
 
-- Vite+ は `vite` を `@voidzero-dev/vite-plus-core` に置き換える。Astro が内部で使う Vite と競合しないかを、雛形の最初の PR で確かめる。競合したら、ビルドは素の `astro build` を `vp run` 経由で呼ぶ形に戻す
-- Oxlint・Oxfmt が `.astro` をどこまで扱えるかは未確認。足りなければ `.astro` だけ別の道具に分ける（バックログ）
+- Vite+ は `vite` を `@voidzero-dev/vite-plus-core` に置き換える（`pnpm-workspace.yaml` の `overrides`）。Astro 7 と組み合わせて検査・テスト・ビルドが通ることを、雛形の PR で確かめた
+- Oxfmt・Oxlint は `.astro` を対象にしない。`.astro` の型は `astro check`（`vp run typecheck`）が見る。フォーマットの扱いはバックログ

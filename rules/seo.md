@@ -10,21 +10,21 @@
 
 サイト全体で共通のノードには固定の `@id` を付け、ほかのノードからは `{"@id": …}` で参照する。
 
-| `@id`              | 型        | 項目                                                                                                                                             |
-| ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `<site>/#website`  | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                            |
-| `<site>/#blog`     | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                          |
-| `<site>/about#person` | `Person` | `name`・`alternateName`（ハンドル名）・`url`（About）・`image`・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
+| `@id`                 | 型        | 項目                                                                                                                                                          |
+| --------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<site>/#website`     | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                                          |
+| `<site>/#blog`        | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                                        |
+| `<site>/about#person` | `Person`  | `name`・`alternateName`（ハンドル名）・`url`（About）・`image`・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
 
 ページごとに出すノード:
 
-| ページ   | ノード                                                                                                                                       |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 記事詳細 | `WebPage`・`BlogPosting`・`BreadcrumbList`（ホーム › カテゴリ › 記事）・共通の 3 ノード                                                      |
-| トップ・一覧 | `CollectionPage`・`ItemList`（ページ内の記事を `ListItem` で、`position` と `url`）・共通の 3 ノード                                     |
-| カテゴリ | `CollectionPage`・`ItemList`・`BreadcrumbList`（ホーム › カテゴリ）・共通の 3 ノード                                                          |
-| About    | `ProfilePage`（`mainEntity` → Person）・`BreadcrumbList`・共通の 3 ノード                                                                     |
-| 404      | 出さない                                                                                                                                     |
+| ページ       | ノード                                                                                               |
+| ------------ | ---------------------------------------------------------------------------------------------------- |
+| 記事詳細     | `WebPage`・`BlogPosting`・`BreadcrumbList`（ホーム › カテゴリ › 記事）・共通の 3 ノード              |
+| トップ・一覧 | `CollectionPage`・`ItemList`（ページ内の記事を `ListItem` で、`position` と `url`）・共通の 3 ノード |
+| カテゴリ     | `CollectionPage`・`ItemList`・`BreadcrumbList`（ホーム › カテゴリ）・共通の 3 ノード                 |
+| About        | `ProfilePage`（`mainEntity` → Person）・`BreadcrumbList`・共通の 3 ノード                            |
+| 404          | 出さない                                                                                             |
 
 記事詳細の `BlogPosting`（`@id` は `<記事の URL>#article`）には、次をすべて入れる。
 

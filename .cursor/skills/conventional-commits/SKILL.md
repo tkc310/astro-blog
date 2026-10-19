@@ -5,7 +5,7 @@ description: Write commit messages in Conventional Commits. Use whenever creatin
 
 # Conventional Commits
 
-Every commit in this repository follows Conventional Commits. The human-facing rules are in `CONTRIBUTING.md` (「コミットメッセージ」). Once the scaffold exists, a `commit-msg` hook and CI (`vp run lint-commits`) will reject other messages.
+Every commit in this repository follows Conventional Commits. The human-facing rules are in `CONTRIBUTING.md` (「コミットメッセージ」). A `commit-msg` hook and a CI check are planned (see `docs/improvement/backlog.md`); until then, reviewers enforce the format.
 
 Use `type(scope): description`.
 
