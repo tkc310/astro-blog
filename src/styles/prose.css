@@ -1,0 +1,75 @@
+/* 記事の本文（Markdown から作った HTML）の組版。.prose の中だけに効かせる。 */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose p {
+  margin: 0 0 1.2em;
+}
+
+.prose h2 {
+  border-bottom: 2px groove var(--frame-lo);
+  padding-bottom: 0.1em;
+}
+
+.prose h2::before {
+  content: "■ ";
+}
+
+.prose h3::before {
+  content: "□ ";
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 2em;
+  margin: 0 0 1.2em;
+}
+
+.prose li + li {
+  margin-top: 0.3em;
+}
+
+.prose blockquote {
+  margin: 0 0 1.2em;
+  padding: 0.5em 1em;
+  border: 1px inset var(--frame-hi);
+}
+
+.prose :not(pre) > code {
+  padding: 0 0.2em;
+  border: 1px solid var(--frame-lo);
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 0.8em 1em;
+  border: 2px inset var(--frame-hi);
+  line-height: 1.6;
+}
+
+.prose table {
+  border: 2px outset var(--frame-hi);
+  border-spacing: 2px;
+  margin: 0 0 1.2em;
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  border: 1px inset var(--frame-hi);
+  padding: 0.2em 0.5em;
+}
+
+.prose img {
+  display: block;
+  margin: 0 auto 1.2em;
+  border: 1px solid var(--frame-lo);
+}
+
+/* 見出しへのリンクで飛んだとき、上に少し余白を残す。 */
+.prose :is(h2, h3) {
+  scroll-margin-top: 1em;
+}

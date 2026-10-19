@@ -6,7 +6,7 @@
 | ------------------------------------------------------------ | ----------------------------------------------------------------- |
 | [specs/blog-replace.md](./specs/blog-replace.md)             | リプレイス全体の要件と技術スタック（実装前に書く指示書）          |
 | [specs/microcms-migration.md](./specs/microcms-migration.md) | microCMS からの記事・画像・URL の移行の指示書                     |
-| [specs/design.md](./specs/design.md) | デザイン（昔の個人ホームページと掲示板のパロディ）の指示書 |
+| [specs/design.md](./specs/design.md)                         | デザイン（昔の個人ホームページと掲示板のパロディ）の指示書        |
 | [improvement-loop.md](./improvement-loop.md)                 | 改善ループ（気づく → 記録する → 直す → 再発を防ぐ → 振り返る）    |
 | [improvement/backlog.md](./improvement/backlog.md)           | 改善候補と、決まっていないことの一覧                              |
 | [improvement/log.md](./improvement/log.md)                   | 直したことの記録（1 改善 1 行）                                   |

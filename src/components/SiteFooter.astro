@@ -1,0 +1,59 @@
+---
+// ページの下の注意書きと著作権表示（docs/specs/design.md §4）。
+import { site } from "../site.config";
+
+const since = 2021;
+const year = new Date().getFullYear();
+const { accounts } = site.author;
+const profiles = [
+  { href: `https://github.com/${accounts.github}`, label: "GitHub" },
+  { href: `https://x.com/${accounts.x}`, label: "X" },
+  { href: `https://zenn.dev/${accounts.zenn}`, label: "Zenn" },
+  { href: `https://qiita.com/${accounts.qiita}`, label: "Qiita" },
+  { href: `https://lapras.com/public/${accounts.lapras}`, label: "LAPRAS" },
+];
+---
+
+<footer class="footer">
+  <hr />
+  <p class="profiles">
+    {
+      profiles.map((profile, index) => (
+        <>
+          {index > 0 && " ｜ "}
+          <a href={profile.href} rel="me noopener" target="_blank">
+            {profile.label}
+          </a>
+        </>
+      ))
+    }
+  </p>
+  <p class="notice">
+    当ブログはリンクフリーです。<br />
+    記事の引用は、出典を書いていただければ歓迎します。
+  </p>
+  <p class="copyright">
+    <small>Copyright (C) {since}-{year} {site.author.name}. All Rights Reserved.</small>
+  </p>
+</footer>
+
+<style>
+  .footer {
+    text-align: center;
+    margin-top: 3em;
+  }
+
+  .profiles {
+    margin: 0 0 1em;
+  }
+
+  .notice {
+    font-weight: bold;
+    margin: 0 0 1em;
+  }
+
+  .copyright {
+    margin: 0;
+    color: var(--quiet);
+  }
+</style>

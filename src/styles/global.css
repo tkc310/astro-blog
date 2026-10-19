@@ -1,0 +1,185 @@
+/*
+ * 見た目は HTML 3.2、中身は 2026（ADR-0013・docs/specs/design.md）。
+ * ここには色と文字のトークンと、要素の既定の見た目だけを書く。部品の見た目は各コンポーネントの <style> に書く。
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --paper: #ffffff;
+  --ink: #000000;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --alert: #ff0000;
+  --frame-hi: #dfdfdf;
+  --frame-lo: #808080;
+  --counter-bg: #000000;
+  --counter-ink: #33ff33;
+  --quiet: #555555;
+
+  --serif: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "MS PMincho", serif;
+  --mono: ui-monospace, "Osaka-Mono", "MS Gothic", "SFMono-Regular", Menlo, monospace;
+  --body-font: var(--serif);
+
+  --measure: 40em;
+  --menu-width: 11em;
+  --space: 1rem;
+}
+
+/* 夜はパソコン通信の端末風（ADR-0013）。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #000000;
+    --ink: #33ff33;
+    --link: #ffff55;
+    --visited: #55ffff;
+    --alert: #ff5555;
+    --frame-hi: #33ff33;
+    --frame-lo: #118811;
+    --counter-bg: #000000;
+    --counter-ink: #33ff33;
+    --quiet: #22bb22;
+    --body-font: var(--mono);
+  }
+}
+
+/* ページの移り変わりを CSS だけで滑らかにする（ADR-0013）。 */
+@view-transition {
+  navigation: auto;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body-font);
+  font-size: 1rem;
+  line-height: 1.9;
+  font-kerning: normal;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:visited {
+  color: var(--visited);
+}
+
+a:active {
+  color: var(--alert);
+}
+
+:focus-visible {
+  outline: 2px dotted var(--ink);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+h2 {
+  font-size: 1.5em;
+  margin: 1.6em 0 0.6em;
+}
+
+h3 {
+  font-size: 1.17em;
+  margin: 1.4em 0 0.5em;
+}
+
+hr {
+  border: none;
+  border-top: 2px groove var(--frame-lo);
+  margin: 1.5em 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
+/* 昔の表。凹凸の枠（outset の表に inset のセル）。 */
+table.bevel {
+  border: 2px outset var(--frame-hi);
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
+table.bevel th,
+table.bevel td {
+  border: 1px inset var(--frame-hi);
+  padding: 0.2em 0.5em;
+  vertical-align: top;
+}
+
+@media (prefers-color-scheme: dark) {
+  table.bevel,
+  table.bevel th,
+  table.bevel td {
+    border-style: solid;
+    border-color: var(--frame-lo);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+}

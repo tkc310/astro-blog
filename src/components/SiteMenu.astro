@@ -1,0 +1,115 @@
+---
+// 左の「●」のメニュー列。フレームで区切ったように見せる（docs/specs/design.md §3）。
+import { categoryPath, getCategories } from "../lib/posts";
+import CategoryMark from "./CategoryMark.astro";
+
+const categories = await getCategories();
+const current = Astro.url.pathname;
+
+// RSS は SEO の PR で /rss/feed.xml を作るときに足す。
+const links = [
+  { href: "/", label: "トップ" },
+  { href: "/about", label: "管理者" },
+];
+---
+
+<nav class="menu" aria-label="サイトのメニュー">
+  <p class="title"><a href="/">メニュー</a></p>
+  <ul class="items">
+    <li><a href={links[0]!.href} aria-current={current === "/" ? "page" : undefined}>{links[0]!.label}</a></li>
+    <li>
+      <span>カテゴリ</span>
+      <ul class="categories">
+        {
+          categories.map((category) => {
+            const href = categoryPath(category.id);
+            return (
+              <li>
+                <CategoryMark category={category} />
+                <a href={href} aria-current={current === href ? "page" : undefined}>
+                  {category.data.name}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </li>
+    {
+      links.slice(1).map((link) => (
+        <li>
+          <a href={link.href} aria-current={current === link.href ? "page" : undefined}>
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .menu {
+    font-size: 0.95rem;
+  }
+
+  .title {
+    margin: 0 0 0.5em;
+    font-weight: bold;
+  }
+
+  .title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .items,
+  .categories {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .items > li {
+    margin: 0 0 0.6em;
+  }
+
+  .items > li::before {
+    content: "●";
+    margin-right: 0.3em;
+  }
+
+  .categories {
+    margin-top: 0.2em;
+    padding-left: 1.2em;
+  }
+
+  [aria-current="page"] {
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  /* スマホでは上に置き、横に並べて折り返す。 */
+  @media (width < 48em) {
+    .title {
+      display: none;
+    }
+
+    .items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2em 1em;
+    }
+
+    .items > li {
+      margin: 0;
+    }
+
+    .categories {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0 0.8em;
+      padding-left: 0.4em;
+    }
+  }
+</style>

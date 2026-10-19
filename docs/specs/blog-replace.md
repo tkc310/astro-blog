@@ -15,18 +15,18 @@
 
 ## 1. 技術スタック
 
-| レイヤー         | 使うもの                                                           | ADR  |
-| ---------------- | ------------------------------------------------------------------ | ---- |
-| フレームワーク   | Astro 7（`output: 'static'`）                                      | 0001 |
-| コンテンツ       | Markdown + Content Collections（`glob` ローダー、Zod スキーマ）    | 0002 |
-| ツールチェーン   | Vite+（`vp`：Oxfmt・Oxlint・Vitest・タスク実行）                   | 0003 |
-| CMS              | Sveltia CMS（`/admin/`）＋ `sveltia-cms-auth`（Cloudflare Worker） | 0004 |
-| 配信・プレビュー | Cloudflare Workers の静的アセット ＋ Workers Builds                | 0005 |
-| URL              | 旧 URL を保つ（`/articles/<id>`、末尾スラッシュなし）              | 0006 |
-| UI               | Astro コンポーネント ＋ scoped CSS（UI フレームワークなし）        | 0007 |
-| デザイン | 昔の個人ホームページと掲示板のパロディ（[`design.md`](./design.md)） | 0013 |
-| Markdown         | `unified()` ＋ remark-link-card-plus ＋ Expressive Code            | 0008 |
-| 計測             | Cloudflare Web Analytics                                           | 0005 |
+| レイヤー         | 使うもの                                                             | ADR  |
+| ---------------- | -------------------------------------------------------------------- | ---- |
+| フレームワーク   | Astro 7（`output: 'static'`）                                        | 0001 |
+| コンテンツ       | Markdown + Content Collections（`glob` ローダー、Zod スキーマ）      | 0002 |
+| ツールチェーン   | Vite+（`vp`：Oxfmt・Oxlint・Vitest・タスク実行）                     | 0003 |
+| CMS              | Sveltia CMS（`/admin/`）＋ `sveltia-cms-auth`（Cloudflare Worker）   | 0004 |
+| 配信・プレビュー | Cloudflare Workers の静的アセット ＋ Workers Builds                  | 0005 |
+| URL              | 旧 URL を保つ（`/articles/<id>`、末尾スラッシュなし）                | 0006 |
+| UI               | Astro コンポーネント ＋ scoped CSS（UI フレームワークなし）          | 0007 |
+| デザイン         | 昔の個人ホームページと掲示板のパロディ（[`design.md`](./design.md)） | 0013 |
+| Markdown         | `unified()` ＋ remark-link-card-plus ＋ Expressive Code              | 0008 |
+| 計測             | Cloudflare Web Analytics                                             | 0005 |
 
 ## 2. 機能
 

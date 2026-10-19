@@ -1,0 +1,30 @@
+---
+// カテゴリ別の書き込み（/articles/categories/<id>）。
+import type { GetStaticPaths } from "astro";
+
+import BoardTable from "../../../components/BoardTable.astro";
+import CategoryMark from "../../../components/CategoryMark.astro";
+import Base from "../../../layouts/Base.astro";
+import { getCategories, getPostNumbers, getPosts, type Category } from "../../../lib/posts";
+
+export const getStaticPaths = (async () => {
+  const categories = await getCategories();
+  return categories.map((category) => ({ params: { id: category.id }, props: { category } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  category: Category;
+}
+
+const { category } = Astro.props;
+const posts = (await getPosts()).filter((post) => post.data.category.id === category.id);
+const numbers = await getPostNumbers();
+const title = `${category.data.name} の書き込み`;
+---
+
+<Base title={title} description={category.data.description ?? title}>
+  <h1><CategoryMark category={category} />{title}</h1>
+  {category.data.description && <p>{category.data.description}</p>}
+  <BoardTable posts={posts} numbers={numbers} caption={title} />
+  <p><a href="/">掲示板のトップに戻る</a></p>
+</Base>

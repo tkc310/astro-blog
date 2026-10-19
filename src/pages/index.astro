@@ -1,18 +1,91 @@
 ---
+// トップ: 大見出し、管理人と記事数の表、「★★★ 最新の書き込み ★★★」の掲示板（docs/specs/design.md §5）。
+import BoardTable from "../components/BoardTable.astro";
+import Counter from "../components/Counter.astro";
+import Pager from "../components/Pager.astro";
 import Base from "../layouts/Base.astro";
-import { articlePath, getPosts } from "../lib/posts";
+import { slicePage } from "../lib/board";
+import { formatBbsDate, toIsoDate } from "../lib/format";
+import { getPostNumbers, getPosts, lastUpdated } from "../lib/posts";
+import { site } from "../site.config";
 
 const posts = await getPosts();
+const numbers = await getPostNumbers();
+const { items, page, totalPages } = slicePage(posts, 1, site.perPage);
+const updated = lastUpdated(posts);
 ---
 
 <Base>
-  <ul>
-    {
-      posts.map((post) => (
-        <li>
-          <a href={articlePath(post.id)}>{post.data.title}</a>
-        </li>
-      ))
-    }
-  </ul>
+  <h1 class="masthead">{site.name} のホームページ</h1>
+  <hr />
+
+  <table class="profile">
+    <tbody>
+      <tr>
+        <td class="spacer"></td>
+        <th scope="row">管理人</th>
+        <td><a href="/about">{site.author.name}</a></td>
+      </tr>
+      <tr>
+        <td class="spacer"></td>
+        <th scope="row">内容</th>
+        <td>{site.description}</td>
+      </tr>
+      <tr>
+        <td class="spacer"></td>
+        <th scope="row">記事数</th>
+        <td><Counter value={numbers.size} label="現在の記事数" /> 件</td>
+      </tr>
+      {
+        updated && (
+          <tr>
+            <td class="spacer" />
+            <th scope="row">最終更新日</th>
+            <td>
+              <time datetime={toIsoDate(updated)}>{formatBbsDate(updated)}</time>
+            </td>
+          </tr>
+        )
+      }
+    </tbody>
+  </table>
+
+  <h2 class="section">★★★ 最新の書き込み ★★★</h2>
+  <BoardTable posts={items} numbers={numbers} caption="最新の書き込み" />
+  <Pager page={page} totalPages={totalPages} perPage={site.perPage} />
 </Base>
+
+<style>
+  .masthead {
+    text-align: center;
+    font-size: 2.2em;
+    margin: 0.4em 0 0;
+  }
+
+  .profile {
+    border-spacing: 0;
+    margin: 0 0 1em;
+  }
+
+  .profile th,
+  .profile td {
+    padding: 0.2em 0.6em 0.2em 0;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .profile th {
+    white-space: nowrap;
+  }
+
+  /* 参考サイトにならい、表の左を 1 列分空ける。 */
+  .spacer {
+    width: 2em;
+  }
+
+  .section {
+    font-size: 1.2em;
+    text-align: center;
+    margin: 1.5em 0 0.8em;
+  }
+</style>

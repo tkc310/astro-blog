@@ -1,0 +1,164 @@
+---
+// 管理者について: 自己 PR（静的）と LAPRAS の活動一覧（クライアントで取得、ADR-0012）。
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+
+const { author } = site;
+const laprasProfile = `https://lapras.com/public/${author.accounts.lapras}`;
+const laprasApi = `${laprasProfile}.json`;
+---
+
+<Base title="管理者について" description={`${site.name} の管理者 ${author.name} の自己紹介と活動`}>
+  <h1>管理者について</h1>
+
+  <table class="bevel profile">
+    <tbody>
+      <tr>
+        <th scope="row">名前</th>
+        <td>{author.name}</td>
+      </tr>
+      <tr>
+        <th scope="row">自己紹介</th>
+        <td>{author.description}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>★★★ 最近の活動 ★★★</h2>
+  <p class="note">
+    <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった活動の記録を、開いたときに読み込みます。
+  </p>
+  <div class="activities" data-lapras-api={laprasApi} data-lapras-profile={laprasProfile}>
+    <p class="status" data-status>読み込み中です……</p>
+    <ol class="list" data-list hidden></ol>
+  </div>
+</Base>
+
+<script>
+  // LAPRAS の公開 API から活動を取り、新しい順に出す（ADR-0012）。
+  // 枠の高さは CSS で確保してあるので、読み込んでもページはずれない。
+  interface Activity {
+    title: string;
+    url: string;
+    date: string;
+    type: string;
+  }
+
+  const LIMIT = 20;
+  const TYPE_LABELS: Record<string, string> = {
+    github: "GitHub",
+    qiita: "Qiita",
+    zenn: "Zenn",
+    note: "note",
+    blog: "ブログ",
+    speaker_deck: "Speaker Deck",
+    teratail: "teratail",
+    connpass: "connpass（イベント参加）",
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-lapras-api]");
+
+  async function load(container: HTMLElement): Promise<void> {
+    const status = container.querySelector<HTMLElement>("[data-status]");
+    const list = container.querySelector<HTMLOListElement>("[data-list]");
+    if (!status || !list) return;
+    try {
+      const response = await fetch(container.dataset.laprasApi ?? "");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = (await response.json()) as { activities?: Activity[] };
+      const activities = (data.activities ?? [])
+        .toSorted((a, b) => b.date.localeCompare(a.date))
+        .slice(0, LIMIT);
+      if (activities.length === 0) {
+        status.textContent = "まだ活動の記録はありません。";
+        return;
+      }
+      for (const activity of activities) {
+        const item = document.createElement("li");
+        const date = document.createElement("time");
+        date.dateTime = activity.date;
+        date.textContent = activity.date.slice(0, 10).replaceAll("-", "/");
+        const link = document.createElement("a");
+        link.href = activity.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = activity.title;
+        const type = document.createElement("span");
+        type.className = "type";
+        type.textContent = TYPE_LABELS[activity.type] ?? activity.type;
+        item.append(date, " ", link, " ", type);
+        list.append(item);
+      }
+      status.remove();
+      list.hidden = false;
+    } catch {
+      status.replaceChildren(
+        "活動を読み込めませんでした。",
+        Object.assign(document.createElement("a"), {
+          href: container.dataset.laprasProfile ?? "",
+          textContent: "LAPRAS のプロフィールを見る",
+          target: "_blank",
+          rel: "noopener",
+        }),
+      );
+    }
+  }
+
+  if (root) {
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          void load(root);
+        }
+      });
+      observer.observe(root);
+    } else {
+      void load(root);
+    }
+  }
+</script>
+
+<style>
+  .profile {
+    max-width: var(--measure);
+  }
+
+  .profile th {
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .note {
+    font-size: 0.9em;
+  }
+
+  /* 取得前から高さを確保し、読み込んでもレイアウトをずらさない（rules/architecture.md）。 */
+  .activities {
+    height: 24em;
+    overflow-y: auto;
+    border: 2px inset var(--frame-hi);
+    padding: 0.5em 0.8em;
+    max-width: var(--measure);
+  }
+
+  .status {
+    margin: 0;
+  }
+
+  .list {
+    margin: 0;
+    padding-left: 1.5em;
+    font-size: 0.95em;
+  }
+
+  .list :global(time) {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+
+  .list :global(.type) {
+    font-size: 0.85em;
+    color: var(--quiet);
+  }
+</style>

@@ -1,5 +1,10 @@
 ---
-// 雛形の仮のレイアウト。見た目はデザインの指示書（docs/specs/design.md）で作り直す。
+// 全ページの枠。左のメニュー列と右の本文を、フレームで区切ったように並べる（docs/specs/design.md §3）。
+// メタタグと構造化データは SEO の PR で足す（docs/specs/blog-replace.md の「進め方」4）。
+import "../styles/global.css";
+
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteMenu from "../components/SiteMenu.astro";
 import { site } from "../site.config";
 
 interface Props {
@@ -9,6 +14,18 @@ interface Props {
 
 const { title, description = site.description } = Astro.props;
 const pageTitle = title ? `${title} | ${site.name}` : site.name;
+
+// 同じサイトのページを、リンクにカーソルを載せた時点で先読みする（ADR-0013）。JS は実行しない。
+const speculationRules = {
+  prerender: [
+    {
+      where: {
+        and: [{ href_matches: "/*" }, { not: { href_matches: "/admin/*" } }],
+      },
+      eagerness: "moderate",
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -18,9 +35,87 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
   </head>
   <body>
-    <header><a href="/">{site.name}</a></header>
-    <main><slot /></main>
+    <a class="skip" href="#main">本文へ移動</a>
+    <div class="frames">
+      <aside class="menu-frame">
+        <SiteMenu />
+      </aside>
+      <div class="main-frame">
+        <main id="main">
+          <slot />
+        </main>
+        <SiteFooter />
+      </div>
+    </div>
   </body>
 </html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .skip:focus {
+    left: 0.5em;
+    top: 0.5em;
+    background: var(--paper);
+    padding: 0.2em 0.5em;
+    z-index: 1;
+  }
+
+  .frames {
+    display: grid;
+    grid-template-columns: var(--menu-width) minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .menu-frame {
+    border-right: 4px ridge var(--frame-hi);
+    padding: 1em 0.8em;
+  }
+
+  .menu-frame > :global(*) {
+    position: sticky;
+    top: 1em;
+  }
+
+  .main-frame {
+    padding: 1em 1.5em 2em;
+    min-width: 0;
+  }
+
+  @media (width < 48em) {
+    .frames {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .menu-frame {
+      border-right: none;
+      border-bottom: 4px ridge var(--frame-hi);
+      padding: 0.6em 1em;
+    }
+
+    .menu-frame > :global(*) {
+      position: static;
+    }
+
+    .main-frame {
+      padding: 1em;
+    }
+  }
+
+  @media print {
+    .menu-frame {
+      display: none;
+    }
+
+    .frames {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
