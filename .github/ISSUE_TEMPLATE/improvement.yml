@@ -1,0 +1,33 @@
+name: 改善提案
+description: 書いていて・読んでいて気づいた不便・不具合・表示の違和感などを伝える
+labels: [improvement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が困ったか
+      description: どのページ・記事・機能で、何がどう困ったか（例:「リンクカードが読み込み後にずれて、本文が跳ねる」）
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 種類
+      description: 優先度の判断に使います（docs/improvement-loop.md）
+      options:
+        - 記事や URL を失う・壊す
+        - 設計のルールの破れ
+        - 読者が受け取る品質（速度・読みやすさ・検索や AI での見つかりやすさ）
+        - 開発・執筆体験（コマンド・検査・CMS・ドキュメント）
+        - 見た目の好み
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: こうなるとよい
+  - type: textarea
+    id: prevent
+    attributes:
+      label: 再発防止の案（任意）
+      description: スキーマ・テスト・検査・ルール・スキルのどれで防げそうか
