@@ -2,6 +2,7 @@
 // カテゴリ別の記事（/articles/categories/<id>）。
 import type { GetStaticPaths } from "astro";
 
+import PageHeader from "../../../components/PageHeader.astro";
 import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
 import { getCategories, getPosts, type Category } from "../../../lib/posts";
@@ -21,32 +22,6 @@ const { name, description } = category.data;
 ---
 
 <Base title={name} description={description ?? `${name}の記事`}>
-  <header class="heading">
-    <p class="kind">カテゴリ</p>
-    <h1>{name}</h1>
-    {description && <p class="description">{description}</p>}
-  </header>
+  <PageHeader title={name} kicker="カテゴリ" lead={description} />
   <PostList posts={posts} />
 </Base>
-
-<style>
-  .heading {
-    margin-bottom: 3.5rem;
-  }
-
-  .kind {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-
-  h1 {
-    margin: 0.2rem 0 0.6rem;
-    font-size: 2rem;
-  }
-
-  .description {
-    margin: 0;
-    color: var(--muted);
-  }
-</style>

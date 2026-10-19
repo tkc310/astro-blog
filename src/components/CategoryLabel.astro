@@ -42,22 +42,24 @@ const color = palette[category.data.color];
   .category {
     display: inline-flex;
     align-items: center;
-    gap: 0.45em;
+    gap: 0.55em;
     color: var(--muted);
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
     text-decoration: none;
+    transition: color 0.2s;
   }
 
   .category::before {
     content: "";
-    width: 0.5em;
-    height: 0.5em;
+    width: 0.4375rem;
+    height: 0.4375rem;
     border-radius: 50%;
     background: var(--dot);
     flex: none;
   }
 
   a.category:hover {
-    color: var(--ink);
+    color: var(--strong);
   }
 </style>

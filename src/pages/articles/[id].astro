@@ -5,7 +5,9 @@ import { render } from "astro:content";
 
 import "../../styles/prose.css";
 import CategoryLabel from "../../components/CategoryLabel.astro";
-import Toc from "../../components/Toc.astro";
+import DraftLabel from "../../components/DraftLabel.astro";
+import HeadingLink from "../../components/HeadingLink.astro";
+import WithToc from "../../components/WithToc.astro";
 import Base from "../../layouts/Base.astro";
 import { formatDate, toIsoDate } from "../../lib/format";
 import { neighbors } from "../../lib/listing";
@@ -27,7 +29,7 @@ const { older, newer } = neighbors(await getPosts(), post.id);
 const { title, description, pubDate, updatedDate, draft } = post.data;
 ---
 
-<Base title={title} description={description} wide>
+<Base title={title} description={description}>
   <article>
     <header class="heading">
       <p class="meta">
@@ -40,18 +42,20 @@ const { title, description, pubDate, updatedDate, draft } = post.data;
             </span>
           )
         }
-        {draft && <span class="draft">下書き</span>}
+        {draft && <DraftLabel />}
       </p>
-      <h1 style={`view-transition-name: post-${post.id}`}>{title}</h1>
+      <h1 style={`view-transition-name: post-${post.id}`}>
+        {title}
+      </h1>
     </header>
 
-    <div class="body">
-      <Toc headings={headings} />
+    <WithToc headings={headings}>
       <div class="prose">
         <Content />
       </div>
-    </div>
+    </WithToc>
   </article>
+  <HeadingLink />
 
   {
     (older || newer) && (
@@ -78,65 +82,43 @@ const { title, description, pubDate, updatedDate, draft } = post.data;
 <style>
   .heading {
     max-width: var(--measure);
-    margin-bottom: 3rem;
+    margin-bottom: var(--space-8);
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.25rem 1.25rem;
-    margin: 0 0 0.75rem;
-    font-size: 0.88rem;
+    gap: var(--space-1) var(--space-5);
+    margin: 0 0 var(--space-4);
     color: var(--muted);
-  }
-
-  .draft {
-    padding: 0 0.5em;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
   }
 
   h1 {
     margin: 0;
-    font-size: 2rem;
-    line-height: 1.45;
-  }
-
-  /* PC では目次を本文の右に置く。 */
-  @media (width >= 64rem) {
-    .body {
-      display: grid;
-      grid-template-columns: minmax(0, var(--measure)) 14rem;
-      justify-content: space-between;
-      gap: 3rem;
-      align-items: start;
-    }
-
-    .body > :global(.toc) {
-      order: 2;
-      position: sticky;
-      top: 2rem;
-      max-height: calc(100vh - 4rem);
-      overflow-y: auto;
-    }
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.55;
+    /* 大きな文字では欧文の字間が開きすぎるので、本文より詰める。 */
+    letter-spacing: 0.03em;
   }
 
   .neighbors {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: var(--space-6);
     max-width: var(--measure);
-    margin-top: 4.5rem;
-    padding-top: 1.5rem;
+    margin-top: var(--space-9);
+    padding-top: var(--space-6);
     border-top: 1px solid var(--line);
   }
 
   .neighbors a {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: var(--space-1);
     text-decoration: none;
   }
 
@@ -146,23 +128,25 @@ const { title, description, pubDate, updatedDate, draft } = post.data;
   }
 
   .label {
-    font-size: 0.82rem;
     color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
   }
 
   .neighbor-title {
     color: var(--strong);
+    font-size: var(--text-sm);
     font-weight: 600;
-    line-height: 1.7;
+    line-height: 1.8;
     word-break: auto-phrase;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 0.2s;
   }
 
   .neighbors a:hover .neighbor-title {
-    text-decoration: underline;
-  }
-
-  h1 {
-    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2rem);
+    text-decoration-color: currentColor;
   }
 
   @media (width < 36rem) {

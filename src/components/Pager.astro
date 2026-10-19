@@ -34,25 +34,38 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 <style>
   .pager {
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 4rem;
-    font-size: 0.94rem;
+    align-items: baseline;
+    gap: var(--space-6);
+    margin-top: var(--space-9);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
   }
 
   ol {
     display: flex;
-    gap: 1rem;
+    gap: var(--space-5);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  a {
+    color: var(--muted);
+    text-decoration-color: transparent;
+  }
+
+  a:hover {
+    color: var(--strong);
+    text-decoration-color: currentColor;
+  }
+
   .current {
-    font-weight: 700;
+    color: var(--strong);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .off {
-    color: var(--line);
+    color: var(--faint);
   }
 </style>

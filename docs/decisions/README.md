@@ -21,7 +21,7 @@
 | [0014](./0014-makefile.md)                    | コマンドの入口を Makefile にまとめる（中身は vp と mise）                             | 採用               |
 | [0015](./0015-theme-switch.md)                | 表示の切り替え（自動・昼・夜）を置く                                                  | 廃止（→ 0016）     |
 | [0016](./0016-simple-white-design.md)         | 見た目は白地のシンプルなデザインにし、表示の切り替えは置かない                        | 採用               |
-| [0017](./0017-top-on-demand-with-cache.md)    | トップだけを Worker で描き、Cloudflare にキャッシュする（LAPRAS の活動一覧）          | 採用               |
+| [0017](./0017-top-on-demand-with-cache.md)    | `/about` だけを Worker で描き、Cloudflare にキャッシュする（LAPRAS の活動一覧）       | 採用               |
 
 ## テンプレート
 

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { expect, test } from "vite-plus/test";
 
-const ALLOWED = ["index.astro"];
+const ALLOWED = ["about.astro"];
 
 const pagesDir = fileURLToPath(new URL("../src/pages/", import.meta.url));
 

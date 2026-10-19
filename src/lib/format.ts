@@ -23,13 +23,7 @@ export function formatDate(date: Date): string {
   return `${p.year}.${p.month}.${p.day}`;
 }
 
-/** 10.19 の形にする（年でまとめた一覧の中で使う）。 */
-export function formatMonthDay(date: Date): string {
-  const p = partsOf(date);
-  return `${p.month}.${p.day}`;
-}
-
-/** 日本時間の年。 */
+/** 日本時間の年（JSON-LD の copyrightYear などに使う）。 */
 export function yearOf(date: Date): number {
   return Number(partsOf(date).year);
 }

@@ -2,6 +2,8 @@
 
 .prose {
   max-width: var(--measure);
+  font-size: 1.0625rem;
+  line-height: 2.05;
   overflow-wrap: anywhere;
 }
 
@@ -10,89 +12,163 @@
 }
 
 .prose p {
-  margin: 0 0 1.4em;
+  margin: 0 0 1.5em;
 }
 
+/* 見出しの前は広く、後ろは狭く空け、見出しが後ろの段落に属して見えるようにする。 */
 .prose h2 {
-  font-size: 1.45rem;
-  margin: 2.6em 0 0.8em;
+  margin: 3.2em 0 1em;
+  font-size: var(--text-lg);
+  line-height: 1.6;
 }
 
 .prose h3 {
-  font-size: 1.15rem;
-  margin: 2em 0 0.6em;
+  margin: 2.4em 0 0.75em;
+  font-size: var(--text-md);
+  line-height: 1.7;
 }
 
-.prose :is(h2, h3) {
-  scroll-margin-top: 1.5rem;
+.prose h4 {
+  margin: 2em 0 0.6em;
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
+
+.prose :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: var(--space-6);
+}
+
+/*
+ * 見出しレベルを Markdown と同じ「##」で示す。h1（ページの題）には付けない。
+ * クリックでその見出しへページ内で移動する（HeadingLink.astro）。
+ * .permalink は本文外の見出し（最近の活動）用。
+ */
+:is(.prose h2, .permalink[data-level="2"])::before {
+  content: "##";
+}
+:is(.prose h3, .permalink[data-level="3"])::before {
+  content: "###";
+}
+:is(.prose h4, .permalink[data-level="4"])::before {
+  content: "####";
+}
+:is(.prose h5, .permalink[data-level="5"])::before {
+  content: "#####";
+}
+:is(.prose h6, .permalink[data-level="6"])::before {
+  content: "######";
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6), .permalink)::before {
+  margin-right: 0.4em;
+  color: var(--faint);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* 左の余白が広い画面では「##」を列の外へぶら下げ、見出しの文字の左端を本文にそろえる。 */
+@media (width >= 56rem) {
+  :is(.prose :is(h2, h3, h4, h5, h6), .permalink) {
+    position: relative;
+  }
+
+  :is(.prose :is(h2, h3, h4, h5, h6), .permalink)::before {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.5em;
+    white-space: nowrap;
+  }
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]) {
+  cursor: pointer;
+  scroll-margin-top: var(--space-6);
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]):hover::before {
+  color: var(--muted);
 }
 
 .prose ul,
 .prose ol {
-  margin: 0 0 1.4em;
-  padding-left: 1.5em;
+  margin: 0 0 1.5em;
+  padding-left: 1.4em;
 }
 
 .prose li + li {
-  margin-top: 0.35em;
+  margin-top: 0.4em;
 }
 
 .prose li::marker {
+  color: var(--faint);
+}
+
+.prose ol > li::marker {
   color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .prose blockquote {
-  margin: 0 0 1.4em;
-  padding: 0.2em 0 0.2em 1.2em;
-  border-left: 3px solid var(--line);
+  margin: 0 0 1.5em;
+  padding: 0 0 0 1.25em;
+  border-left: 1px solid var(--strong);
   color: var(--muted);
 }
 
 .prose hr {
+  width: 3rem;
+  margin: 3.5em 0;
   border: none;
-  border-top: 1px solid var(--line);
-  margin: 2.5em 0;
+  border-top: 1px solid var(--faint);
 }
 
 .prose :not(pre) > code {
-  font-size: 0.88em;
-  padding: 0.12em 0.35em;
-  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
   background: var(--wash);
+  font-size: 0.86em;
+  letter-spacing: 0;
 }
 
 .prose pre {
-  margin: 0 0 1.6em;
-  padding: 1em 1.2em;
+  margin: 0 0 1.75em;
+  padding: var(--space-5) var(--space-5);
   overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  font-size: 0.86rem;
-  line-height: 1.7;
+  border-radius: 4px;
+  /* Shiki が pre に書く地の色（白）より、サイトの地の色を優先する。 */
+  background: var(--wash) !important;
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  letter-spacing: 0;
   overflow-wrap: normal;
 }
 
 .prose table {
   display: block;
   overflow-x: auto;
-  margin: 0 0 1.6em;
+  margin: 0 0 1.75em;
   border-collapse: collapse;
-  font-size: 0.94rem;
+  font-size: var(--text-sm);
 }
 
 .prose th,
 .prose td {
-  padding: 0.45em 0.9em;
+  padding: 0.6em 1.2em 0.6em 0;
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
 
 .prose th {
-  font-weight: 700;
+  border-bottom-color: var(--strong);
+  font-weight: 600;
 }
 
 .prose img {
   display: block;
-  margin: 0 auto 1.6em;
-  border-radius: 6px;
+  margin: 2.25em auto;
+}
+
+.prose strong {
+  color: var(--strong);
+  font-weight: 600;
 }

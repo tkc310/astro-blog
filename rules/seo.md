@@ -10,21 +10,21 @@
 
 サイト全体で共通のノードには固定の `@id` を付け、ほかのノードからは `{"@id": …}` で参照する。
 
-| `@id`             | 型        | 項目                                                                                                                                                           |
-| ----------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `<site>/#website` | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                                           |
-| `<site>/#blog`    | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                                         |
-| `<site>/#person`  | `Person`  | `name`・`alternateName`（ハンドル名）・`url`（トップ）・`image`・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
+| `@id`             | 型        | 項目                                                                                                                                                                                      |
+| ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<site>/#website` | `WebSite` | `name`・`alternateName`・`url`・`description`・`inLanguage`・`publisher`（→ Person）                                                                                                      |
+| `<site>/#blog`    | `Blog`    | `name`・`url`・`description`・`inLanguage`・`author`・`publisher`（→ Person）・`isPartOf`（→ WebSite）                                                                                    |
+| `<site>/#person`  | `Person`  | `name`・`alternateName`（ハンドル名）・`url`（`/about`）・`image`（`/profile.png`、512px）・`description`（自己紹介）・`sameAs`（GitHub・X・Zenn・Qiita・LAPRAS。画面のリンクと同じもの） |
 
 ページごとに出すノード:
 
-| ページ             | ノード                                                                                               |
-| ------------------ | ---------------------------------------------------------------------------------------------------- |
-| 記事詳細           | `WebPage`・`BlogPosting`・`BreadcrumbList`（ホーム › カテゴリ › 記事）・共通の 3 ノード              |
-| 記事一覧           | `CollectionPage`・`ItemList`（ページ内の記事を `ListItem` で、`position` と `url`）・共通の 3 ノード |
-| カテゴリ           | `CollectionPage`・`ItemList`・`BreadcrumbList`（ホーム › カテゴリ）・共通の 3 ノード                 |
-| トップ（自己紹介） | `ProfilePage`（`mainEntity` → Person）・共通の 3 ノード                                              |
-| 404                | 出さない                                                                                             |
+| ページ                 | ノード                                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| 記事詳細               | `WebPage`・`BlogPosting`・`BreadcrumbList`（ホーム › カテゴリ › 記事）・共通の 3 ノード              |
+| 記事一覧               | `CollectionPage`・`ItemList`（ページ内の記事を `ListItem` で、`position` と `url`）・共通の 3 ノード |
+| カテゴリ               | `CollectionPage`・`ItemList`・`BreadcrumbList`（ホーム › カテゴリ）・共通の 3 ノード                 |
+| 私について（`/about`） | `ProfilePage`（`mainEntity` → Person）・共通の 3 ノード                                              |
+| 404                    | 出さない                                                                                             |
 
 記事詳細の `BlogPosting`（`@id` は `<記事の URL>#article`）には、次をすべて入れる。
 
@@ -39,7 +39,7 @@
 
 `WebPage`（`@id` は `<記事の URL>#webpage`）には `url`・`name`・`isPartOf`（→ WebSite）・`breadcrumb`（→ BreadcrumbList）・`primaryImageOfPage`・`datePublished`・`dateModified`・`inLanguage` を入れる。
 
-使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。読了時間とライセンスは画面に出さないので、`timeRequired`・`license` も出さない。About は自己 PR だけで肩書や得意分野の欄を持たないので、`Person` の `jobTitle`・`knowsAbout` も出さない。トップの LAPRAS の活動一覧は、このサイトの著作物ではなく、キャッシュの間に変わるので、JSON-LD に入れない（ADR-0017）。
+使わないもの: 画面に無い評価（`AggregateRating`）、FAQ や手順になっていない記事の `FAQPage`・`HowTo`、サイト内検索が無いあいだの `SearchAction`。読了時間とライセンスは画面に出さないので、`timeRequired`・`license` も出さない。About は自己 PR だけで肩書や得意分野の欄を持たないので、`Person` の `jobTitle`・`knowsAbout` も出さない。私についての LAPRAS の活動一覧は、このサイトの著作物ではなく、キャッシュの間に変わるので、JSON-LD に入れない（ADR-0017）。
 
 下書き、`/admin/`、404 は `noindex` にし、サイトマップと RSS に入れない。
 

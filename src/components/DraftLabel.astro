@@ -1,0 +1,19 @@
+---
+// 下書きの印。記事の一覧と記事詳細で、題名や日付の横に小さく出す（プレビューでだけ見える）。
+---
+
+<span class="draft">下書き</span>
+
+<style>
+  .draft {
+    display: inline-block;
+    padding: 0 0.6em;
+    border: 1px solid var(--faint);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+  }
+</style>

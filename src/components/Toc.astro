@@ -1,45 +1,65 @@
 ---
-// 目次。h2・h3 から作る。PC は本文の横に固定、スマホは本文の前に畳む（docs/specs/design.md §4）。
+// 目次。置き場所は WithToc が決める（docs/specs/design.md §4）。
 // 現在位置の強調だけ小さなスクリプトで行う（rules/architecture.md で許したクライアント JS）。
 import type { MarkdownHeading } from "astro";
 
 interface Props {
-  headings: MarkdownHeading[];
+  /** 目次に載せる見出し（h2・h3）。 */
+  items: MarkdownHeading[];
 }
 
-const items = Astro.props.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const { items } = Astro.props;
 ---
 
-{
-  items.length > 0 && (
-    <details class="toc" open data-toc>
-      <summary>目次</summary>
-      <ol>
-        {items.map((heading) => (
-          <li class={`depth-${heading.depth}`}>
-            <a href={`#${heading.slug}`}>{heading.text}</a>
-          </li>
-        ))}
-      </ol>
-    </details>
-  )
-}
+<!-- PC では常に開く（閉じた details の中身は CSS では出せない）。スマホはスクリプトで畳む。 -->
+<details class="toc" data-toc open>
+  <summary>
+    <span class="label">目次</span>
+    <span class="current" data-toc-current></span>
+  </summary>
+  <ol>
+    {
+      items.map((heading) => (
+        <li class={`depth-${heading.depth}`}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))
+    }
+  </ol>
+</details>
 
 <script>
-  // 画面に入っている見出しに対応する目次の項目へ aria-current を付ける。
-  const toc = document.querySelector<HTMLElement>("[data-toc]");
+  // 画面に入っている見出しに対応する目次の項目へ aria-current を付け、スマホの sticky 見出しにも出す。
+  const toc = document.querySelector<HTMLDetailsElement>("[data-toc]");
   if (toc && "IntersectionObserver" in window) {
+    const wide = window.matchMedia("(width >= 80rem)");
+    const syncOpen = () => {
+      toc.open = wide.matches;
+    };
+    syncOpen();
+    wide.addEventListener("change", syncOpen);
+
+    const current = toc.querySelector<HTMLElement>("[data-toc-current]");
     const links = new Map<string, HTMLAnchorElement>();
     for (const link of toc.querySelectorAll<HTMLAnchorElement>("a[href^='#']")) {
       links.set(decodeURIComponent(link.hash.slice(1)), link);
     }
+
+    const setCurrent = (id: string | undefined) => {
+      for (const link of links.values()) link.removeAttribute("aria-current");
+      const link = id ? links.get(id) : undefined;
+      if (link) {
+        link.setAttribute("aria-current", "true");
+        if (current) current.textContent = link.textContent?.trim() ?? "";
+      } else if (current) {
+        current.textContent = "";
+      }
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((entry) => entry.isIntersecting);
-        const target = visible[0]?.target;
-        if (!target) return;
-        for (const link of links.values()) link.removeAttribute("aria-current");
-        links.get(target.id)?.setAttribute("aria-current", "true");
+        setCurrent(visible[0]?.target.id);
       },
       { rootMargin: "0px 0px -70% 0px" },
     );
@@ -47,50 +67,152 @@ const items = Astro.props.headings.filter((heading) => heading.depth === 2 || he
       const heading = document.getElementById(id);
       if (heading) observer.observe(heading);
     }
+
+    // スマホでは開いたまま追尾すると邪魔なので、項目を選んだら閉じる。
+    toc.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest("a[href^='#']")) return;
+      if (wide.matches) return;
+      toc.open = false;
+    });
   }
 </script>
 
 <style>
   .toc {
-    font-size: 0.88rem;
-    line-height: 1.6;
-    margin: 0 0 2.5rem;
-    padding: 0 0 0 1rem;
-    border-left: 1px solid var(--line);
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    letter-spacing: 0.05em;
   }
 
   summary {
-    color: var(--muted);
-    font-weight: 700;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
+    color: var(--strong);
+    font-weight: 600;
+    letter-spacing: 0.12em;
     cursor: pointer;
-    list-style-position: outside;
+  }
+
+  .label {
+    flex: none;
+  }
+
+  /* 畳んでいるあいだ、今読んでいる見出しを sticky バーに出す。 */
+  .current:not(:empty)::before {
+    content: "·";
+    margin-right: 0.35em;
+    color: var(--faint);
+    font-weight: 400;
+  }
+
+  .current {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toc[open] .current {
+    display: none;
+  }
+
+  /* 狭い画面: 畳めることを右端の細い山形で示し、開いたら上に向ける。 */
+  @media (width < 80rem) {
+    summary {
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "";
+      flex: none;
+      width: 0.4rem;
+      height: 0.4rem;
+      margin: 0 0.2rem 0 auto;
+      border-right: 1px solid var(--muted);
+      border-bottom: 1px solid var(--muted);
+      transform: translateY(-0.15rem) rotate(45deg);
+      transition: transform 0.2s;
+    }
+
+    .toc[open] summary::after {
+      transform: translateY(0.05rem) rotate(-135deg);
+    }
   }
 
   ol {
+    margin: var(--space-3) 0 0;
+    padding: 0 0 0 var(--space-4);
+    border-left: 1px solid var(--line);
     list-style: none;
-    margin: 0.6rem 0 0;
-    padding: 0;
   }
 
   li + li {
-    margin-top: 0.45rem;
+    margin-top: var(--space-2);
   }
 
   .depth-3 {
-    padding-left: 1rem;
+    padding-left: var(--space-4);
   }
 
   a {
+    display: block;
     color: var(--muted);
     text-decoration: none;
   }
 
   a:hover,
   [aria-current] {
-    color: var(--ink);
+    color: var(--strong);
   }
 
+  /* 今読んでいる見出しは、左の線に黒い印を重ねて示す。 */
   [aria-current] {
-    font-weight: 700;
+    position: relative;
+  }
+
+  [aria-current]::before {
+    content: "";
+    position: absolute;
+    inset: 0.15em auto 0.15em calc(var(--space-4) * -1 - 1px);
+    width: 1px;
+    background: var(--strong);
+  }
+
+  .depth-3 [aria-current]::before {
+    left: calc(var(--space-4) * -2 - 1px);
+  }
+
+  /* 狭い画面: 開いた一覧が画面を埋めないよう高さに上限を付ける。 */
+  @media (width < 80rem) {
+    .toc[open] ol {
+      max-height: min(70vh, 28rem);
+      overflow-y: auto;
+    }
+  }
+
+  @media (width >= 80rem) {
+    summary {
+      pointer-events: none;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .current {
+      display: none;
+    }
   }
 </style>

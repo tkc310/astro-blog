@@ -2,6 +2,7 @@
 // 一覧の 2 ページ目以降（/articles/page/<n>）。1 ページ目はトップ。
 import type { GetStaticPaths } from "astro";
 
+import PageHeader from "../../../components/PageHeader.astro";
 import Pager from "../../../components/Pager.astro";
 import PostList from "../../../components/PostList.astro";
 import Base from "../../../layouts/Base.astro";
@@ -23,7 +24,7 @@ const title = `記事の一覧（${slice.page} ページ目）`;
 ---
 
 <Base title={title} description={`${site.name} の${title}`}>
-  <h1 class="visually-hidden">{title}</h1>
+  <PageHeader title="記事" kicker={`${slice.page} ページ目`} />
   <PostList posts={slice.items} />
   <Pager page={slice.page} totalPages={slice.totalPages} />
 </Base>

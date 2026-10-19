@@ -26,13 +26,38 @@ if (!existsSync(DIST)) {
 }
 
 // 末尾スラッシュなしの URL を返すため、ページは <path>.html で出す（ADR-0006）。
-for (const file of ["404.html", "articles.html", "_redirects"]) {
+for (const file of [
+  "404.html",
+  "index.html",
+  "_redirects",
+  // アイコン（Base.astro の <link rel="icon">・私について）
+  "favicon.ico",
+  "icon-192.png",
+  "apple-touch-icon.png",
+  "profile.webp",
+  "profile.png",
+]) {
   if (!existsSync(join(DIST, file))) fail(`${file} がありません`);
 }
 
-// トップ（/）は Worker で描く（ADR-0017）。静的な index.html があると、アセットが先に返して Worker に届かない。
-if (existsSync(join(DIST, "index.html"))) {
-  fail("index.html があります。トップは prerender = false にして Worker で描いてください");
+// 公開済みの URL を 301 で生かす（ADR-0006）。記事一覧の 1 ページ目は /。
+if (existsSync(join(DIST, "_redirects"))) {
+  const rules = readFileSync(join(DIST, "_redirects"), "utf8")
+    .split("\n")
+    .map((line) => line.replace(/#.*/, "").trim().split(/\s+/))
+    .filter((parts) => parts.length === 3);
+  for (const [from, to] of [
+    ["/articles", "/"],
+    ["/articles/page/1", "/"],
+  ]) {
+    if (!rules.some((rule) => rule[0] === from && rule[1] === to && rule[2] === "301"))
+      fail(`_redirects に ${from} → ${to} の 301 がありません`);
+  }
+}
+
+// 私について（/about）は Worker で描く（ADR-0017）。静的な about.html があると、アセットが先に返して Worker に届かない。
+if (existsSync(join(DIST, "about.html"))) {
+  fail("about.html があります。私については prerender = false にして Worker で描いてください");
 }
 
 // Worker の設定: Workers Cache が有効で、セッションの KV と Images のバインディングを作らない。

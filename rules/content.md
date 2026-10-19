@@ -14,4 +14,6 @@ frontmatter は `title`・`description`・`pubDate`・`category` が必須で、
 
 コードブロックには言語名を付ける（例: ` ```ts `）。ファイル名を出すときは ` ```ts title="src/foo.ts" ` のように書く。
 
+私について（`/about`）の自己紹介は `src/content/profile/about.md` に書く。見出しは `##` から、frontmatter は `updatedDate` だけだ。
+
 公開前の記事は `draft: true` にする。下書きは本番に出ず、プレビュー URL にだけ出る。

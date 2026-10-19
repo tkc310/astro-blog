@@ -1,13 +1,13 @@
 ---
-// ヘッダー: 左にサイト名、右に「記事」「About」（docs/specs/design.md §4）。
+// ヘッダー: 左にサイト名、右に「記事」「私について」（docs/specs/design.md §4）。
 import { site } from "../site.config";
 
-// build.format: 'file' では /about.html・/index.html の形で来るので、拡張子と index を外してそろえる。
+// build.format: 'file' では /articles.html・/index.html の形で来るので、拡張子と index を外してそろえる。
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
-// トップ（/）は自己紹介、記事は /articles の下（docs/specs/design.md §5）。
+// トップ（/）は記事一覧、私については /about（docs/specs/design.md §5）。
 const links = [
-  { href: "/articles", label: "記事", current: path.startsWith("/articles") },
-  { href: "/", label: "About", current: path === "/" },
+  { href: "/", label: "記事", current: path === "/" || path.startsWith("/articles") },
+  { href: "/about", label: "私について", current: path === "/about" },
 ];
 ---
 
@@ -33,38 +33,51 @@ const links = [
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 1rem;
-    padding: 2rem 0 0;
+    gap: var(--space-4);
+    padding-top: var(--space-7);
   }
 
   .name {
     color: var(--strong);
+    font-size: var(--text-sm);
     font-weight: 600;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
     text-decoration: none;
   }
 
   ul {
     display: flex;
-    gap: 1.5rem;
+    gap: var(--space-6);
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 0.94rem;
+    font-size: var(--text-sm);
+    letter-spacing: 0.1em;
   }
 
   nav a {
     color: var(--muted);
-    text-decoration: none;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.6em;
   }
 
-  nav a:hover,
+  nav a:hover {
+    color: var(--strong);
+  }
+
   nav a[aria-current="page"] {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.45em;
+    color: var(--strong);
+    text-decoration-color: currentColor;
+  }
+
+  @media (width < 36rem) {
+    .header {
+      padding-top: var(--space-6);
+    }
+
+    ul {
+      gap: var(--space-5);
+    }
   }
 
   @media print {

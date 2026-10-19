@@ -12,7 +12,7 @@
 
 - ツールと依存パッケージを入れる: `make setup`（`.tool-versions` の node・pnpm を mise で入れ、`pnpm install` で依存を入れる）
 - 依存パッケージだけを入れる: `make install`
-- 開発サーバ起動: `make dev`（workerd で動く。トップは毎回描画し、キャッシュしない）。下書きも見るなら `SHOW_DRAFTS=true make dev`
+- 開発サーバ起動: `make dev`（workerd で動く。`/about` は毎回描画し、キャッシュしない）。下書きも見るなら `SHOW_DRAFTS=true make dev`
 - ビルド: `make build`
 - ビルド結果の検査: `make check-output`（`make build` の後）
 - CI と同じ検査をすべて: `make check`（typecheck → lint → test → build → check-output）
@@ -20,7 +20,7 @@
 - フォーマット・静的検査・型検査: `make lint`（`vp check`）
 - フォーマットだけを検査: `make fmt`（直すなら `make fmt-fix`）
 - テスト: `make test`（例: `make test ARGS="src/lib"`）
-- 手元で Workers として確かめる: `make preview`（`astro preview`。トップのキャッシュの動きもここで見る）
+- 手元で Workers として確かめる: `make preview`（`astro preview`。`/about` のキャッシュの動きもここで見る）
 - 手動でデプロイ: `make deploy`（ふだんは Workers Builds が行う）
 - 新しい版がある依存パッケージを一覧: `make outdated`（範囲内で上げるなら `make update`）
 - ビルド結果と生成物を消す: `make clean`
