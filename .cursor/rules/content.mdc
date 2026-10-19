@@ -1,0 +1,7 @@
+---
+description: 記事（Markdown・frontmatter・画像・リンクカード）の規則
+globs: src/content/**,public/admin/**
+alwaysApply: false
+---
+
+本文は `rules/content.md`。
