@@ -132,10 +132,14 @@ if (Astro.cache.enabled) {
     letter-spacing: 0.06em;
   }
 
+  /* 行間は行の箱（div）で決まるので、リンクではなく箱に付ける。 */
+  .list li > div {
+    font-size: var(--text-sm);
+    line-height: 1.8;
+  }
+
   .list a {
     color: var(--ink);
-    font-size: var(--text-sm);
-    line-height: 1.75;
     word-break: auto-phrase;
     text-decoration-color: transparent;
   }
