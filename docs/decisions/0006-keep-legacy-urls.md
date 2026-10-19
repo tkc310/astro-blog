@@ -19,13 +19,13 @@
 - 末尾スラッシュは付けない。Astro は `trailingSlash: 'never'` と `build.format: 'file'` にし、`/articles/<id>.html` を出す。Workers の `html_handling` は既定（`auto-trailing-slash`）のままにし、`/articles/<id>` を 200 で返す
 - 無くすページは `_redirects` で 301 にする
 
-| 旧 URL                                  | 新しい扱い                 |
-| --------------------------------------- | -------------------------- |
-| `/articles/tags/*`                      | `/` へ 301（タグは廃止）   |
-| `/notes`、`/notes/*`                    | `/` へ 301（ノートは廃止） |
-| `/donation`、`/auth/*`、`/preview/*`    | `/` へ 301                 |
-| `/rss/atom.xml`、`/rss/feed.json`       | `/rss/feed.xml` へ 301     |
-| `/sitemap.xml`                          | 新しいサイトマップへ 301   |
+| 旧 URL                               | 新しい扱い                 |
+| ------------------------------------ | -------------------------- |
+| `/articles/tags/*`                   | `/` へ 301（タグは廃止）   |
+| `/notes`、`/notes/*`                 | `/` へ 301（ノートは廃止） |
+| `/donation`、`/auth/*`、`/preview/*` | `/` へ 301                 |
+| `/rss/atom.xml`、`/rss/feed.json`    | `/rss/feed.xml` へ 301     |
+| `/sitemap.xml`                       | 新しいサイトマップへ 301   |
 
 ## 理由
 

@@ -35,7 +35,9 @@ if (!existsSync(articles)) {
   for (const name of readdirSync(articles)) {
     const path = join(articles, name);
     if (statSync(path).isDirectory() && existsSync(join(path, "index.html"))) {
-      fail(`articles/${name}/index.html があります。build.format: 'file' で articles/${name}.html にしてください`);
+      fail(
+        `articles/${name}/index.html があります。build.format: 'file' で articles/${name}.html にしてください`,
+      );
     }
   }
 }
@@ -45,7 +47,8 @@ for (const file of htmlFiles(DIST)) {
   const name = relative(DIST, file);
   if (!/<html[^>]*\blang="ja"/.test(html)) fail(`${name}: <html lang="ja"> がありません`);
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${name}: <title> がありません`);
-  if (!/<meta name="description" content="[^"]+"/.test(html)) fail(`${name}: meta description がありません`);
+  if (!/<meta name="description" content="[^"]+"/.test(html))
+    fail(`${name}: meta description がありません`);
 }
 
 if (errors.length > 0) {

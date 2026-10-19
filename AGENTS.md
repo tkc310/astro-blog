@@ -20,16 +20,16 @@
 
 ## まず読むもの
 
-| やりたいこと                           | 読むもの                                                    |
-| -------------------------------------- | ----------------------------------------------------------- |
-| 全体の要件・技術スタックを知る         | `docs/specs/blog-replace.md`                                |
+| やりたいこと                           | 読むもの                                                       |
+| -------------------------------------- | -------------------------------------------------------------- |
+| 全体の要件・技術スタックを知る         | `docs/specs/blog-replace.md`                                   |
 | ブログ自体を直す・改善する             | `docs/improvement-loop.md` → `.claude/skills/improve/SKILL.md` |
-| 判断の理由を知る                       | `docs/decisions/`（ADR）                                    |
-| 機能を足す・大きく変える               | `docs/specs/`（先に指示書を書く。`write-spec` スキル）      |
-| 記事を書く・移行する                   | `rules/content.md` → `.claude/skills/write-post/SKILL.md`   |
-| 過去に直したこと・残っている改善を知る | `docs/improvement/log.md`・`docs/improvement/backlog.md`    |
-| エージェントとの進め方を知る           | `docs/ai-agents.md`                                         |
-| 開発の手順を知る                       | `CONTRIBUTING.md`                                           |
+| 判断の理由を知る                       | `docs/decisions/`（ADR）                                       |
+| 機能を足す・大きく変える               | `docs/specs/`（先に指示書を書く。`write-spec` スキル）         |
+| 記事を書く・移行する                   | `rules/content.md` → `.claude/skills/write-post/SKILL.md`      |
+| 過去に直したこと・残っている改善を知る | `docs/improvement/log.md`・`docs/improvement/backlog.md`       |
+| エージェントとの進め方を知る           | `docs/ai-agents.md`                                            |
+| 開発の手順を知る                       | `CONTRIBUTING.md`                                              |
 
 ## 守ること
 
