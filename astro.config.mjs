@@ -7,7 +7,7 @@ import { shouldShowDrafts } from "./src/lib/drafts.ts";
 import { SITE_URL } from "./src/site.config.ts";
 
 // ページはビルド時に作り、末尾スラッシュなしの URL で配信する（ADR-0001・ADR-0006）。
-// トップ（/）だけは LAPRAS の活動を載せるため、Worker で描画して Cloudflare にキャッシュする（ADR-0017）。
+// 私について（/about）だけは LAPRAS の活動を載せるため、Worker で描画して Cloudflare にキャッシュする（ADR-0017）。
 export default defineConfig({
   site: SITE_URL,
   output: "static",

@@ -1,9 +1,9 @@
 // 一覧に使う、純粋な計算（ページ送り・前後の記事）。
 // Astro に依存させず、テストできる形にしておく。
 
-/** 記事の一覧の n ページ目の URL。1 ページ目は /articles。 */
+/** 記事の一覧の n ページ目の URL。1 ページ目は /。 */
 export function listPageHref(page: number): string {
-  return page <= 1 ? "/articles" : `/articles/page/${page}`;
+  return page <= 1 ? "/" : `/articles/page/${page}`;
 }
 
 export interface PageSlice<T> {

@@ -4,6 +4,7 @@
 import { formatDate, toIsoDate } from "../lib/format";
 import { articlePath, getCategory, type Post } from "../lib/posts";
 import CategoryLabel from "./CategoryLabel.astro";
+import DraftLabel from "./DraftLabel.astro";
 
 interface Props {
   posts: Post[];
@@ -32,7 +33,7 @@ const categories = new Map(
                 <a href={articlePath(post.id)} style={`view-transition-name: post-${post.id}`}>
                   {post.data.title}
                 </a>
-                {post.data.draft && <span class="draft">下書き</span>}
+                {post.data.draft && <DraftLabel />}
               </h2>
               <p class="description">{post.data.description}</p>
               {category && <CategoryLabel category={category} />}
@@ -86,15 +87,8 @@ const categories = new Map(
     text-decoration-color: currentColor;
   }
 
-  .draft {
+  .title :global(.draft) {
     margin-left: 0.75em;
-    padding: 0.1em 0.6em;
-    border: 1px solid var(--faint);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: var(--text-2xs);
-    font-weight: 400;
-    letter-spacing: 0.08em;
     vertical-align: 0.15em;
   }
 

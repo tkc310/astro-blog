@@ -43,7 +43,7 @@ const categories = defineCollection({
     .strict(),
 });
 
-// 私について（/）の自己紹介。本文を Markdown で書き、ページに差し込む（docs/specs/blog-replace.md §6）。
+// 私について（/about）の自己紹介。本文を Markdown で書き、ページに差し込む（docs/specs/blog-replace.md §6）。
 // 1 ファイル（about.md）だけを置く。見出しは ## から。
 const profile = defineCollection({
   loader: glob({ base: "./src/content/profile", pattern: "about.md" }),

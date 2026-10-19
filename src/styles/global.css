@@ -92,7 +92,8 @@ a {
   text-decoration-line: underline;
   text-decoration-color: var(--faint);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.35em;
+  /* 行間が広いので、下線を文字に寄せて、行の区切りの線に見えないようにする。 */
+  text-underline-offset: 0.2em;
   transition:
     color 0.2s,
     text-decoration-color 0.2s;

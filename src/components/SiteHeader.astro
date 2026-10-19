@@ -1,13 +1,13 @@
 ---
-// ヘッダー: 左にサイト名、右に「私について」「記事」（docs/specs/design.md §4）。
+// ヘッダー: 左にサイト名、右に「記事」「私について」（docs/specs/design.md §4）。
 import { site } from "../site.config";
 
 // build.format: 'file' では /articles.html・/index.html の形で来るので、拡張子と index を外してそろえる。
 const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "") || "/";
-// トップ（/）は自己紹介（/about からも 301 で来る）、記事は /articles の下（docs/specs/design.md §5）。
+// トップ（/）は記事一覧、私については /about（docs/specs/design.md §5）。
 const links = [
-  { href: "/", label: "私について", current: path === "/" },
-  { href: "/articles", label: "記事", current: path.startsWith("/articles") },
+  { href: "/", label: "記事", current: path === "/" || path.startsWith("/articles") },
+  { href: "/about", label: "私について", current: path === "/about" },
 ];
 ---
 

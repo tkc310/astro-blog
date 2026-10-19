@@ -1,4 +1,4 @@
-// LAPRAS の公開 API から活動を取る（ADR-0017）。トップ（/）をリクエストのたびにサーバで描画するときに呼ぶ。
+// LAPRAS の公開 API から活動を取る（ADR-0017）。私について（/about）をリクエストのたびにサーバで描画するときに呼ぶ。
 // 形: https://github.com/lapras-inc/public-api-schema#response
 
 export interface Activity {

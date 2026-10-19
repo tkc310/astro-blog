@@ -3,8 +3,8 @@ import { describe, expect, test } from "vite-plus/test";
 import { listPageHref, neighbors, slicePage } from "./listing";
 
 describe("listPageHref", () => {
-  test("1 ページ目は /articles、2 ページ目からは /articles/page/<n>", () => {
-    expect(listPageHref(1)).toBe("/articles");
+  test("1 ページ目は /、2 ページ目からは /articles/page/<n>", () => {
+    expect(listPageHref(1)).toBe("/");
     expect(listPageHref(2)).toBe("/articles/page/2");
   });
 });

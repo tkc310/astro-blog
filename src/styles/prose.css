@@ -28,8 +28,65 @@
   line-height: 1.7;
 }
 
-.prose :is(h2, h3) {
+.prose h4 {
+  margin: 2em 0 0.6em;
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
+
+.prose :is(h2, h3, h4, h5, h6) {
   scroll-margin-top: var(--space-6);
+}
+
+/*
+ * 見出しレベルを Markdown と同じ「##」で示す。h1（ページの題）には付けない。
+ * クリックでその見出しへページ内で移動する（HeadingLink.astro）。
+ * .permalink は本文外の見出し（最近の活動）用。
+ */
+:is(.prose h2, .permalink[data-level="2"])::before {
+  content: "##";
+}
+:is(.prose h3, .permalink[data-level="3"])::before {
+  content: "###";
+}
+:is(.prose h4, .permalink[data-level="4"])::before {
+  content: "####";
+}
+:is(.prose h5, .permalink[data-level="5"])::before {
+  content: "#####";
+}
+:is(.prose h6, .permalink[data-level="6"])::before {
+  content: "######";
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6), .permalink)::before {
+  margin-right: 0.4em;
+  color: var(--faint);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* 左の余白が広い画面では「##」を列の外へぶら下げ、見出しの文字の左端を本文にそろえる。 */
+@media (width >= 56rem) {
+  :is(.prose :is(h2, h3, h4, h5, h6), .permalink) {
+    position: relative;
+  }
+
+  :is(.prose :is(h2, h3, h4, h5, h6), .permalink)::before {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.5em;
+    white-space: nowrap;
+  }
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]) {
+  cursor: pointer;
+  scroll-margin-top: var(--space-6);
+}
+
+:is(.prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]):hover::before {
+  color: var(--muted);
 }
 
 .prose ul,

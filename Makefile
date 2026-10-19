@@ -20,13 +20,13 @@ setup: ## ツール（.tool-versions の node・pnpm）と依存パッケージ�
 install: ## 依存パッケージを入れる
 	pnpm install $(ARGS)
 
-dev: ## 開発サーバを workerd で起動する。トップは毎回描画する（下書きも見るなら SHOW_DRAFTS=true make dev）
+dev: ## 開発サーバを workerd で起動する。/about は毎回描画する（下書きも見るなら SHOW_DRAFTS=true make dev）
 	pnpm run dev $(ARGS)
 
 build: ## 本番と同じビルドをする（dist/）
 	pnpm run build $(ARGS)
 
-preview: ## ビルドして、手元で Workers として動かす（トップのキャッシュもここで確かめる）
+preview: ## ビルドして、手元で Workers として動かす（/about のキャッシュもここで確かめる）
 	pnpm run preview $(ARGS)
 
 deploy: ## ビルドして Cloudflare に手動でデプロイする（ふだんは Workers Builds が行う）

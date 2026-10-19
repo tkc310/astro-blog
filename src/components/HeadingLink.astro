@@ -1,0 +1,30 @@
+---
+// 見出し（.prose の h2〜 と .permalink）をクリックすると、その見出しへページ内で移動する。
+// 見た目の「##」は prose.css。許したクライアント JS（rules/architecture.md）。
+---
+
+<script>
+  const SELECTOR = ".prose :is(h2, h3, h4, h5, h6)[id], .permalink[id]";
+
+  function isTextSelecting(heading: HTMLElement): boolean {
+    const selection = document.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+    const anchor = selection.anchorNode;
+    return Boolean(anchor && heading.contains(anchor));
+  }
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    // 見出し内のリンクは通常どおり開く。
+    if (event.target.closest("a")) return;
+    const heading = event.target.closest<HTMLElement>(SELECTOR);
+    if (!heading || isTextSelecting(heading)) return;
+
+    // 同じハッシュを代入してもスクロールしないので、そのときは直接スクロールする。
+    if (decodeURIComponent(location.hash.slice(1)) === heading.id) {
+      heading.scrollIntoView();
+    } else {
+      location.hash = heading.id;
+    }
+  });
+</script>

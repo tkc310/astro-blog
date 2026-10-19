@@ -1,0 +1,60 @@
+---
+// 目次と本文を並べる枠。記事詳細と私についてで共通（docs/specs/design.md §3・§4）。
+// 広い画面は目次を本文の列の外（右の余白）に追従させ、狭い画面は本文の前に畳んで sticky で追尾する。
+// 本文の列の幅と位置は、ほかのページと同じまま。
+import type { MarkdownHeading } from "astro";
+
+import Toc from "./Toc.astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+// 目次は h2・h3 から作る。見出しが無ければ目次を出さない。
+const items = Astro.props.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<div class="with-toc">
+  {
+    items.length > 0 && (
+      <div class="toc-rail">
+        <Toc items={items} />
+      </div>
+    )
+  }
+  <slot />
+</div>
+
+<style>
+  /* 本文を含む枠に対して目次を置くので、読み進めているあいだ sticky が効く。 */
+  .with-toc {
+    position: relative;
+  }
+
+  @media (width < 80rem) {
+    .toc-rail {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 0 var(--space-7);
+      padding: var(--space-3) 0;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (width >= 80rem) {
+    .toc-rail {
+      position: absolute;
+      inset: 0 auto 0 calc(100% + var(--space-8));
+      width: 13rem;
+    }
+
+    .toc-rail > :global(.toc) {
+      position: sticky;
+      top: var(--space-7);
+      max-height: calc(100vh - var(--space-7) * 2);
+      overflow-y: auto;
+    }
+  }
+</style>

@@ -3,7 +3,7 @@
 - 日付: 2026-10-19
 - 状態: 一部廃止（→ 0017）
 
-> トップ（`/`）だけは Astro の Cloudflare アダプターで Worker に描かせ、Cloudflare にキャッシュする（ADR-0017）。ほかのページは静的アセットのまま。
+> 私について（`/about`）だけは Astro の Cloudflare アダプターで Worker に描かせ、Cloudflare にキャッシュする（ADR-0017）。ほかのページは静的アセットのまま。
 
 ## 背景
 

@@ -1,0 +1,210 @@
+---
+// 私について（/about）: 自己紹介（src/content/profile/about.md）と、LAPRAS の活動一覧（ADR-0017）。
+// 目次は記事詳細と同じ部品（WithToc）を使う（docs/specs/design.md §4）。
+//
+// このページだけをリクエストのときにサーバ（Worker）で描画する。LAPRAS の API はブラウザから
+// 呼ぶと CORS で止まるため。開発中（make dev）は毎回描画し、本番は Cloudflare のキャッシュに置いて
+// 期限が切れたら裏で描き直す（ISR と同じ動き）。
+import type { MarkdownHeading } from "astro";
+import { getEntry, render } from "astro:content";
+
+import "../styles/prose.css";
+import HeadingLink from "../components/HeadingLink.astro";
+import PageHeader from "../components/PageHeader.astro";
+import WithToc from "../components/WithToc.astro";
+import { fetchActivities, formatActivityDate, laprasProfileUrl, TYPE_LABELS } from "../lib/lapras";
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+
+export const prerender = false;
+
+/** 取れたときのキャッシュ: 1 時間は新しいとみなし、その後 1 日は古いものを返しながら描き直す。 */
+const CACHE_OK = { maxAge: 60 * 60, swr: 60 * 60 * 24 };
+/** 取れなかったときのキャッシュ: 5 分で取り直す（LAPRAS に何度も行かないように）。 */
+const CACHE_FAILED = { maxAge: 60 * 5 };
+
+/** ページ下部の「最近の活動」見出し。Markdown 外なので目次に手で足す。 */
+const ACTIVITY_HEADING: MarkdownHeading = {
+  depth: 2,
+  slug: "activity-heading",
+  text: "最近の活動",
+};
+
+const { author } = site;
+const profile = await getEntry("profile", "about");
+if (!profile) throw new Error("自己紹介（src/content/profile/about.md）がありません");
+const { Content: Profile, headings: profileHeadings } = await render(profile);
+const headings = [...profileHeadings, ACTIVITY_HEADING];
+const laprasProfile = laprasProfileUrl(author.accounts.lapras);
+const activities = await fetchActivities(author.accounts.lapras, { limit: 10 });
+
+// cache.enabled は開発中とキャッシュの設定が無いときは false（毎回描画する）。
+if (Astro.cache.enabled) {
+  Astro.cache.set({ ...(activities.ok ? CACHE_OK : CACHE_FAILED), tags: ["lapras"] });
+}
+---
+
+<Base title="私について" description={`${author.name} の自己紹介と、最近の活動`}>
+  <PageHeader title="私について">
+    <p class="byline" slot="before">
+      <img src={author.image.src} alt="" width="56" height="56" decoding="async" />
+      <span>{author.name}</span>
+    </p>
+  </PageHeader>
+
+  <WithToc headings={headings}>
+    <section class="profile prose" aria-label="自己紹介">
+      <Profile />
+    </section>
+
+    <section class="activity" aria-labelledby="activity-heading">
+      <h2 class="permalink" data-level="2" id="activity-heading">最近の活動</h2>
+      <p class="note">
+        <a href={laprasProfile} target="_blank" rel="noopener">LAPRAS</a> に集まった GitHub・Zenn・Qiita などの記録です。
+      </p>
+      {
+        !activities.ok ? (
+          <p class="status">
+            活動を読み込めませんでした。
+            <a href={laprasProfile} target="_blank" rel="noopener">
+              LAPRAS のプロフィールを見る
+            </a>
+          </p>
+        ) : activities.activities.length === 0 ? (
+          <p class="status">まだ活動の記録はありません。</p>
+        ) : (
+          <>
+            <ol class="list">
+              {activities.activities.map((activity) => (
+                <li>
+                  <time datetime={activity.date}>{formatActivityDate(activity.date)}</time>
+                  <div>
+                    <a href={activity.url} target="_blank" rel="noopener">
+                      {activity.title}
+                    </a>
+                    <span class="type">{TYPE_LABELS[activity.type] ?? activity.type}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p class="more">
+              <a href={laprasProfile} target="_blank" rel="noopener">
+                LAPRAS ですべての活動を見る
+              </a>
+            </p>
+          </>
+        )
+      }
+    </section>
+  </WithToc>
+  <HeadingLink />
+</Base>
+
+<style>
+  /* 題の上に、アイコンと名前を並べる。名前があるので画像の alt は空にする。 */
+  .byline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-5);
+    color: var(--muted);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+  }
+
+  .byline img {
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+  }
+
+  /* 自己紹介と最近の活動は、線と広い余白で分ける。 */
+  .activity {
+    margin-top: var(--space-10);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--line);
+  }
+
+  h2 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+  }
+
+  .note {
+    margin: 0 0 var(--space-7);
+    color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+  }
+
+  .status {
+    margin: 0;
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  .list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list li {
+    display: grid;
+    grid-template-columns: var(--date-column) minmax(0, 1fr);
+    gap: 0 var(--space-5);
+  }
+
+  .list li + li {
+    margin-top: var(--space-5);
+  }
+
+  .list time {
+    padding-top: 0.2em;
+    color: var(--muted);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+  }
+
+  /* 行間は行の箱（div）で決まるので、リンクではなく箱に付ける。 */
+  .list li > div {
+    font-size: var(--text-sm);
+    line-height: 1.8;
+  }
+
+  .list a {
+    color: var(--ink);
+    word-break: auto-phrase;
+    text-decoration-color: transparent;
+  }
+
+  .list a:hover {
+    color: var(--strong);
+    text-decoration-color: currentColor;
+  }
+
+  .type {
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+  }
+
+  .more {
+    margin: var(--space-7) 0 0;
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+  }
+
+  @media (width < 36rem) {
+    .list li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .list time {
+      padding-top: 0;
+    }
+  }
+</style>
