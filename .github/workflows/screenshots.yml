@@ -1,0 +1,95 @@
+name: Screenshots
+
+# PR の見た目を撮り、`screenshots/<ブランチ名>` ブランチに置く。
+# 人は PR のコメントのリンクから、エージェントは git でそのブランチを取って見る（docs/ai-agents.md）。
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "public/**"
+      - "astro.config.mjs"
+      - "scripts/screenshots/**"
+      - ".github/workflows/screenshots.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version-file: .node-version
+          cache: true
+          run-install: |
+            - args: ['--frozen-lockfile']
+
+      - name: Build
+        run: scripts/ci-step.sh "astro build" vp run build
+
+      # Playwright はプロジェクトの依存に入れず、撮影のときだけ別の場所に入れる。
+      - name: Install Playwright
+        run: |
+          mkdir -p "$RUNNER_TEMP/capture"
+          cp scripts/screenshots/capture.mjs "$RUNNER_TEMP/capture/"
+          cd "$RUNNER_TEMP/capture"
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund playwright@1.64.1
+          npx playwright install --with-deps chromium
+
+      - name: Capture
+        run: |
+          scripts/ci-step.sh "screenshots" node "$RUNNER_TEMP/capture/capture.mjs" "$GITHUB_WORKSPACE/dist" "$RUNNER_TEMP/shots"
+
+      - name: Publish to screenshots branch
+        env:
+          BRANCH: screenshots/${{ github.head_ref }}
+        run: |
+          cd "$RUNNER_TEMP/shots"
+          git init -q -b "$BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "screenshots: ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/$BRANCH"
+
+      - name: Comment
+        uses: actions/github-script@v9
+        env:
+          BRANCH: screenshots/${{ github.head_ref }}
+        with:
+          script: |
+            const branch = process.env.BRANCH;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const raw = (name) => `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branch}/${name}`;
+            const pages = ["top", "article", "category", "about", "404"];
+            const rows = pages.map((page) =>
+              `| ${page} | <img src="${raw(`${page}-pc-light.png`)}" width="320"> | <img src="${raw(`${page}-sp-light.png`)}" width="120"> | <img src="${raw(`${page}-pc-dark.png`)}" width="320"> |`);
+            const marker = "<!-- screenshots -->";
+            const body = [
+              marker,
+              `### スクリーンショット（${sha}）`,
+              "",
+              "| ページ | PC（昼） | スマホ（昼） | PC（夜） |",
+              "| --- | --- | --- | --- |",
+              ...rows,
+              "",
+              `全部の画像: [\`${branch}\`](https://github.com/${context.repo.owner}/${context.repo.repo}/tree/${branch})`,
+            ].join("\n");
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number });
+            const existing = comments.find((comment) => comment.body?.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }

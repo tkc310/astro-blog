@@ -4,7 +4,8 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   lint: {
-    ignorePatterns: ["dist/**", ".astro/**", ".wrangler/**"],
+    // scripts/screenshots は CI でだけ入れる Playwright を使うので、型の検査から外す。
+    ignorePatterns: ["dist/**", ".astro/**", ".wrangler/**", "scripts/screenshots/**"],
     options: {
       typeAware: true,
       typeCheck: true,
