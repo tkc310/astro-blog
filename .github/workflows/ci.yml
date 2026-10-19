@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version-file: .node-version
+          # ロックファイルが入るまではロックなしで入れる（バックログ）。入ったら --frozen-lockfile に戻す。
+          run-install: |
+            - args: ['--no-frozen-lockfile']
+
+      # astro check は型の生成（.astro/types.d.ts）も行うので、vp check より先に回す。
+      - name: Type check (.astro)
+        run: vp run typecheck
+
+      - name: Format, lint, type check
+        run: vp check
+
+      - name: Test
+        run: vp test
+
+      - name: Build
+        run: vp run build
+
+      - name: Check build output
+        run: vp run check-output
+
+      - name: Upload lockfile
+        if: always() && hashFiles('pnpm-lock.yaml') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: pnpm-lock
+          path: pnpm-lock.yaml
+          if-no-files-found: ignore
