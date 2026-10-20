@@ -18,6 +18,26 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          # 記事だけの PR かを、PR の元のコミットとの差分で調べるため（ADR-0024）
+          fetch-depth: 0
+
+      # 記事と記事の画像（src/content/・src/assets/posts/）だけを変えた PR は、ビルドとビルド結果の検査だけ回す（ADR-0024）。
+      # 型・lint・テストはコードの検査で、記事だけの変更では結果が変わらない。main への push はいつもすべて回す。
+      - name: Detect content-only change
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          content_only=false
+          if [ -n "$BASE_SHA" ]; then
+            changed=$(git diff --name-only "$BASE_SHA" HEAD)
+            if [ -n "$changed" ] && ! printf '%s\n' "$changed" | grep -qvE '^src/(content|assets/posts)/'; then
+              content_only=true
+            fi
+          fi
+          echo "content_only=$content_only" >> "$GITHUB_OUTPUT"
+          echo "記事だけの変更: $content_only"
 
       - uses: voidzero-dev/setup-vp@v1.21.2
         with:
@@ -29,12 +49,15 @@ jobs:
       # 手元と同じ make のコマンドで回す（ADR-0014）。Makefile が壊れれば CI で気づける。
       # 失敗したときは scripts/ci-step.sh が出力の末尾を注釈に出す（docs/ai-agents.md）。
       - name: Type check (.astro)
+        if: steps.scope.outputs.content_only != 'true'
         run: scripts/ci-step.sh "make typecheck" make typecheck
 
       - name: Format, lint, type check
+        if: steps.scope.outputs.content_only != 'true'
         run: scripts/ci-step.sh "make lint" make lint
 
       - name: Test
+        if: steps.scope.outputs.content_only != 'true'
         run: scripts/ci-step.sh "make test" make test
 
       - name: Build

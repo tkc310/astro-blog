@@ -6,6 +6,9 @@ on:
   pull_request:
     paths:
       - "src/**"
+      # 記事と記事の画像だけの PR では測らない・撮らない（ADR-0024）。ほかのファイルも変えていれば回る。
+      - "!src/content/**"
+      - "!src/assets/posts/**"
       - "public/**"
       - "astro.config.mjs"
       - "wrangler.jsonc"

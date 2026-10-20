@@ -46,3 +46,4 @@
 | [0021](./0021-lighthouse-100.md) | Lighthouse は 4 項目とも 100 点を目標にし、CI で守る | 採用 |
 | [0022](./0022-self-host-sveltia-cms.md) | 管理画面の本体（Sveltia CMS）は npm のパッケージから自分で配り、CSP で読み込み先を絞る | 採用 |
 | [0023](./0023-content-out-of-format-check.md) | 記事（`src/content/`）は整形の検査から外す | 採用 |
+| [0024](./0024-content-pr-and-publish.md) | 記事だけの PR は最低限の検査にし、管理画面の「公開」は自動マージでスクイズする | 採用 |
