@@ -98,6 +98,8 @@ Cloudflare のダッシュボードで Worker を作り、GitHub のリポジト
 
 プレビュービルドを有効にすると、`main` 以外のブランチを push するたびに、ブランチごとのプレビュー URL にデプロイされます。下書きの記事はプレビュー URL にだけ出し、本番には出しません。Workers Builds がビルド中に入れる `WORKERS_CI_BRANCH` を見て切り替えています。
 
+プレビュー URL はそのままだと誰でも開けるので、あとで Cloudflare Access で認証をかけました（手順 7）。
+
 ```plain
 export function shouldShowDrafts(env: Record<string, string | undefined>): boolean {
   if (env.SHOW_DRAFTS === "true") return true;
@@ -241,6 +243,27 @@ https://github.com/sveltia/sveltia-cms-auth
 5. 旧ブログの URL の一覧がすべて 200 か 301 を返すことを確かめる
 
 <!-- スクショ 6: Worker の「ドメインとルート」でカスタムドメインを足した画面 -->
+
+### 7. プレビュー URL を Cloudflare Access で守る
+
+プレビュー URL（`<ブランチ名>-astro-blog.<サブドメイン>.workers.dev`）には下書きの記事も出るので、そのままだと公開前の記事を誰でも読めてしまいます。Cloudflare Access で、プレビュー URL にだけ認証をかけました。
+
+1. Workers & Pages で Worker を開き、**Access** タブの **Protect this Worker behind Access** を選ぶ
+2. 範囲は **Previews only** にする
+3. 認証のポリシーを選ぶ（1 人で使うなら、Cloudflare のアカウントのメンバーだけを通すのが簡単）
+4. **Apply Access** を押す
+
+<!-- スクショ 8: Worker の Access タブ（Previews only と認証のポリシー） -->
+
+範囲を **All traffic** にすると、Worker につながるすべてのドメインが対象になり、カスタムドメインの本番（`tkc310.com`）まで認証が必要になります。プレビューだけを守りたいときは Previews only を選びます。
+
+これでプレビュー URL を開くと、Cloudflare のログイン画面が出るようになりました。気をつけたのは次の 3 点です。
+
+- **ブランチの URL は 1 つのラベル**: プレビュー URL は `cms-posts-foo-astro-blog.<サブドメイン>.workers.dev` のように、ブランチ名と Worker の名前が 1 つのラベルにつながります。Zero Trust 側で自分でアプリを作り、`*.astro-blog.<サブドメイン>.workers.dev` のようなホスト名を指定しても当たりません。Worker の Access タブから設定するのが確実です
+- **ポリシーの動作は Allow**: Bypass にすると、誰でも認証なしで通ります
+- **CMS の認証の Worker には掛けない**: 管理画面のログイン（GitHub）の途中で Access の画面が挟まると、ログインできなくなります
+
+CI の Lighthouse とスクリーンショットは、CI の中で `astro preview` を起動して `localhost` に対して動かしているので、Access の影響を受けません。
 
 ## 移行: Claude に旧サイトをスクレイピングさせて Markdown を作る
 
