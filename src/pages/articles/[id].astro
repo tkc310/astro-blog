@@ -54,7 +54,7 @@ const graph = articleGraph({
         }
         {draft && <DraftLabel />}
       </p>
-      <h1 style={`view-transition-name: post-${post.id}`}>
+      <h1>
         {title}
       </h1>
     </header>
@@ -148,7 +148,6 @@ const graph = articleGraph({
     font-size: var(--text-sm);
     font-weight: 600;
     line-height: 1.8;
-    word-break: auto-phrase;
     text-decoration: underline;
     text-decoration-color: transparent;
     text-underline-offset: 0.2em;

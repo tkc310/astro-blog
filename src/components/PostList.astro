@@ -30,7 +30,7 @@ const categories = new Map(
             </time>
             <div class="body">
               <h2 class="title">
-                <a href={articlePath(post.id)} style={`view-transition-name: post-${post.id}`}>
+                <a href={articlePath(post.id)}>
                   {post.data.title}
                 </a>
                 {post.data.draft && <DraftLabel />}

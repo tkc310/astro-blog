@@ -35,7 +35,7 @@
 - 本文 16px・行間 2・字間 0.05em。記事の本文だけ 17px・行間 2.05、1 行の最大幅 36em
 - 文字の大きさは 1.25 倍ずつの階段（`--text-2xs` 12px 〜 `--text-lg` 22px、`--text-xl`・`--text-display` は画面の幅で伸び縮み）
 - ページの題: `--text-display`（36〜52px）・太さ 200・字間 0.16em。このサイトでいちばん目立つ要素
-- 見出し: 太さ 600、字間 0.06em（記事の題は欧文が開きすぎないよう 0.03em）、かなを詰める（`font-feature-settings: "palt"`）。文節の切れ目で折り返す（`word-break: auto-phrase`）
+- 見出し: 太さ 600、字間 0.06em（記事の題は欧文が開きすぎないよう 0.03em）、かなを詰める（`font-feature-settings: "palt"`）。行の長さをそろえる（`text-wrap: balance`）。文節の切れ目での折り返し（`word-break: auto-phrase`）と本文の `text-wrap: pretty` は、描画が重く TBT を延ばすので使わない（ADR-0021）
 - 小さな文字（日付・ナビ・カテゴリ・補足）は字間を 0.06〜0.14em 開け、小さくても詰まって見えないようにする
 - 日付は `2026.10.19` の形で、数字の幅をそろえる（`tabular-nums`）
 - 和文と欧文のあいだを自動で空け（`text-autospace`）、行頭の約物を詰める（`text-spacing-trim`）。対応しないブラウザでは何も起きない
@@ -96,7 +96,7 @@ PC（記事一覧 /）
 
 ## 6. 動きと先読み
 
-- ページの移り変わりは CSS のビュー遷移（`@view-transition`）。一覧の題名に `view-transition-name` を付け、記事の題名へつなぐ
+- ページの移り変わりは CSS のビュー遷移（`@view-transition`）の既定のフェードだけ。一覧の題名から記事の題名へつなぐ動き（`view-transition-name`）は外した（2026-10-20）
 - Speculation Rules で、サイト内のリンクを `moderate`（カーソルを載せたとき）で先読みする。`/admin/` は除く
 - それ以外の動きは付けない。`prefers-reduced-motion: reduce` ではビュー遷移も止める
 
