@@ -23,7 +23,10 @@ interface Collection {
   files?: { name: string; file: string; fields: Field[] }[];
 }
 
-const config = parse(read("public/admin/config.yml")) as { collections: Collection[] };
+const config = parse(read("public/admin/config.yml")) as {
+  backend: { base_url?: string };
+  collections: Collection[];
+};
 const contentConfig = read("src/content.config.ts");
 
 /** content.config.ts の defineCollection の z.object の項目名（optional/default 付きかどうか）。 */
@@ -54,6 +57,12 @@ const collection = (name: string) => {
 };
 
 describe("Sveltia CMS の設定", () => {
+  test("認証の Worker（sveltia-cms-auth）を https の origin で指す", () => {
+    const url = new URL(config.backend.base_url ?? "");
+    expect(url.protocol).toBe("https:");
+    expect(url.href).toBe(`${url.origin}/`);
+  });
+
   test("記事の項目と必須かどうかが Zod スキーマと同じ", () => {
     const posts = collection("posts");
     expect(posts.folder).toBe("src/content/posts");
