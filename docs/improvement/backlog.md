@@ -9,7 +9,7 @@
 
 ## 人が Cloudflare・GitHub で行う設定
 
-- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `pnpm run build`（Workers Builds には `vp` と `make` の前提が無いので、`package.json` のスクリプトを直接呼ぶ）、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする
+- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `pnpm run build`（Workers Builds には `vp` と `make` の前提が無いので、`package.json` のスクリプトを直接呼ぶ）、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする。Node.js は `.node-version`、pnpm は `packageManager` から決まる。pnpm が切り替わらずに入れられないときは、ビルド変数に `PNPM_VERSION=11.28.6` を足す
 - [ ] GitHub の Settings で「Automatically delete head branches」を有効にする
 - [ ] Sveltia CMS の認証: GitHub の OAuth App を作り、`sveltia/sveltia-cms-auth` を別の Worker としてデプロイし（`GITHUB_CLIENT_ID`・`GITHUB_CLIENT_SECRET`・`ALLOWED_DOMAINS` をシークレットに）、その URL を `public/admin/config.yml` の `backend.base_url` に書く。それまでは CMS にトークンで入る
 

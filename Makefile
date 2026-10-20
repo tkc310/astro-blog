@@ -13,7 +13,7 @@ VP := pnpm exec vp
 help: ## コマンドの一覧を出す
 	@awk 'BEGIN { FS = ":.*## " } /^[a-zA-Z_-]+:.*## / { printf "  make %-14s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-setup: ## ツール（.tool-versions の node・pnpm）と依存パッケージを入れる
+setup: ## ツール（mise.toml の node・pnpm）と依存パッケージを入れる
 	mise install
 	pnpm install
 
