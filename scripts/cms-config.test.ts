@@ -24,7 +24,7 @@ interface Collection {
 }
 
 const config = parse(read("public/admin/config.yml")) as {
-  backend: { base_url?: string };
+  backend: { base_url?: string; squash_merges?: boolean };
   collections: Collection[];
 };
 const contentConfig = read("src/content.config.ts");
@@ -98,4 +98,9 @@ describe("管理画面の本体", () => {
     expect(page).not.toMatch(/unpkg\.com|jsdelivr\.net/);
     expect(page).toMatch(/import \{ init \} from "@sveltia\/cms"/);
   });
+});
+
+// main の保護はスクイズマージだけを許すので、管理画面の「公開」もスクイズでマージする（ADR-0024）。
+test("「公開」はスクイズでマージする（squash_merges）", () => {
+  expect(config.backend.squash_merges).toBe(true);
 });

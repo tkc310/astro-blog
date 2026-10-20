@@ -65,7 +65,7 @@ sequenceDiagram
     CMS->>GH: ブランチ cms/posts/{id} を作り、<br/>記事（src/content/posts/{id}.md）と<br/>画像（src/assets/posts/{id}/）をコミット
     CMS->>GH: プルリクエストを作る<br/>（ラベル sveltia-cms/draft）
     par 検査
-        GH->>CI: CI（型・lint・テスト・ビルド・出力の検査）<br/>Lighthouse・スクリーンショット
+        GH->>CI: CI の check（記事と画像だけならビルドと出力の検査だけ）
     and プレビュー
         GH->>WB: ブランチをビルド（下書きも出す）
         WB->>P: cms-posts-{id}-astro-blog.tkc310.workers.dev
@@ -78,7 +78,13 @@ sequenceDiagram
     U->>CMS: 状態を「公開待ち」にする
     CMS->>GH: ラベルを sveltia-cms/pending_publish に変える
     U->>CMS: 公開（または GitHub でマージ）
-    CMS->>GH: プルリクエストを main にマージし、ブランチを消す
+    alt check が通っている
+        CMS->>GH: スクイズでマージし、ブランチを消す
+    else check が実行中
+        CMS->>GH: 自動マージを予約する
+        CI-->>GH: check が通る
+        GH->>GH: スクイズでマージし、ブランチを消す
+    end
     GH->>WB: main をビルド（下書きは出さない）
     WB->>S: 本番にデプロイ
 ```
@@ -89,3 +95,6 @@ sequenceDiagram
 - 記事が増えてページ送りのページが増えると、旧ブログ用の 301（`public/_redirects`）が新しいページを隠すことがある。`make check-output` が見つけるので、その行を消す
 - 状態のラベル（`sveltia-cms/draft`・`pending_review`・`pending_publish`）は管理画面の「ワークフロー」の列の位置を表すだけで、公開を止める仕組みではない。公開を止めるのは、記事の `draft: true` と、プルリクエストをマージしないこと
 - GitHub で直接マージしても、管理画面から公開しても結果は同じ。マージしたあと、管理画面は `main` を読み直す
+- 「公開」はスクイズマージで行う（`config.yml` の `squash_merges: true`）。`main` の保護がスクイズだけを許すので、これが無いと拒まれる（ADR-0024）
+- 必須の検査（`check`）が実行中のときに「公開」を押すと、Sveltia CMS は GitHub の自動マージを予約し、検査が通った時点で GitHub がマージする。管理画面を閉じてもマージされる。リポジトリの設定で「Allow auto-merge」が有効になっている必要がある
+- 変更が記事と画像（`src/content/`・`src/assets/posts/`）だけの PR では、`check` はビルドとビルド結果の検査だけで、Lighthouse と撮影は回らない（ADR-0024）
