@@ -95,6 +95,7 @@ sequenceDiagram
 - 記事が増えてページ送りのページが増えると、旧ブログ用の 301（`public/_redirects`）が新しいページを隠すことがある。`make check-output` が見つけるので、その行を消す
 - 状態のラベル（`sveltia-cms/draft`・`pending_review`・`pending_publish`）は管理画面の「ワークフロー」の列の位置を表すだけで、公開を止める仕組みではない。公開を止めるのは、記事の `draft: true` と、プルリクエストをマージしないこと
 - GitHub で直接マージしても、管理画面から公開しても結果は同じ。マージしたあと、管理画面は `main` を読み直す
+- 画像は記事の編集画面（本文の画像のボタンやドラッグ）から足す。記事のブランチとプルリクエストに入り、`src/assets/posts/{id}/` に置かれる。「すべてのアセット」「グローバルアセット」の画面からのアップロードは、Editorial Workflow を通らずに `main` へ直接コミットしようとするので、PR を必須にした `main` の保護に拒まれて失敗する（置き場所も記事の画像の場所と違う）
 - 「公開」はスクイズマージで行う（`config.yml` の `squash_merges: true`）。`main` の保護がスクイズだけを許すので、これが無いと拒まれる（ADR-0024）
 - 必須の検査（`check`）が実行中のときに「公開」を押すと、Sveltia CMS は GitHub の自動マージを予約し、検査が通った時点で GitHub がマージする。管理画面を閉じてもマージされる。リポジトリの設定で「Allow auto-merge」が有効になっている必要がある
 - 変更が記事と画像（`src/content/`・`src/assets/posts/`）だけの PR では、`check` はビルドとビルド結果の検査だけで、Lighthouse と撮影は回らない（ADR-0024）
