@@ -7,7 +7,7 @@ description: |-
 pubDate: 2026-10-20T12:00:00
 updatedDate: 2026-10-20T12:00:00
 category: tech
-draft: true
+draft: false
 ---
 
 microCMS + Next.js + Vercel で作っていたこのブログを、Astro + Sveltia CMS + Cloudflare Workers に作り直しました。
@@ -60,7 +60,6 @@ export default defineConfig({
     format: "file",
   },
 });
-
 ```
 
 `build.format: "file"` にすると、`/articles/foo/index.html` ではなく `/articles/foo.html` が出ます。Cloudflare Workers の静的アセットは、`/articles/foo` へのリクエストに `foo.html` をリダイレクトなしで返してくれます。
@@ -81,7 +80,6 @@ const posts = defineCollection({
     })
     .strict(),
 });
-
 ```
 
 Markdown の処理は `unified()` にして、リンクカード（remark-link-card-plus）・コードブロックの装飾（Expressive Code）・外部リンクを別タブで開く設定（rehype-external-links）を入れています。リンクカードの OGP はビルド時に取るので、読み込んだあとでレイアウトがずれることはありません。
@@ -107,7 +105,6 @@ export function shouldShowDrafts(env: Record<string, string | undefined>): boole
   const branch = env.WORKERS_CI_BRANCH;
   return branch !== undefined && branch !== "" && branch !== "main";
 }
-
 ```
 
 `wrangler.jsonc` に書くのは名前と静的アセットの扱いくらいです。Worker の入口とアセットの置き場所は、Astro の Cloudflare アダプターがビルドのときに足してくれます。
@@ -121,7 +118,6 @@ export function shouldShowDrafts(env: Record<string, string | undefined>): boole
   },
   "observability": { "enabled": true },
 }
-
 ```
 
 旧ブログの URL のうち、無くしたページ（タグ・ノート・寄付など）は `public/_redirects` で 301 にしました。旧サイトのサイトマップにあった URL を一覧にしておき、すべてが 200 か 301 を返すことを CI で確かめています。
@@ -147,7 +143,6 @@ if (Astro.cache.enabled) {
   );
 }
 ---
-
 ```
 
 ```plain
@@ -160,7 +155,6 @@ export default defineConfig({
   session: false, // セッションを使わないので KV を作らない
   cache: { provider: cacheCloudflare() },
 });
-
 ```
 
 LAPRAS の API は 3 秒で打ち切り、取れなくてもプロフィールへのリンクを出してページを返すようにしています。
@@ -183,7 +177,6 @@ https://github.com/sveltia/sveltia-cms
     <script src="https://unpkg.com/@sveltia/cms@0.228.0/dist/sveltia-cms.js"></script>
   </body>
 </html>
-
 ```
 
 設定では、保存の方式を Editorial Workflow にしています。管理画面で保存すると、記事ごとのブランチとプルリクエストができます。プレビュー URL で見た目を確かめてからマージすると公開される流れです。
@@ -213,7 +206,6 @@ collections:
       - { name: category, label: カテゴリ, widget: relation, collection: categories, value_field: "{{slug}}", display_fields: [name] }
       - { name: draft, label: 下書き, widget: boolean, required: false }
       - { name: body, label: 本文, widget: markdown }
-
 ```
 
 frontmatter の項目は、Astro の Zod スキーマと Sveltia の設定の 2 か所に書くことになります。ずれるとビルドで止まるので、両方がそろっているかをテストで確かめています。
@@ -271,7 +263,6 @@ async function nextData(path: string): Promise<Record<string, unknown>> {
   if (!json) throw new Error(`${path}: __NEXT_DATA__ がありません`);
   return (JSON.parse(json) as { props: { pageProps: Record<string, unknown> } }).props.pageProps;
 }
-
 ```
 
 記事の ID は、トップと `/articles/page/<n>` の一覧を順にたどって集めます。サイトマップには 16 本中 10 本しか載っていなかったので使えませんでした。
@@ -328,5 +319,3 @@ CI のビルドが 1 分から 6 分に延びました。リンクカードの�
 <br />
 
 ![Sveltia CMSの管理画面](../../assets/posts/next-to-astro/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-10-20%2012.04.37.png)
-
-。
