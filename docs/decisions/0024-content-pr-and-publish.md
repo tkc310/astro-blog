@@ -15,7 +15,7 @@
 ## 決定
 
 - `public/admin/config.yml` の `backend.squash_merges` を `true` にし、「公開」をスクイズマージにする（`scripts/cms-config.test.ts` が確かめる）
-- `@sveltia/cms` を 0.248.1 に上げる。v0.248.0 から、「公開」を押したときに必須の検査が実行中なだけなら、GitHub の自動マージ（auto-merge）を予約し、検査が通った時点で GitHub がマージする
+- `@sveltia/cms` を 0.248.0 に上げる。v0.248.0 から、「公開」を押したときに必須の検査が実行中なだけなら、GitHub の自動マージ（auto-merge）を予約し、検査が通った時点で GitHub がマージする
 - リポジトリの設定で「Allow auto-merge」を有効にする（人がリポジトリの設定から行う）
 - 変更が記事と記事の画像（`src/content/`・`src/assets/posts/`）だけの PR では、CI の `check` はビルド（`make build`）とビルド結果の検査（`make check-output`）だけを回す。型・lint・テストは飛ばす。Lighthouse と撮影のワークフローは起動しない。`main` への push ではいつもすべて回す
 - `check` は必須の検査のまま残す。自動マージは `check` が通ってからマージする
@@ -30,4 +30,4 @@
 
 - 記事だけの PR では、Lighthouse の点と見た目のスクリーンショットを見ない。新しい記事の見た目はプレビュー URL で確かめる。`main` に入ったあとの push では Lighthouse が回る
 - 自動マージを予約したあとに `check` が落ちると、マージされずにプルリクエストが残る。管理画面か GitHub で直して保存し直す
-- Sveltia CMS 0.248 は出てから日が浅い。上げる PR で、管理画面がログインの画面まで動くことを撮影で確かめ、ログイン後の保存と公開は人が試す
+- 0.248.1 は pnpm の `minimumReleaseAge`（公開から 1 日たっていない版を入れない）に止められたので、0.248.0 にした。Sveltia CMS 0.248 は出てから日が浅い。上げる PR で、管理画面がログインの画面まで動くことを撮影で確かめ、ログイン後の保存と公開は人が試す
