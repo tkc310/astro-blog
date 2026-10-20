@@ -17,7 +17,7 @@
 
 Node.js と pnpm の版は [`mise.toml`](./mise.toml) にまとめてあり、[mise](https://mise.jdx.dev/) で入れます。GitHub Actions と Cloudflare の Workers Builds は、Node.js の版を [`.node-version`](./.node-version) から読みます。`.tool-versions` は置きません（Workers Builds が asdf で読もうとしてビルドが止まるため。ADR-0019）。
 
-asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いて Node.js を `.node-version` から読ませ、pnpm は `asdf set -u pnpm 12.14.0` のようにホームに置きます。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わって動きます。
+asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いておきます（Node.js を `.node-version` から読ませるため）。`make setup` が asdf のプラグインと Node.js・pnpm を入れ、ホームに pnpm の版が無ければ `asdf set -u` で置きます。プロジェクトには `.tool-versions` を置きません（Workers Builds が読んでビルドが止まるため。ADR-0019）。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わります。
 
 | ツール  | 置き場所                                         | 用途                                            |
 | ------- | ------------------------------------------------ | ----------------------------------------------- |
@@ -28,7 +28,7 @@ asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書い�
 ```bash
 git clone https://github.com/tkc310/astro-blog.git
 cd astro-blog
-make setup   # mise で node・pnpm を入れ、pnpm install で依存（Vite+ を含む）を入れる
+make setup   # mise か asdf で Node.js・pnpm を入れ、pnpm install で依存（Vite+ を含む）を入れる
 make dev     # http://localhost:4321
 ```
 
