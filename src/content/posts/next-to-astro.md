@@ -1,5 +1,5 @@
 ---
-title: ブログをNext.jsからAstroにリプレイス
+title: AI駆動開発でブログをNext.jsからAstroにリプレイスした
 description: |-
   microCMS + Next.js + Vercel で作っていたこのブログを、Astro + Sveltia CMS + Cloudflare Workers に作り直しました。
 
@@ -27,18 +27,18 @@ microCMS + Next.js + Vercel で作っていたこのブログを、Astro + Svelt
 
 - **表示を速くする**: 記事を読むだけのページに、クライアントの JavaScript はほとんど要らない
 - **構造化データ（JSON-LD）を充実させる**: 検索エンジンと AI の要約に、記事の中身を正しく伝える
-- **新しい道具に触る**: Cloudflare Workers・Astro・Vite+ のキャッチアップ
+- **新しい道具に触る**: Cloudflare Workers・Astro・Vite+ のキャッチアップ、Claude Codeの素振り (普段はCursor)
 
 ## 構成
 
-| 役割           | 使ったもの                                          |
-| -------------- | --------------------------------------------------- |
-| フレームワーク | Astro 7（SSG。1 ページだけ Worker で描画）          |
-| 記事           | リポジトリの Markdown（MDX は使わない）             |
-| 管理画面       | Sveltia CMS（Git-based）                            |
-| 配信           | Cloudflare Workers の静的アセット ＋ Workers Builds |
-| CMS の認証     | sveltia-cms-auth（別の Cloudflare Worker）          |
-| ツールチェーン | Vite+（検査・テスト・フォーマット）、pnpm、mise     |
+| 役割 | 使ったもの |
+| --- | --- |
+| フレームワーク | Astro 7（SSG。1 ページだけ Worker で描画） |
+| 記事 | リポジトリの Markdown（MDX は使わない） |
+| 管理画面 | Sveltia CMS（Git-based） |
+| 配信 | Cloudflare Workers の静的アセット ＋ Workers Builds |
+| CMS の認証 | sveltia-cms-auth（別の Cloudflare Worker） |
+| ツールチェーン | Vite+（検査・テスト・フォーマット）、pnpm、mise |
 
 記事の正本は GitHub のリポジトリの Markdown です。管理画面で書いた記事も、GitHub にコミットされるだけなので、データベースも外部の CMS もありません。
 
@@ -90,11 +90,11 @@ Cloudflare のダッシュボードで Worker を作り、GitHub のリポジト
 
 <!-- スクショ 1: Workers Builds でリポジトリをつなぐ画面（ビルドコマンド・デプロイコマンド・プレビュービルドの設定） -->
 
-| 項目             | 値                                  |
-| ---------------- | ----------------------------------- |
-| ビルドコマンド   | `pnpm run build`                    |
+| 項目 | 値 |
+| --- | --- |
+| ビルドコマンド | `pnpm run build` |
 | デプロイコマンド | `npx wrangler deploy`（既定のまま） |
-| プレビュービルド | 有効                                |
+| プレビュービルド | 有効 |
 
 プレビュービルドを有効にすると、`main` 以外のブランチを push するたびに、ブランチごとのプレビュー URL にデプロイされます。下書きの記事はプレビュー URL にだけ出し、本番には出しません。Workers Builds がビルド中に入れる `WORKERS_CI_BRANCH` を見て切り替えています。
 
@@ -229,9 +229,9 @@ https://github.com/sveltia/sveltia-cms-auth
 
 1. **認証の Worker をデプロイする**: README の「Deploy to Cloudflare Workers」ボタンから作ります。ビルドコマンドは空欄、プレビュービルドと Cloudflare Access は不要です。できた Worker の URL（`https://<名前>.<サブドメイン>.workers.dev`）を控えます
 2. **GitHub の OAuth App を作る**: GitHub の Settings → Developer settings → OAuth Apps から作ります
-   - Redirect URIs: `<Worker の URL>/callback`
-   - Allow wildcard matching: オフ（戻り先は登録した 1 件だけなので不要。認証の Worker は GitHub に `redirect_uri` を送らず、GitHub は登録した URL に戻す）
-   - Enable Device Flow: オフ
+    - Redirect URIs: `<Worker の URL>/callback`
+    - Allow wildcard matching: オフ（戻り先は登録した 1 件だけなので不要。認証の Worker は GitHub に `redirect_uri` を送らず、GitHub は登録した URL に戻す）
+    - Enable Device Flow: オフ
 3. **Worker に値を入れる**: Worker の Settings → Variables and Secrets に、`GITHUB_CLIENT_ID`・`GITHUB_CLIENT_SECRET`（シークレットとして）・`ALLOWED_DOMAINS`（`tkc310.com`）を入れます
 4. **CMS の設定に Worker の URL を書く**: `config.yml` の `backend.base_url` に書きます
 
@@ -297,6 +297,10 @@ CI の Lighthouse とスクリーンショットは、CI の中で `astro previe
 
 https://github.com/tkc310/astro-blog/blob/main/docs/cms.md
 
+CSP以外にも色々とできそうです。
+
+[https://sveltiacms.app/en/docs/security](https://sveltiacms.app/en/docs/security)
+
 ## 移行: Claude に旧サイトをスクレイピングさせて Markdown を作る
 
 記事の移行は、Claude Code に任せました。はじめは microCMS の API から記事を取る予定でしたが、API キーをエージェントの作業環境に渡したくなかったので、公開しているサイトから取る方法に変えています。
@@ -326,14 +330,14 @@ async function nextData(path: string): Promise<Record<string, unknown>> {
 
 旧ブログは、描画の前に本文を書き換えていました。新しいブログで同じ見た目になるよう、移行のときに Markdown を直します。変換のルールは先に指示書に書き、Claude にスクリプトとテストを書かせました。
 
-| 旧ブログでの書き方                                          | 移行後                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------------ |
-| `<https://...>` だけの行（実行時に OGP を取るリンクカード） | URL だけの行（ビルド時にリンクカードになる）           |
-| microCMS の画像の URL                                       | 画像をダウンロードしてリポジトリに置き、相対パスに直す |
-| `<img src="..." alt="..." />`                               | `![alt](...)` に直す                                   |
-| 本文中の `#`（h1）                                          | 全体を 1 段下げる（ページの h1 はタイトルだけ）        |
-| 言語名の無いコードブロック                                  | `text` を付けて一覧に出す                              |
-| JSX のコンポーネント                                        | 自動では直さず、一覧に出して下書きにする               |
+| 旧ブログでの書き方 | 移行後 |
+| --- | --- |
+| `<https://...>` だけの行（実行時に OGP を取るリンクカード） | URL だけの行（ビルド時にリンクカードになる） |
+| microCMS の画像の URL | 画像をダウンロードしてリポジトリに置き、相対パスに直す |
+| `<img src="..." alt="..." />` | `![alt](...)` に直す |
+| 本文中の `#`（h1） | 全体を 1 段下げる（ページの h1 はタイトルだけ） |
+| 言語名の無いコードブロック | `text` を付けて一覧に出す |
+| JSX のコンポーネント | 自動では直さず、一覧に出して下書きにする |
 
 スクリプトは何度実行しても同じ結果になるようにしてあります。出力先を消してから書き、最後に整形までするので、旧サイトに新しい記事が無ければ差分は出ません。切り替えの直前にもう一度実行して、取りこぼしが無いことを確かめました。
 
@@ -367,9 +371,39 @@ CI のビルドが 1 分から 6 分に延びました。リンクカードの�
 
 ## おわりに
 
-作り直しのほとんどは、Claude Code と会話しながら進めました。技術の選定・要件・設計の判断を先に文書（指示書と ADR）にしてから実装させ、直した内容と再発防止をログに残す流れにしたので、あとから「なぜこうなっているのか」をたどれます。
+作り直しのほとんどは、Claude Code と会話しながら進めました。
 
-この記事も、その管理画面から投稿しています。
+Opus5.5を使っていますが、コスト的もパフォーマンスも今までと次元が違くて驚いています。
+
+いままで、Cursorから色々なモデルを使っていましたが、外部APIと定額サブスクリプションでは圧倒的に後者が有利だとやっと気づきました。
+
+仕事でもレガシーコードやレビューなどは安いモデルだと使い物にならないため、ClaudeやCodexのモデルを使っていましたが、忙しいときは半月で上限までクレジットを消費していました。
+
+GrokBot / Cursor Projects / Cloude Agents / pstackなど、エコシステムはまだCursorに利がありますが、モデルの賢さ的に併用するしかなさそうです。
+
+しかしながら、そんなにスキルやコマンドなどを知らなくても、対話的にプロンプトを与えるだけでやりたい事をシニアクラスの品質で出力してくれるので本当に驚きです。
+
+エンジニアが不要になるにはもう少し掛かるかも知れませんが、まず急激にやることは変わっていきそうです。
+
+このリプレイスもこの記事の通り、AIが全てのコードを書いており、私はインフラ設定とレビューとプロンプトやコマンドを叩いていただけです。
+
+こだわったりキャッチアップしながらでなければ、マイグレーション含めて数時間で完成していたと思います。
+
+インフラすらもcloudflareに特化したvoidなどのフレームワークを使えば、AIに任せられそうです。
+
+コードを書くのは楽しかったですが、悲観的にばかりならず、この歴史的な時代に生まれたことに感謝して楽しむマインドを忘れないようにしたいです。
+
+一番近くにいるエンジニアから影響を受けていますが、他のホワイトワーカー、次にブルーワーカーも業態が変わっていき1-2年以内には世界が様変わりしていそうです。
+
+一応、AI駆動開発のハーネスとして、技術の選定・要件・設計の判断を先に文書（指示書と ADR）にしてから実装させ、直した内容と再発防止をログに残す流れにしたので、あとから「なぜこうなっているのか」をリポジトリからたどれます。
+
+sveltiaについては仕組みも複雑でカスタマイズもyamlを通じて行われるため、正直流行らなそうな気がしました笑
+
+サーバーが不要ですが、SSGなので結局はGitHub Actionsが必要になります。
+
+スキル・コマンド化しておいて、スマホからGrokBotに依頼してクラウド上でビルドしてもらった成果物をPRでマージするなどの方が今っぽいかもしれません。(クラウド上でプレビュー)
+
+ちなみにこの記事は、sveltiaの管理画面から投稿しています。
 
 <br />
 
