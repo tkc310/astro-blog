@@ -96,7 +96,7 @@
 本番のドメインは旧サイトと同じものを使い、Cloudflare の DNS で切り替える。
 
 1. 移行を実行して PR を出し、プレビュー URL で確かめてマージする
-2. 切り替えの直前に `make migrate` をもう一度実行し、差分が無いことを確かめる（2026-10-20 に実行し、差分は無かった。`make migrate` は最後に整形までする）（移行のあとに microCMS で書いた記事を取りこぼさないため）。旧サイトを消すと再実行できない（ADR-0018）
+2. 切り替えの直前に `make migrate` をもう一度実行し、差分が無いことを確かめる（2026-10-20 に実行し、差分は無かった。当時の `make migrate` は最後に整形までしていた。ADR-0023 で記事を整形の検査から外したので、今は整形しない）（移行のあとに microCMS で書いた記事を取りこぼさないため）。旧サイトを消すと再実行できない（ADR-0018）
 3. Cloudflare で本番のドメインを新しい Worker のカスタムドメインにし、Vercel を向いていた DNS のレコードを置き換える（2026-10-20 に行った）
    1. Cloudflare に `tkc310.com` を足し、Vercel の DNS から読み込んだレコードを整理する。`*` と `_domainconnect` は消し、`tkc310.com` と `www` の A はプロキシなし（DNS のみ）で残す（Vercel をプロキシ越しにしない）。CAA・`_dmarc`・`_vercel` の TXT は残す
    2. お名前.com のネームサーバーを、Vercel（`ns1/ns2.vercel-dns.com`）から Cloudflare（`dahlia`・`yisroel.ns.cloudflare.com`）に変える。この間も旧サイトが見える

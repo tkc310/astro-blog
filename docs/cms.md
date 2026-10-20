@@ -85,7 +85,7 @@ sequenceDiagram
 
 - 管理画面の項目は `config.yml` に、記事の形式の検査は Astro の Zod スキーマ（`src/content.config.ts`）にある。2 つがずれていないかを `scripts/cms-config.test.ts` が確かめる。項目を足すときは両方を直す（`rules/content.md`）
 - ファイル名（`<id>`）は記事の URL（`/articles/<id>`）になる。管理画面では作るときにだけ入力でき、あとから変えられない
-- 管理画面のエディタは Markdown の表の列をそろえないので、表を含む記事は `make lint`（フォーマットの検査）で落ちることがある。そのときはブランチを取って `make fmt-fix` をかけ、同じブランチに push する
+- 管理画面は保存のたびに Markdown を自分の形（表の列をそろえない・入れ子の箇条書きの字下げ 4）で書き直す。`src/content/` は整形の検査（`make lint`）から外してあるので、これで CI は落ちない（ADR-0023）。エディタで書くときも整形は任意
 - 記事が増えてページ送りのページが増えると、旧ブログ用の 301（`public/_redirects`）が新しいページを隠すことがある。`make check-output` が見つけるので、その行を消す
 - 状態のラベル（`sveltia-cms/draft`・`pending_review`・`pending_publish`）は管理画面の「ワークフロー」の列の位置を表すだけで、公開を止める仕組みではない。公開を止めるのは、記事の `draft: true` と、プルリクエストをマージしないこと
 - GitHub で直接マージしても、管理画面から公開しても結果は同じ。マージしたあと、管理画面は `main` を読み直す
