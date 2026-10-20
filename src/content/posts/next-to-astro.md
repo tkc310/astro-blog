@@ -371,7 +371,6 @@ CI でも Lighthouse を回していて、点が下がる変更はマージで�
 
 ![Lighthouseの測定結果 - 4項目が100点](../../assets/posts/next-to-astro/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-10-20%2018.51.58.png)
 
-
 ## おわりに
 
 作り直しのほとんどは、Claude Code と会話しながら進めました。
@@ -422,4 +421,4 @@ sveltiaについては仕組みも複雑でカスタマイズもyamlを通じて
 
 <br />
 
-![Sveltia CMSの管理画面](../../assets/posts/next-to-astro/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-10-20%2012.04.37.png "Sveltia CMSの管理画面_")
+![Sveltia CMSの管理画面](../../assets/posts/next-to-astro/スクリーンショット%202026-10-20%2018.51.58.png "Sveltia CMSの管理画面_")
