@@ -32,6 +32,8 @@ export default defineConfig({
   build: {
     // /articles/<id>.html を出し、Workers の静的アセットが /articles/<id> を 200 で返す。
     format: "file",
+    // CSS は小さいので HTML に埋め込み、読み込みを待って描画が止まらないようにする（Lighthouse の FCP）。
+    inlineStylesheets: "always",
   },
   adapter: cloudflare({
     // ビルド時のページは Node.js で作る（Workers の外のファイルや環境変数を読むため）。

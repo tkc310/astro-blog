@@ -65,8 +65,9 @@ const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     text-underline-offset: 0.2em;
   }
 
-  /* 先が無いときの「前へ」「次へ」。位置をそろえるための飾りなので、支援技術には読ませない（aria-hidden）。 */
+  /* 先が無いときの「前へ」「次へ」。位置をそろえるためだけに場所を取り、見せない。
+     薄い文字で見せるとコントラスト不足になる（Lighthouse のアクセシビリティ）。 */
   .off {
-    color: var(--faint);
+    visibility: hidden;
   }
 </style>
