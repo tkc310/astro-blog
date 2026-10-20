@@ -1,0 +1,28 @@
+---
+// 管理画面（/admin）。Sveltia CMS の本体を npm のパッケージ（@sveltia/cms）から Astro でまとめ、
+// このサイトから配る（ADR-0004・ADR-0022）。外部の CDN からスクリプトを読まない。
+// 設定は public/admin/config.yml。ページは build.format: 'file' で admin.html になるので、
+// 設定の場所を <link rel="cms-config-url"> で教える（既定の「同じフォルダの config.yml」だと /config.yml を探す）。
+// 外から読めるものを絞るため、public/_headers で Content-Security-Policy を付けている。
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 管理画面は検索に出さない（rules/seo.md）。robots.txt でも除外している。 -->
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="same-origin" />
+    <title>管理画面 | tkc310.com</title>
+    <link href="/admin/config.yml" type="application/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <script>
+      // npm のパッケージでは、初期化を自分で呼ぶ（Sveltia CMS の Manual Initialization）。
+      import { init } from "@sveltia/cms";
+
+      void init();
+    </script>
+  </body>
+</html>

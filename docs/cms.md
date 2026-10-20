@@ -1,15 +1,17 @@
 # 管理画面（Sveltia CMS）の仕組み
 
-管理画面（`/admin/`）は Sveltia CMS で、データベースもサーバも持たない（ADR-0004）。ブラウザの中で動く 1 つの JavaScript が、GitHub の API でこのリポジトリを直接読み書きする。記事の正本はリポジトリの Markdown のままで、管理画面はそれを編集する道具にすぎない。
+管理画面（`/admin`）は Sveltia CMS で、データベースもサーバも持たない（ADR-0004）。ブラウザの中で動く JavaScript が、GitHub の API でこのリポジトリを直接読み書きする。本体は npm のパッケージ（`@sveltia/cms`）を Astro でまとめてこのサイトから配り、外部の CDN からは読まない（ADR-0022）。記事の正本はリポジトリの Markdown のままで、管理画面はそれを編集する道具にすぎない。
 
-| 部品                  | 置き場所                                                                                 | 役割                                                                             |
-| --------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| 管理画面              | `public/admin/index.html`・`config.yml`（`https://tkc310.com/admin/`）                   | Sveltia CMS を読み込む静的なページと、その設定（コレクション・項目・保存の方式） |
-| 認証の Worker         | `tkc310/astro-blog-sveltia-cms-auth`（`astro-blog-sveltia-cms-auth.tkc310.workers.dev`） | GitHub の OAuth のやり取りを中継し、アクセストークンを管理画面に渡す             |
-| GitHub の OAuth App   | GitHub の Developer settings                                                             | ログインの許可画面と、トークンの発行                                             |
-| ブログの Worker と CI | Workers Builds・GitHub Actions                                                           | ブランチのプレビュー URL へのデプロイ、検査、`main` の本番デプロイ               |
+| 部品                  | 置き場所                                                                                            | 役割                                                                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 管理画面              | `src/pages/admin.astro`・`public/admin/config.yml`・`public/_headers`（`https://tkc310.com/admin`） | Sveltia CMS の本体を読み込むページ（ビルドでまとめた `/_astro/` のスクリプト）、設定、読み込み先を絞る CSP |
+| 認証の Worker         | `tkc310/astro-blog-sveltia-cms-auth`（`astro-blog-sveltia-cms-auth.tkc310.workers.dev`）            | GitHub の OAuth のやり取りを中継し、アクセストークンを管理画面に渡す                                       |
+| GitHub の OAuth App   | GitHub の Developer settings                                                                        | ログインの許可画面と、トークンの発行                                                                       |
+| ブログの Worker と CI | Workers Builds・GitHub Actions                                                                      | ブランチのプレビュー URL へのデプロイ、検査、`main` の本番デプロイ                                         |
 
 秘密の値（OAuth App の Client Secret）は、認証の Worker の環境変数にだけある。管理画面にもこのリポジトリにも置かない。
+
+管理画面のスクリプトは、ログインした人の GitHub のトークン（`repo` 権限）を持って動く。そのため本体は自分で配り、`/admin` には Content-Security-Policy を付けて、スクリプトはこのサイトのものだけ、通信はこのサイトと GitHub だけに絞っている（`public/_headers`）。本体の版は `package.json` で固定し、上げるときは PR とプレビューで管理画面を確かめる。
 
 ## 1. ログイン（認証）
 
@@ -19,7 +21,7 @@
 sequenceDiagram
     autonumber
     actor U as 書く人
-    participant CMS as 管理画面<br/>tkc310.com/admin/
+    participant CMS as 管理画面<br/>tkc310.com/admin
     participant W as 認証の Worker<br/>sveltia-cms-auth
     participant GH as GitHub
 

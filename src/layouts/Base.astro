@@ -38,7 +38,7 @@ const speculationRules = {
   prerender: [
     {
       where: {
-        and: [{ href_matches: "/*" }, { not: { href_matches: "/admin/*" } }],
+        and: [{ href_matches: "/*" }, { not: { href_matches: "/admin*" } }],
       },
       eagerness: "moderate",
     },
