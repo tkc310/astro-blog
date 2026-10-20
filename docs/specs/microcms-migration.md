@@ -97,10 +97,14 @@
 
 1. 移行を実行して PR を出し、プレビュー URL で確かめてマージする
 2. 切り替えの直前に `make migrate` をもう一度実行し、差分が無いことを確かめる（2026-10-20 に実行し、差分は無かった。`make migrate` は最後に整形までする）（移行のあとに microCMS で書いた記事を取りこぼさないため）。旧サイトを消すと再実行できない（ADR-0018）
-3. Cloudflare で本番のドメインを新しい Worker のカスタムドメインにし、Vercel を向いていた DNS のレコードを置き換える
-4. 本番のドメインで、旧 URL の一覧が 200 か 301 を返すことを確かめる
+3. Cloudflare で本番のドメインを新しい Worker のカスタムドメインにし、Vercel を向いていた DNS のレコードを置き換える（2026-10-20 に行った）
+   1. Cloudflare に `tkc310.com` を足し、Vercel の DNS から読み込んだレコードを整理する。`*` と `_domainconnect` は消し、`tkc310.com` と `www` の A はプロキシなし（DNS のみ）で残す（Vercel をプロキシ越しにしない）。CAA・`_dmarc`・`_vercel` の TXT は残す
+   2. お名前.com のネームサーバーを、Vercel（`ns1/ns2.vercel-dns.com`）から Cloudflare（`dahlia`・`yisroel.ns.cloudflare.com`）に変える。この間も旧サイトが見える
+   3. ゾーンが有効になったら、`tkc310.com` の A を消し、Worker `astro-blog` のカスタムドメインに `tkc310.com` を足す
+   4. `www` の A を消し、AAAA `www` → `100::`（プロキシあり）と、Redirect Rule「Redirect from WWW to root」（301、クエリ文字列を保つ）を置く
+4. 本番のドメインで、旧 URL の一覧が 200 か 301 を返すことを確かめる（2026-10-20 に 41 件すべてが 200 か 301 だった。`www` は `https://tkc310.com/...` へ 301）
 5. microCMS の Webhook（記事の更新で Vercel のビルドを走らせるもの）を止める
-6. Vercel のプロジェクト（旧サイトのホスティング）を消す
+6. Vercel のプロジェクト（旧サイトのホスティング）を消し、Cloudflare の DNS から `_vercel` の TXT を消す
 7. Search Console にサイトマップを出し直し、カバレッジの変化を 2 週間ほど見る
 8. 問題が無ければ、移行スクリプトを消し、microCMS の契約を止める
 
