@@ -26,11 +26,11 @@
 ```bash
 git clone https://github.com/tkc310/astro-blog.git
 cd astro-blog
-make setup   # mise で Node.js・pnpm を入れ、pnpm install で依存を入れる
+make setup   # mise か asdf で Node.js・pnpm を入れ、pnpm install で依存を入れる
 make dev     # http://localhost:4321
 ```
 
-asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いて Node.js を `.node-version` から読ませ、pnpm を `asdf set -u pnpm 12.14.0` でホームに置きます。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わります。
+asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いておきます（Node.js を `.node-version` から読ませるため）。`make setup` が asdf のプラグインと Node.js・pnpm を入れ、ホームに pnpm の版が無ければ `asdf set -u` で置きます。プロジェクトには `.tool-versions` を置きません（Workers Builds が読んでビルドが止まるため。ADR-0019）。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わります。
 
 `.env` は要りません。秘密情報（API キー・OAuth のシークレット・Cloudflare のトークン）はコミットしないでください。
 
