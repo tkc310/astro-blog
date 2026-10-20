@@ -17,7 +17,7 @@
 
 Node.js と pnpm の版は [`mise.toml`](./mise.toml) にまとめてあり、[mise](https://mise.jdx.dev/) で入れます。GitHub Actions と Cloudflare の Workers Builds は、Node.js の版を [`.node-version`](./.node-version) から読みます。`.tool-versions` は置きません（Workers Builds が asdf で読もうとしてビルドが止まるため。ADR-0019）。
 
-asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いて Node.js を `.node-version` から読ませ、pnpm は `asdf set -u pnpm 11.28.6` のようにホームに置きます。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わって動きます。
+asdf を使うときは、`~/.asdfrc` に `legacy_version_file = yes` を書いて Node.js を `.node-version` から読ませ、pnpm は `asdf set -u pnpm 12.14.0` のようにホームに置きます。pnpm は 10 以上ならどの版でも、`package.json` の `packageManager` の版に切り替わって動きます。
 
 | ツール  | 置き場所                                         | 用途                                            |
 | ------- | ------------------------------------------------ | ----------------------------------------------- |
