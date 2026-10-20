@@ -4,7 +4,8 @@ backend:
   name: github
   repo: tkc310/astro-blog
   branch: main
-  # 認証の Worker（sveltia-cms-auth）を置いたら、その URL を base_url に書く。それまでは「トークンでサインイン」で入る。
+  # 認証の Worker（sveltia-cms-auth）。GitHub の OAuth App のコールバックは <base_url>/callback にする。
+  base_url: https://astro-blog-sveltia-cms-auth.takashisato-develop.workers.dev
 # 保存は記事ごとのブランチとプルリクエストにし、プレビュー URL で確かめてからマージする。
 publish_mode: editorial_workflow
 site_url: https://tkc310.com
