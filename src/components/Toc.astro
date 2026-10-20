@@ -11,8 +11,9 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<!-- PC では常に開く（閉じた details の中身は CSS では出せない）。スマホはスクリプトで畳む。 -->
-<details class="toc" data-toc open>
+<!-- 閉じた状態で出し、PC ではスクリプトで開く。PC の目次は本文の外に絶対配置なので、開いても本文はずれない。
+     開いて出してスマホで畳むと、目次の高さぶん本文が上へずれる（CLS）。 -->
+<details class="toc" data-toc>
   <summary>
     <span class="label">目次</span>
     <span class="current" data-toc-current></span>
