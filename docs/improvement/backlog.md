@@ -3,9 +3,13 @@
 改善候補と、まだ決まっていないことの一覧です。Issue があればリンクします。優先度の決め方は [`../improvement-loop.md`](../improvement-loop.md) を参照。
 着手したら `- [x]` にし、完了したら [`log.md`](./log.md) に 1 行記録してここから消します。
 
-## 本番の切り替え
+## 本番の切り替えのあと
 
-- [ ] 本番の切り替え（Cloudflare の Worker と Workers Builds は用意できた。手順は `docs/specs/microcms-migration.md` の「切り替え」。本番のドメインは `https://tkc310.com`）
+- [ ] Cloudflare の **SSL/TLS → エッジ証明書** で「常に HTTPS を使用」をオンにする（2026-10-20 の時点で `http://tkc310.com/` が 301 にならず 200 を返していた）
+- [ ] microCMS の Webhook（記事の更新で Vercel のビルドを走らせるもの）を止める（`docs/specs/microcms-migration.md` §6 の手順 5）
+- [ ] 数日様子を見て問題が無ければ、Vercel のプロジェクトを消し、Cloudflare の DNS から `_vercel` の TXT を消す（手順 6。これ以降は Vercel に戻せない）
+- [ ] Search Console にサイトマップ（`https://tkc310.com/sitemap-index.xml`）を出し直し、カバレッジを 2 週間ほど見る（手順 7）
+- [ ] 問題が無ければ、移行スクリプト（`scripts/migrate-legacy.ts`・`make migrate`・`scripts/legacy-urls.txt` 以外の移行専用のもの）を消し、microCMS の契約を止める（手順 8）
 
 ## 仕組み
 
