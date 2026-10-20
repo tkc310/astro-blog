@@ -13,6 +13,8 @@
 - CI（`lighthouserc.json`、3 回の中央値）は、アクセシビリティ・ベストプラクティス・SEO が 100 点、性能が 98 点、CLS が 0.01 以下、LCP が 2.5 秒以下でないと落ちる
 - CSS は HTML に埋め込む（`build.inlineStylesheets: 'always'`）。どのページも CSS は 30KB 未満で、読み込みの往復を 1 回減らせる
 
+- 文字組みのうち、描画の重いもの（見出しの `word-break: auto-phrase`、本文の `text-wrap: pretty`、コードの `text-autospace`）は使わない。手元の測定で、私についての TBT が 96ms から 8ms、記事が 300ms から 100ms になった
+
 ## 理由
 
 - アクセシビリティ・ベストプラクティス・SEO の点は、同じページなら測るたびに変わらない。100 点を下回るのは、何かを壊したときだけだ
