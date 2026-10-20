@@ -11,7 +11,7 @@ ADR-0003 でコマンドの入口を `vp` にした。ところが `vp` には�
 
 - コマンドの入口を `Makefile` にする。人も、エージェントも、CI も `make <名前>` で呼ぶ
 - 中身は `pnpm`・`vp`・`mise` を呼ぶだけにする。検査やビルドの道具は ADR-0003 のまま（Vite+）
-- `vp` はグローバルのものに頼らず、プロジェクトに入れた `vite-plus` を `pnpm exec vp` で呼ぶ。`package.json` のスクリプトは `pnpm run` で呼ぶ。`.tool-versions` には node と pnpm だけを書く
+- `vp` はグローバルのものに頼らず、プロジェクトに入れた `vite-plus` を `pnpm exec vp` で呼ぶ。`package.json` のスクリプトは `pnpm run` で呼ぶ。`.tool-versions` には node と pnpm だけを書く（2026-10-20 に `mise.toml` と `.node-version` に移した。ADR-0019）
 - 追加の引数は `ARGS` で渡す（例: `make test ARGS="src/lib"`）
 - `make` だけで一覧が出る（`make help`）。各ターゲットに `## 説明` を書く
 - コマンドを足すときは、`Makefile` に足し、`AGENTS.md` と `CONTRIBUTING.md` に `make` の形で書く。`package.json` のスクリプトが要るときはそれも足し、`Makefile` から `pnpm run` で呼ぶ

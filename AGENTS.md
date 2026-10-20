@@ -10,7 +10,7 @@
 
 コマンドは `make` で実行する（`Makefile`、ADR-0014）。一覧は `make help`。追加の引数は `ARGS="..."` で渡す。コマンドを足すときは `Makefile` に `## 説明` 付きで足し、ここと `CONTRIBUTING.md` に `make` の形で書く（`scripts/makefile.test.ts` が検査する）。中身は `pnpm`・`vp`（Vite+）・`mise` を呼ぶだけで、`vp` はプロジェクトの `vite-plus` を `pnpm exec vp` で呼ぶ（グローバルの `vp` は要らない）。
 
-- ツールと依存パッケージを入れる: `make setup`（`.tool-versions` の node・pnpm を mise で入れ、`pnpm install` で依存を入れる）
+- ツールと依存パッケージを入れる: `make setup`（`mise.toml` の node・pnpm を mise で入れ、`pnpm install` で依存を入れる）
 - 依存パッケージだけを入れる: `make install`
 - 開発サーバ起動: `make dev`（workerd で動く。`/about` は毎回描画し、キャッシュしない）。下書きも見るなら `SHOW_DRAFTS=true make dev`
 - ビルド: `make build`
