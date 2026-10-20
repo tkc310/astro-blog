@@ -187,6 +187,13 @@ for (const file of htmlFiles(DIST)) {
     if (!/\bwidth="\d+"/.test(tag) || !/\bheight="\d+"/.test(tag))
       fail(`${name}: 画像に width と height がありません: ${tag}`);
   }
+
+  // サイト内の画像はビルド結果にある。リンクカードの画像は、Astro のキャッシュから本文を戻すと
+  // 落とされないことがある（ビルドは astro build --force で回す）。
+  for (const [, src] of html.matchAll(/<img\b[^>]*\bsrc="(\/(?!\/)[^"?#]*)/g)) {
+    if (!existsSync(join(DIST, decodeURIComponent(src))))
+      fail(`${name}: 画像がビルド結果にありません: ${src}`);
+  }
 }
 
 if (errors.length > 0) {

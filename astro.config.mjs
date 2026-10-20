@@ -96,6 +96,7 @@ export default defineConfig({
       remarkPlugins: [
         // URL だけの段落を、ビルド時に OGP を取ってリンクカードにする。取れなければ普通のリンクのまま。
         // 画像とファビコンは public/remark-link-card-plus/ に保存して、自分のサイトから出す。
+        // 保存はプラグインが本文を描くときだけなので、ビルドは Astro のキャッシュを捨てて回す（package.json の build）。
         [remarkLinkCard, { cache: true, shortenUrl: true, thumbnailPosition: "right" }],
       ],
       rehypePlugins: [

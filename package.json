@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build --force",
     "preview": "astro build && astro preview",
     "typecheck": "astro check",
     "check-output": "node scripts/check-output.mjs",
