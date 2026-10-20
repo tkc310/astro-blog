@@ -4,7 +4,7 @@
 
 ## いまの段階
 
-**実装中。** `docs/specs/blog-replace.md` の「進め方」の順に、1 PR ずつ作っている。指示書に無い機能は、先に `docs/specs/` に指示書を書いて合意してから作る。
+**運用中。** 2026-10-20 に本番（tkc310.com）を切り替えた。指示書に無い機能は、先に `docs/specs/` に指示書を書いて合意してから作る。
 
 ## 開発者用のコマンド
 
@@ -31,16 +31,16 @@ npm のレジストリに届かない環境（一部のエージェントの作�
 
 ## まず読むもの
 
-| やりたいこと                           | 読むもの                                                       |
-| -------------------------------------- | -------------------------------------------------------------- |
-| 全体の要件・技術スタックを知る         | `docs/specs/blog-replace.md`                                   |
-| ブログ自体を直す・改善する             | `docs/improvement-loop.md` → `.claude/skills/improve/SKILL.md` |
-| 判断の理由を知る                       | `docs/decisions/`（ADR）                                       |
-| 機能を足す・大きく変える               | `docs/specs/`（先に指示書を書く。`write-spec` スキル）         |
-| 記事を書く・移行する                   | `rules/content.md` → `.claude/skills/write-post/SKILL.md`      |
-| 過去に直したこと・残っている改善を知る | `docs/improvement/log.md`・`docs/improvement/backlog.md`       |
-| エージェントとの進め方を知る           | `docs/ai-agents.md`                                            |
-| 開発の手順を知る                       | `CONTRIBUTING.md`                                              |
+| やりたいこと                           | 読むもの                                                                            |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
+| 全体の要件・技術スタックを知る         | `docs/specs/blog-replace.md`                                                        |
+| ブログ自体を直す・改善する             | `docs/improvement-loop.md` → `.claude/skills/improve/SKILL.md`                      |
+| 判断の理由を知る                       | `docs/decisions/`（ADR）                                                            |
+| 機能を足す・大きく変える               | `docs/specs/`（先に指示書を書く。`write-spec` スキル）                              |
+| 記事を書く・移行する                   | `docs/writing-posts.md` → `rules/content.md` → `.claude/skills/write-post/SKILL.md` |
+| 過去に直したこと・残っている改善を知る | `docs/improvement/log.md`・`docs/improvement/backlog.md`                            |
+| エージェントとの進め方を知る           | `docs/ai-agents.md`                                                                 |
+| 開発の手順を知る                       | `CONTRIBUTING.md`                                                                   |
 
 ## 守ること
 

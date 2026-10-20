@@ -11,7 +11,7 @@
 
 ## いまの段階
 
-実装中です。指示書（[`docs/specs/`](./docs/specs/)）の「進め方」の順に、1 PR ずつ作っています。指示書に無い機能は、先に指示書と ADR（[`docs/decisions/`](./docs/decisions/README.md)）を Pull Request でレビューして合意します。
+運用中です（2026-10-20 に本番を切り替えました）。記事の書き方は [`docs/writing-posts.md`](./docs/writing-posts.md) にあります。指示書に無い機能は、先に指示書と ADR（[`docs/decisions/`](./docs/decisions/README.md)）を Pull Request でレビューして合意します。
 
 ## 開発環境
 
@@ -48,7 +48,7 @@ make dev     # http://localhost:4321
 2. 変更する。機能を足す・大きく変えるときは、先に `docs/specs/` に指示書を書く
 3. 検査を通す: `make check`（CI も同じ順で、同じ `make` のコマンドを回す）。フォーマットの崩れは `make fmt-fix` で直せる。PR では Lighthouse ワークフローも主なページを測り、性能・アクセシビリティ・SEO が 95 点を下回ると落ちる（`lighthouserc.json`）
 4. Pull Request を作り、テンプレートのチェックリストを埋める
-5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする（Cloudflare 側の設定が済んでから。[バックログ](./docs/improvement/backlog.md)）。見た目と構造化データをそこで確かめる
+5. Cloudflare Workers Builds がブランチのプレビュー URL を PR にコメントする。見た目と構造化データをそこで確かめる
 6. `main` にマージすると本番に反映される
 
 ## コミットメッセージ
