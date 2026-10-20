@@ -7,6 +7,8 @@ import { join, relative } from "node:path";
 const DIST = "dist/client";
 const SERVER = "dist/server";
 const errors = [];
+/** ページに出す 1 枚の画像の大きさの上限。 */
+const MAX_IMAGE_BYTES = 200 * 1024;
 
 function fail(message) {
   errors.push(message);
@@ -190,9 +192,26 @@ for (const file of htmlFiles(DIST)) {
 
   // サイト内の画像はビルド結果にある。リンクカードの画像は、Astro のキャッシュから本文を戻すと
   // 落とされないことがある（ビルドは astro build --force で回す）。
-  for (const [, src] of html.matchAll(/<img\b[^>]*\bsrc="(\/(?!\/)[^"?#]*)/g)) {
-    if (!existsSync(join(DIST, decodeURIComponent(src))))
+  for (const [tag, src] of html.matchAll(/<img\b[^>]*\bsrc="(\/(?!\/)[^"?#]*)[^>]*>/g)) {
+    const file = join(DIST, decodeURIComponent(src));
+    if (!existsSync(file)) {
       fail(`${name}: 画像がビルド結果にありません: ${src}`);
+      continue;
+    }
+    // 大きな画像は LCP を遅らせる（OGP の画像をそのまま出して 9 秒になった。ADR-0021）。
+    // srcset があれば、狭い画面が読む一番小さい候補を見る。
+    const srcset = /\bsrcset="([^"]*)"/.exec(tag)?.[1];
+    const smallest = srcset
+      ? srcset
+          .split(",")
+          .map((candidate) => candidate.trim().split(/\s+/))
+          .toSorted((a, b) => Number.parseInt(a[1]) - Number.parseInt(b[1]))[0][0]
+      : src;
+    const size = statSync(join(DIST, decodeURIComponent(smallest))).size;
+    if (size > MAX_IMAGE_BYTES)
+      fail(
+        `${name}: 画像が ${Math.round(size / 1024)}KB あります（${MAX_IMAGE_BYTES / 1024}KB まで）: ${smallest}`,
+      );
   }
 }
 

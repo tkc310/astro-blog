@@ -51,7 +51,7 @@ SHOW_DRAFTS=true make dev     # http://localhost:4321 で下書きも見える
    - `category` は `src/content/categories/` のファイル名（`tech`・`lifehack`・`book_review`・`occult`・`etc`）
    - frontmatter に書けるのは `title`・`description`・`pubDate`・`category`・`updatedDate`・`draft` だけ。ほかの項目を書くとビルドが落ちる
 
-2. 画像は `src/assets/posts/<id>/` に置き、本文から相対パスで参照する
+2. 画像は `src/assets/posts/<id>/` に置き、本文から相対パスで参照する。スマホの写真は幅 1600px までに縮めてから置く
 3. `make check` を通す
 4. `post` の type でコミットして PR を出す（例: `post: Astro 7 への移行メモを公開する`）
 5. プレビュー URL で確かめ、`draft: true` を外すコミットを足してマージする
