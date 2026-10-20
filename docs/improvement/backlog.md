@@ -5,16 +5,7 @@
 
 ## 本番の切り替え
 
-- [ ] 本番の切り替え（下の Cloudflare の設定ができたらすぐ行う。手順は `docs/specs/microcms-migration.md` の「切り替え」。本番のドメインは `https://tkc310.com`）
-
-## 人が Cloudflare・GitHub で行う設定
-
-- [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `pnpm run build`（Workers Builds には `vp` と `make` の前提が無いので、`package.json` のスクリプトを直接呼ぶ）、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする。Node.js は `.node-version`、pnpm は `packageManager` から決まる。pnpm が切り替わらずに入れられないときは、ビルド変数に `PNPM_VERSION=11.28.6` を足す
-- [ ] GitHub の Settings で「Automatically delete head branches」を有効にする
-
-## Markdown の拡張（その PR で確かめる）
-
-- [ ] Workers にデプロイしたあと、`/articles/<id>` がリダイレクトなしに 200 で返るか（ビルドが `articles/<id>.html` を出すことは `check-output` で確かめ済み）
+- [ ] 本番の切り替え（Cloudflare の Worker と Workers Builds は用意できた。手順は `docs/specs/microcms-migration.md` の「切り替え」。本番のドメインは `https://tkc310.com`）
 
 ## 仕組み
 
