@@ -61,6 +61,7 @@ check-output: ## ビルド結果（dist/）を検査する（make build の後�
 
 migrate: ## 旧ブログ（tkc310.com）の記事を Markdown に移す（docs/specs/microcms-migration.md。何度実行しても同じ結果）
 	pnpm run migrate $(ARGS)
+	$(VP) fmt src/content/posts
 
 outdated: ## 新しい版がある依存パッケージを一覧する
 	pnpm outdated $(ARGS)
