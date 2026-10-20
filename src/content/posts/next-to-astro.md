@@ -163,20 +163,27 @@ LAPRAS の API は 3 秒で打ち切り、取れなくてもプロフィール�
 
 ### 4. Sveltia CMS を置く
 
-Sveltia CMS は、Decap CMS（旧 Netlify CMS）の後継として作り直された Git-based の CMS です。`public/admin/` に HTML と設定ファイルを置くだけで、`/admin/` が管理画面になります。
+Sveltia CMS は、Decap CMS（旧 Netlify CMS）の後継として作り直された Git-based の CMS です。管理画面のページと設定ファイルを置くだけで、`/admin` が管理画面になります。サーバもデータベースも要らず、ブラウザの中で動く JavaScript が GitHub の API でリポジトリの Markdown を直接読み書きします。
 
 https://github.com/sveltia/sveltia-cms
 
-```plain
+はじめは公式の手順どおり、`public/admin/index.html` から unpkg の本体（`<script src="https://unpkg.com/@sveltia/cms@0.228.0/dist/sveltia-cms.js">`）を読み込んでいました。今は npm のパッケージを Astro でまとめて、自分のサイトから配っています（理由は手順 8）。
+
+```astro title="src/pages/admin.astro"
 <!doctype html>
 <html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="robots" content="noindex" />
     <title>管理画面 | tkc310.com</title>
+    <link href="/admin/config.yml" type="application/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <script src="https://unpkg.com/@sveltia/cms@0.228.0/dist/sveltia-cms.js"></script>
+    <script>
+      import { init } from "@sveltia/cms";
+
+      void init();
+    </script>
   </body>
 </html>
 ```
@@ -223,7 +230,7 @@ https://github.com/sveltia/sveltia-cms-auth
 1. **認証の Worker をデプロイする**: README の「Deploy to Cloudflare Workers」ボタンから作ります。ビルドコマンドは空欄、プレビュービルドと Cloudflare Access は不要です。できた Worker の URL（`https://<名前>.<サブドメイン>.workers.dev`）を控えます
 2. **GitHub の OAuth App を作る**: GitHub の Settings → Developer settings → OAuth Apps から作ります
    - Redirect URIs: `<Worker の URL>/callback`
-   - Allow wildcard matching: オフ（Worker が `redirect_uri` を毎回はっきり送るので不要）
+   - Allow wildcard matching: オフ（戻り先は登録した 1 件だけなので不要。認証の Worker は GitHub に `redirect_uri` を送らず、GitHub は登録した URL に戻す）
    - Enable Device Flow: オフ
 3. **Worker に値を入れる**: Worker の Settings → Variables and Secrets に、`GITHUB_CLIENT_ID`・`GITHUB_CLIENT_SECRET`（シークレットとして）・`ALLOWED_DOMAINS`（`tkc310.com`）を入れます
 4. **CMS の設定に Worker の URL を書く**: `config.yml` の `backend.base_url` に書きます
@@ -264,6 +271,31 @@ https://github.com/sveltia/sveltia-cms-auth
 - **CMS の認証の Worker には掛けない**: 管理画面のログイン（GitHub）の途中で Access の画面が挟まると、ログインできなくなります
 
 CI の Lighthouse とスクリーンショットは、CI の中で `astro preview` を起動して `localhost` に対して動かしているので、Access の影響を受けません。
+
+### 8. 管理画面の本体を自分で配り、CSP を付ける
+
+管理画面のスクリプトは、ログインした人の GitHub のアクセストークン（`repo` 権限）を持って動きます。unpkg から本体を読み込む形だと、版を固定していても、配信元が乗っ取られたり途中で中身が変わったりしたときに、ブラウザはそれを確かめずに実行してしまいます。差し替えられた本体は、トークンを外に送ることも、リポジトリに書き込んで本番に出すこともできます。
+
+さらに CDN 版の本体は、日本語の翻訳やコードのハイライト（Shiki）なども実行中に unpkg から追加で読み込むので、unpkg が止まると管理画面も開けません。
+
+そこで次のように変えました。
+
+1. `@sveltia/cms` を `package.json` に正確な版で入れる。中身はロックファイルのハッシュで確かめられ、版の更新もほかの依存と同じく PR と CI を通る
+2. 管理画面を Astro のページ（`src/pages/admin.astro`）にし、パッケージの `init()` を呼ぶ。Astro（Vite）がまとめて `/_astro/` から配るので、翻訳なども含めて外部の CDN を読まない
+3. `public/_headers` で `/admin` に Content-Security-Policy を付け、スクリプトは自分のサイトのものだけ、通信は自分のサイトと GitHub だけに絞る
+
+```text title="public/_headers"
+/admin
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://avatars.githubusercontent.com https://*.githubusercontent.com; connect-src 'self' blob: data: https://api.github.com https://*.githubusercontent.com https://www.githubstatus.com; frame-ancestors 'none'; ...
+```
+
+`script-src` は `'self'` だけで、インラインのスクリプトも許していません。Astro は小さなスクリプトを HTML に埋め込むことがありますが、管理画面のスクリプトはパッケージを読み込むので埋め込まれず、別のファイルとして配られます。スタイルだけは、Sveltia CMS が部品のスタイルを差し込むので `'unsafe-inline'` を許しています。
+
+壊れていないことは CI で確かめています。ビルド結果の検査で管理画面に外部やインラインのスクリプトが無いことを、スクリーンショットの撮影で管理画面を実際に開き、CSP のヘッダーが付いていること・CSP に止められた読み込みが無いこと・ログインの画面まで描かれることを見ています。
+
+ログインから記事の保存までの流れ（シーケンス図付き）は、リポジトリの文書にまとめました。
+
+https://github.com/tkc310/astro-blog/blob/main/docs/cms.md
 
 ## 移行: Claude に旧サイトをスクレイピングさせて Markdown を作る
 
