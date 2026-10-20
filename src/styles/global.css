@@ -82,6 +82,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* コードには行末の調整と和欧間のアキを掛けない。見た目に要らず、細かい要素が多いので
+   スタイルとレイアウトの計算が重くなる（長い記事で TBT が延びた。ADR-0021）。 */
+pre,
+code,
+.expressive-code {
+  text-wrap: wrap;
+  text-autospace: no-autospace;
+}
+
 ::selection {
   background: var(--strong);
   color: var(--paper);
