@@ -2,7 +2,7 @@
 
 [tkc310.com](https://tkc310.com) のソースです。microCMS + Next.js で作っていたブログ（[tkc310/microCMS_blog](https://github.com/tkc310/microCMS_blog)）を、Astro の SSG と Cloudflare Workers に移しました（2026-10-20 に切り替え）。
 
-- 記事はこのリポジトリの Markdown が正本です。管理画面（Sveltia CMS、[`/admin/`](https://tkc310.com/admin/)）からも書け、保存は Pull Request になります
+- 記事はこのリポジトリの Markdown が正本です。管理画面（Sveltia CMS、[`/admin`](https://tkc310.com/admin)）からも書け、保存は Pull Request になります
 - ページはビルド時に作り、Cloudflare Workers の静的アセットで配信します。私について（`/about`）だけは Worker で描き、Cloudflare にキャッシュします
 - 目標は Core Web Vitals と Lighthouse の高得点、JSON-LD による SEO・AIO です
 
@@ -69,7 +69,7 @@ src/
   assets/posts/<id>/    記事の画像
   pages/ components/ layouts/ styles/ lib/
 public/
-  admin/                管理画面（Sveltia CMS の設定は config.yml）
+  admin/                管理画面の設定（config.yml。ページは src/pages/admin.astro）
   _redirects            旧 URL からの 301
 scripts/                ビルド結果の検査・移行スクリプト・設定のテスト
 rules/                  構成・記事・SEO の規則（エージェントも人も従う）

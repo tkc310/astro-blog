@@ -83,3 +83,19 @@ describe("Sveltia CMS の設定", () => {
     expect(cmsFields(about?.fields ?? [])).toEqual(schemaFields("profile"));
   });
 });
+
+// 管理画面の本体は npm のパッケージから Astro でまとめ、このサイトから配る（ADR-0022）。
+describe("管理画面の本体", () => {
+  const pkg = JSON.parse(read("package.json")) as { dependencies?: Record<string, string> };
+  const page = read("src/pages/admin.astro");
+
+  test("@sveltia/cms を正確な版で入れる（上げるときは PR とプレビューで管理画面を確かめる）", () => {
+    expect(pkg.dependencies?.["@sveltia/cms"]).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  test("ページは外部の CDN を読まず、パッケージを import する", () => {
+    expect(page).not.toMatch(/<script[^>]*\bsrc=/);
+    expect(page).not.toMatch(/unpkg\.com|jsdelivr\.net/);
+    expect(page).toMatch(/import \{ init \} from "@sveltia\/cms"/);
+  });
+});

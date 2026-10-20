@@ -137,16 +137,42 @@ if (!existsSync(articles)) {
 }
 
 // 管理画面（Sveltia CMS、ADR-0004）は検索に出さず、ページの検査から外す。
-const ADMIN = join(DIST, "admin", "index.html");
-if (!existsSync(ADMIN)) fail("admin/index.html がありません");
-else if (!readFileSync(ADMIN, "utf8").includes('<meta name="robots" content="noindex"'))
-  fail("admin/index.html: noindex がありません");
+// 本体はこのサイトから配り（ADR-0022）、外部のスクリプトもインラインのスクリプトも置かない（CSP で止まるため）。
+const ADMIN = join(DIST, "admin.html");
+if (!existsSync(ADMIN)) fail("admin.html がありません");
+else {
+  const html = readFileSync(ADMIN, "utf8");
+  if (!html.includes('<meta name="robots" content="noindex"'))
+    fail("admin.html: noindex がありません");
+  if (!html.includes('href="/admin/config.yml"'))
+    fail("admin.html: 設定（cms-config-url）がありません");
+  const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)];
+  if (scripts.length === 0) fail("admin.html: Sveltia CMS のスクリプトがありません");
+  for (const [, attributes, body] of scripts) {
+    const src = /\bsrc="([^"]+)"/.exec(attributes)?.[1];
+    if (!src)
+      fail("admin.html: インラインのスクリプトがあります（CSP の script-src 'self' で止まる）");
+    else if (!src.startsWith("/")) fail(`admin.html: 外部のスクリプトを読んでいます: ${src}`);
+    else if (body.trim() !== "") fail("admin.html: src のあるスクリプトに中身があります");
+  }
+}
+if (existsSync(join(DIST, "admin", "index.html")))
+  fail("admin/index.html があります。管理画面は src/pages/admin.astro（/admin）だけにしてください");
 if (!existsSync(join(DIST, "admin", "config.yml"))) fail("admin/config.yml がありません");
+const headers = existsSync(join(DIST, "_headers"))
+  ? readFileSync(join(DIST, "_headers"), "utf8")
+  : "";
+const adminCsp = /^\/admin\n(?:[ \t]+.*\n)*?[ \t]+Content-Security-Policy: (.+)$/m.exec(
+  headers,
+)?.[1];
+if (!adminCsp) fail("_headers に /admin の Content-Security-Policy がありません");
+else if (!/(^|; )script-src 'self'(;|$)/.test(adminCsp))
+  fail("_headers: /admin の script-src は 'self' だけにしてください");
 
 for (const file of htmlFiles(DIST)) {
   const html = readFileSync(file, "utf8");
   const name = relative(DIST, file);
-  if (name.startsWith("admin/")) continue;
+  if (name === "admin.html" || name.startsWith("admin/")) continue;
   if (!/<html[^>]*\blang="ja"/.test(html)) fail(`${name}: <html lang="ja"> がありません`);
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${name}: <title> がありません`);
   if (!/<meta name="description" content="[^"]+"/.test(html))

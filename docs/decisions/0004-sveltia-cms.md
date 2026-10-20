@@ -1,7 +1,7 @@
 # 0004 管理画面は Git-based の Sveltia CMS にする
 
 - 日付: 2026-10-19
-- 状態: 採用
+- 状態: 採用（置き方と本体の配り方は ADR-0022 で変えた）
 
 ## 背景
 
@@ -10,7 +10,7 @@
 ## 決定
 
 - 管理画面は Sveltia CMS（Decap CMS の後継として作り直された Git-based CMS）にする
-- `/admin/` に静的ページとして置き、設定は `public/admin/config.yml` に書く
+- `/admin/` に静的ページとして置き、設定は `public/admin/config.yml` に書く（→ ADR-0022: `/admin` に置き、本体は npm のパッケージから自分で配る）
 - GitHub の認証は `sveltia-cms-auth` を別の Cloudflare Worker として動かし、GitHub OAuth App とつなぐ
 - CMS からの保存は下書きブランチに行い、プレビュー URL で確かめてから `main` にマージする
 - `/admin/` は `noindex` にし、`robots.txt` でも除外する
