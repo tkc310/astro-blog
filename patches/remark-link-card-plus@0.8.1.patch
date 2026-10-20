@@ -1,0 +1,13 @@
+diff --git a/build/index.js b/build/index.js
+index 5101716ebd59f150c75e3137e58072b565b527ac..d3ed9e805f88987d1829375e1bad4534f3a75ef5 100644
+--- a/build/index.js
++++ b/build/index.js
+@@ -107,7 +107,7 @@ const getOpenGraph = async (targetUrl) => {
+     try {
+         const { result } = await client({
+             url: targetUrl.toString(),
+-            timeout: 10000,
++            timeout: 10,
+         });
+         return result;
+     }
