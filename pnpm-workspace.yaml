@@ -9,3 +9,8 @@ overrides:
 allowBuilds:
   esbuild: true
   workerd: true
+
+# remark-link-card-plus 0.8.1 は open-graph-scraper に timeout を 10000（秒）で渡し、応答しないサイトで
+# ビルドが 5 分止まる。10 秒に直す（scripts/link-card-timeout.test.ts）。上げたら当て直すか外す。
+patchedDependencies:
+  remark-link-card-plus@0.8.1: patches/remark-link-card-plus@0.8.1.patch
