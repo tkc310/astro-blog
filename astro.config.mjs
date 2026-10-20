@@ -35,6 +35,10 @@ export default defineConfig({
     // CSS は小さいので HTML に埋め込み、読み込みを待って描画が止まらないようにする（Lighthouse の FCP）。
     inlineStylesheets: "always",
   },
+  image: {
+    // 本文の画像に srcset と sizes を付け、画面の幅に合った大きさを読ませる（スマホに大きな写真を送らない）。
+    layout: "constrained",
+  },
   adapter: cloudflare({
     // ビルド時のページは Node.js で作る（Workers の外のファイルや環境変数を読むため）。
     prerenderEnvironment: "node",
