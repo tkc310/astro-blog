@@ -37,6 +37,7 @@ npm のレジストリに届かない環境（一部のエージェントの作�
 | ブログ自体を直す・改善する             | `docs/improvement-loop.md` → `.claude/skills/improve/SKILL.md`                      |
 | 判断の理由を知る                       | `docs/decisions/`（ADR）                                                            |
 | 機能を足す・大きく変える               | `docs/specs/`（先に指示書を書く。`write-spec` スキル）                              |
+| 管理画面（Sveltia CMS）の仕組みを知る  | `docs/cms.md`                                                                       |
 | 記事を書く・移行する                   | `docs/writing-posts.md` → `rules/content.md` → `.claude/skills/write-post/SKILL.md` |
 | 過去に直したこと・残っている改善を知る | `docs/improvement/log.md`・`docs/improvement/backlog.md`                            |
 | エージェントとの進め方を知る           | `docs/ai-agents.md`                                                                 |
