@@ -11,7 +11,6 @@
 
 - [ ] Cloudflare で Worker（`astro-blog`）を作り、GitHub の `tkc310/astro-blog` とつなぐ（Workers Builds）。ビルドコマンドは `pnpm run build`（Workers Builds には `vp` と `make` の前提が無いので、`package.json` のスクリプトを直接呼ぶ）、デプロイは `npx wrangler deploy`、非本番ブランチのビルドを有効にする。Node.js は `.node-version`、pnpm は `packageManager` から決まる。pnpm が切り替わらずに入れられないときは、ビルド変数に `PNPM_VERSION=11.28.6` を足す
 - [ ] GitHub の Settings で「Automatically delete head branches」を有効にする
-- [ ] Sveltia CMS の GitHub ログインを確かめる。workers.dev のサブドメインを `tkc310` に変えたので、認証の Worker は `https://astro-blog-sveltia-cms-auth.tkc310.workers.dev`。2026-10-20 の時点では、変えた直後で TLS の証明書がまだ出ていなかった（handshake failure）。証明書が出たら、`/auth?provider=github&site_id=tkc310.com` が GitHub へリダイレクトするかを見る。GitHub の OAuth App のコールバックを `https://astro-blog-sveltia-cms-auth.tkc310.workers.dev/callback` に、`ALLOWED_DOMAINS` を `tkc310.com,*.tkc310.workers.dev` に直す。Worker には雛形（Hello world）ではなく `sveltia-cms-auth` のコードをデプロイする
 
 ## Markdown の拡張（その PR で確かめる）
 
