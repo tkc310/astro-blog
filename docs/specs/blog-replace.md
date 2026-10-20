@@ -93,7 +93,7 @@
 
 - **目次**: h2・h3 から作る。PC は横に固定、モバイルは本文の前に `<details>` で畳み sticky で追尾する（閉じているときは今の見出し名も出す）。現在位置の強調は IntersectionObserver の小さなスクリプトで行う
 - **見出し**: 各見出しに `id` を付け、レベルに応じた `##` / `###` を前に出す（題名の h1 には付けない）。クリックでその見出しへページ内で移動する
-- **リンクカード**: URL だけの行をカードにする（`rules/content.md`）。ビルド時に OGP を取り、画像とファビコンは `public/remark-link-card-plus/` に保存して自分のサイトから出す（コミットしない）。サムネイルの枠は大きさを固定する。OGP が取れないときは普通のリンクにする
+- **リンクカード**: URL だけの行をカードにする（`rules/content.md`）。ビルド時に OGP を取り、画像とファビコンは `public/remark-link-card-plus/` に保存して自分のサイトから出す（コミットしない）。保存は本文を描くときだけなので、ビルドは `astro build --force` で Astro のキャッシュを捨てて回す（Workers Builds はキャッシュを戻してからビルドする）。サムネイルの枠は大きさを固定する。OGP が取れないときは普通のリンクにする
 - **コードブロック**: Expressive Code（`github-light`、枠と影なし、地は `--wash`）。言語名・ファイル名・行の強調・コピーボタン
 - **画像**: `astro:assets` で最適化し、`width`・`height` を必ず出す。最初の画像以外は `loading="lazy"`
 - **外部リンク**: `target="_blank" rel="noopener noreferrer"`
