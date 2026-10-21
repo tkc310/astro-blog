@@ -10,7 +10,7 @@ updatedDate: 2026-10-19
 
 <a href="https://github.com/tkc310/8341-ui" target="\_blank">日本語UI向けa11y配慮のデザインシステム「8341-ui」</a>
 
-<a href="[https://github.com/tkc310/8341-ui](https://koyomi.tkc310.com/)" target="\_blank">PWA対応/各種カレンダー連携可能「タイの仏教行事カレンダー」</a>
+<a href="https://koyomi.tkc310.com/" target="\_blank">PWA対応/各種カレンダー連携可能「タイの仏教行事カレンダー」</a>
 
 ## 自己紹介
 
