@@ -9,7 +9,7 @@ const el = (
   children: unknown[] = [],
 ): HastElement => ({ type: "element", tagName, properties, children }) as HastElement;
 const img = (src = "../../assets/posts/a/b.png", alt = "説明") => el("img", { src, alt });
-const root = (...children: unknown[]) => ({ type: "root", children }) as HastElement;
+const root = (...children: unknown[]) => ({ type: "root", children }) as unknown as HastElement;
 
 describe("wrapImages", () => {
   test("画像だけの段落を、拡大のボタンと popover に書き換える", () => {
