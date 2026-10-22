@@ -94,7 +94,7 @@ jobs:
             const sha = context.payload.pull_request.head.sha.slice(0, 7);
             const raw = (name) => `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branch}/${name}`;
             // scripts/screenshots/capture.mjs の pages と同じ名前。
-            const pages = ["top", "about", "article", "category", "404", "admin"];
+            const pages = ["top", "about", "article", "zoom", "category", "404", "admin"];
             const rows = pages.map((page) =>
               `| ${page} | <img src="${raw(`${page}-pc.png`)}" width="360"> | <img src="${raw(`${page}-sp.png`)}" width="140"> |`);
             const marker = "<!-- screenshots -->";

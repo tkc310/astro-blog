@@ -248,6 +248,67 @@
   margin: 2.25em auto;
 }
 
+/*
+ * 画像の拡大（src/lib/markdown/image-zoom.ts）。画像を押すと popover で画面いっぱいに出し、
+ * 画像を押すか、外を押すか、Esc で閉じる。JS は使わない。
+ */
+.prose .zoom {
+  margin: 2.25em 0;
+}
+
+.prose .zoom-trigger,
+.prose .zoom-close {
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.prose .zoom-trigger {
+  cursor: zoom-in;
+}
+
+.prose .zoom-close {
+  cursor: zoom-out;
+}
+
+.prose .zoom img {
+  margin: 0 auto;
+}
+
+.prose .zoom-dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: var(--space-5);
+  border: 0;
+  /* 下のページが透けると、元の画像が灰色の影に見えるので、白で覆う。 */
+  background: var(--paper);
+}
+
+.prose .zoom-dialog:popover-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prose .zoom-dialog::backdrop {
+  background: transparent;
+}
+
+.prose .zoom-dialog img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100dvh - var(--space-5) * 2);
+  object-fit: contain;
+}
+
 .prose strong {
   color: var(--strong);
   font-weight: 600;

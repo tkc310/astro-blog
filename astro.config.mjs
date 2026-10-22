@@ -11,6 +11,7 @@ import rehypeExternalLinks from "rehype-external-links";
 import remarkLinkCard from "remark-link-card-plus";
 
 import { shouldShowDrafts } from "./src/lib/drafts.ts";
+import { rehypeImageZoom } from "./src/lib/markdown/image-zoom.ts";
 import { rehypeLinkCardImages } from "./src/lib/markdown/link-card-images.ts";
 import { SITE_URL } from "./src/site.config.ts";
 
@@ -107,6 +108,8 @@ export default defineConfig({
       ],
       rehypePlugins: [
         rehypeLinkCardImages,
+        // 画像だけの段落をクリックで拡大できるようにする（popover。JS は使わない）。
+        rehypeImageZoom,
         [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
       ],
     }),

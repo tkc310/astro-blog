@@ -61,6 +61,25 @@ for (const viewport of viewports) {
       path: join(OUT, `${target.name}-${viewport.name}.png`),
       fullPage: true,
     });
+    // 本文の画像を押すと拡大の popover が開き、画像を押すと閉じること（src/lib/markdown/image-zoom.ts）。
+    if (target.name === "article") {
+      const trigger = page.locator(".zoom-trigger").first();
+      if ((await trigger.count()) === 0) {
+        failures.push(`${viewport.name}: ${target.path} に拡大できる画像がありません`);
+      } else {
+        await trigger.click();
+        const dialog = page.locator(".zoom-dialog:popover-open");
+        const opened = await dialog
+          .locator("img")
+          .evaluate((img) => img.decode().then(() => true))
+          .catch(() => false);
+        if (!opened) failures.push(`${viewport.name}: 画像の拡大が開きませんでした`);
+        await page.screenshot({ path: join(OUT, `zoom-${viewport.name}.png`) });
+        await dialog.locator(".zoom-close").click();
+        if ((await page.locator(".zoom-dialog:popover-open").count()) > 0)
+          failures.push(`${viewport.name}: 画像の拡大が閉じませんでした`);
+      }
+    }
   }
   await context.close();
 }
