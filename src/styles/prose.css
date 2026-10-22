@@ -287,7 +287,8 @@
   margin: 0;
   padding: var(--space-5);
   border: 0;
-  background: rgb(255 255 255 / 0.97);
+  /* 下のページが透けると、元の画像が灰色の影に見えるので、白で覆う。 */
+  background: var(--paper);
 }
 
 .prose .zoom-dialog:popover-open {
